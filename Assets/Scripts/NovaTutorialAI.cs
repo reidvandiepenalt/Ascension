@@ -133,17 +133,30 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
     /// </summary>
     IEnumerator DirectedLaser()
     {
-        //grounded vs aerial for real version?
-
-        //left or right floor
-        if (playerTransform.position.x < roomBounds[0].x + (RoomWidth / 2))
+        //min 8 from player
+        int y = rng.Next((int)roomBounds[1].y, (int)roomBounds[0].y);
+        int xminOffset = (int)Math.Sqrt(Math.Abs(Math.Pow(8, 2) - Math.Pow(y - playerTransform.position.y, 2)));
+        int x;
+        if((int)playerTransform.position.x - xminOffset < (int)roomBounds[0].x)
         {
-            target.transform.position = roomBounds[1];
+            x = rng.Next((int)playerTransform.position.x + xminOffset, (int)roomBounds[1].x);
+        }
+        else if ((int)playerTransform.position.x + xminOffset > (int)roomBounds[1].x)
+        {
+            x = rng.Next((int)roomBounds[0].x, (int)playerTransform.position.x - xminOffset);
         }
         else
         {
-            target.transform.position = new Vector2(roomBounds[0].x, roomBounds[1].y);
+            if (rng.Next(0, 2) == 0)
+            {
+                x = rng.Next((int)roomBounds[0].x, (int)playerTransform.position.x - xminOffset);
+            }
+            else
+            {
+                x = rng.Next((int)playerTransform.position.x + xminOffset, (int)roomBounds[1].x);
+            }
         }
+        target.position = new Vector2(x, y);
 
         //create path
         GeneratePath();
@@ -170,29 +183,30 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
     /// </summary>
     IEnumerator OmniProj()
     {
-        //pick a spot in top section away from player
-        //player in left side
-        if(playerTransform.position.x < roomBounds[1].x - (2 * RoomWidth / 3))
+        //min 8 from player in top section
+        int y = rng.Next((int)roomBounds[0].y / 2, (int)roomBounds[0].y);
+        int xminOffset = (int)Math.Sqrt(Math.Abs(Math.Pow(8, 2) - Math.Pow(y - playerTransform.position.y, 2)));
+        int x;
+        if ((int)playerTransform.position.x - xminOffset < (int)roomBounds[0].x)
         {
-            target.position = new Vector2(rng.Next((int)(roomBounds[1].x - (2 * RoomWidth / 3)), (int)roomBounds[1].x + 1) , rng.Next((int)(roomBounds[0].y - (RoomHeight / 2)), (int)roomBounds[0].y + 1));
+            x = rng.Next((int)playerTransform.position.x + xminOffset, (int)roomBounds[1].x);
         }
-        //player in middle
-        else if(playerTransform.position.x < roomBounds[1].x - (RoomWidth / 3))
+        else if ((int)playerTransform.position.x + xminOffset > (int)roomBounds[1].x)
         {
-            if(rng.Next(0, 2) == 0)
+            x = rng.Next((int)roomBounds[0].x, (int)playerTransform.position.x - xminOffset);
+        }
+        else
+        {
+            if (rng.Next(0, 2) == 0)
             {
-                target.position = new Vector2(rng.Next((int)roomBounds[0].x, (int)(roomBounds[0].x + (RoomWidth / 3)) + 1) , rng.Next((int)(roomBounds[0].y - (RoomHeight / 2)), (int)roomBounds[0].y + 1));
+                x = rng.Next((int)roomBounds[0].x, (int)playerTransform.position.x - xminOffset);
             }
             else
             {
-                target.position = new Vector2(rng.Next((int)(roomBounds[1].x - (RoomWidth / 3)), (int)roomBounds[1].x + 1), rng.Next((int)(roomBounds[0].y - (RoomHeight / 2)), (int)roomBounds[0].y + 1));
+                x = rng.Next((int)playerTransform.position.x + xminOffset, (int)roomBounds[1].x);
             }
         }
-        //player on right
-        else
-        {
-            target.position = new Vector2(rng.Next((int)roomBounds[0].x, (int)(roomBounds[1].x - (2 * RoomWidth / 3)) + 1), rng.Next((int)(roomBounds[0].y - (RoomHeight / 2)), (int)roomBounds[0].y + 1));
-        }
+        target.position = new Vector2(x, y);
 
         //create path
         GeneratePath();
@@ -200,7 +214,7 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
         yield return new WaitWhile(() => !reachedEndOfPath);
 
         //spawn attack and animate
-        //spawn 7 projectiles in a 120 degree cone evenly spaced
+        //spawn projectiles in a cone evenly spaced
         yield return new WaitForSeconds(arrivalAttackDelay);
         for(int i = -omniProjCount / 2; i <= omniProjCount / 2; i++)
         {
@@ -210,9 +224,9 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
 
             float sin = Mathf.Sin(omniDegRange / omniProjCount * i * Mathf.Deg2Rad);
             float cos = Mathf.Cos(omniDegRange / omniProjCount * i * Mathf.Deg2Rad);
-            float x =  sin;
-            float y = -cos;
-            proj.targetPosition = Physics2D.Raycast(transform.position, new Vector2(x, y), 60, ground).point;
+            float projX =  sin;
+            float projY = -cos;
+            proj.targetPosition = Physics2D.Raycast(transform.position, new Vector2(projX, projY), 60, ground).point;
             StartCoroutine(proj.DirectedProj());
         }
         yield return new WaitForSeconds(attackFinishDelay);
