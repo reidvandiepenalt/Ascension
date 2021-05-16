@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2325102181780032279}
   - component: {fileID: 1598451168564141222}
   m_Layer: 14
-  m_Name: NovaLaser
+  m_Name: NovaDirectedLaser
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -77,13 +77,13 @@ LineRenderer:
   - {x: 0, y: 60, z: 0}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 1
+    widthMultiplier: 1.0173556
     widthCurve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 1
+        value: 0.19718361
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -144,3 +144,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 1
   targetPosition: {x: 0, y: 0}
+  initPosition: {x: 0, y: 0}
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 4096
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 512

@@ -1043,12 +1043,12 @@ PrefabInstance:
     - target: {fileID: 8120835749589728402, guid: 645259a54d8963d4cb3d3d2c2bc6f8f1,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 13
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 8120835749589728402, guid: 645259a54d8963d4cb3d3d2c2bc6f8f1,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -12.040766
+      value: -9.040762
       objectReference: {fileID: 0}
     - target: {fileID: 8120835749589728402, guid: 645259a54d8963d4cb3d3d2c2bc6f8f1,
         type: 3}
@@ -1135,14 +1135,16 @@ MonoBehaviour:
   - {x: -40, y: 11}
   - {x: 13, y: -12}
   playerTransform: {fileID: 935426104}
-  laserPrefab: {fileID: 5850416030539866354, guid: f4711d6cff1045f4382bfaa3a18b3923,
+  directedLaserPrefab: {fileID: 5850416030539866354, guid: f4711d6cff1045f4382bfaa3a18b3923,
     type: 3}
   projectilePrefab: {fileID: 8021024634191781669, guid: 15f3278b04a61c64396999e0a1e1cd26,
+    type: 3}
+  vertLaserPrefab: {fileID: 6599282189128932685, guid: 15d245902626c22458a35c72d8577044,
     type: 3}
   target: {fileID: 97733361}
   ground:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 512
   timeToMove: 0.75
   arrivalAttackDelay: 0.2
   attackFinishDelay: 0.5
@@ -1151,8 +1153,10 @@ MonoBehaviour:
   omniProjSpeed: 40
   omniDegRange: 220
   omniProjCount: 11
-  laserDelay: 0.3
-  laserExistTime: 0.2
+  vertLaserCount: 12
+  laserDelay: 0.5
+  laserExistTime: 0.5
+  vertLaserSpawnHeight: 14.75
 --- !u!4 &7449971772262371205 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8120835749589728402, guid: 645259a54d8963d4cb3d3d2c2bc6f8f1,

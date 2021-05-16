@@ -8,7 +8,7 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
     public Vector2[] roomBounds = new Vector2[2];
     public Transform playerTransform;
 
-    public GameObject laserPrefab, projectilePrefab;
+    public GameObject directedLaserPrefab, projectilePrefab, vertLaserPrefab;
     public Transform target;
 
     public LayerMask ground;
@@ -16,8 +16,9 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
     public float arrivalAttackDelay, attackFinishDelay;
     public float directedProjDelay, directedProjSpeed;
     public float omniProjSpeed, omniDegRange;
-    public int omniProjCount;
+    public int omniProjCount, vertLaserCount;
     public float laserDelay, laserExistTime;
+    public float vertLaserSpawnHeight;
 
     Queue<Vector2> path;
     int currentWaypoint;
@@ -77,6 +78,7 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
             case AIState.directedLaser:
                 possibleAttacks.Add(AIState.vertLaser);
                 possibleAttacks.Add(AIState.omniProj);
+                possibleAttacks.Add(AIState.directedProj);
                 break;
             case AIState.omniProj:
                 possibleAttacks.Add(AIState.vertLaser);
@@ -86,6 +88,7 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
             case AIState.directedProj:
                 possibleAttacks.Add(AIState.vertLaser);
                 possibleAttacks.Add(AIState.omniProj);
+                possibleAttacks.Add(AIState.directedLaser);
                 break;
         }
         //random attack
@@ -123,7 +126,17 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
         yield return new WaitWhile(() => !reachedEndOfPath);
 
         //spawn attack and animate
-
+        yield return new WaitForSeconds(arrivalAttackDelay);
+        for(int i = 0; i < vertLaserCount; i++)
+        {
+            NovaVertLaser ls = Instantiate(vertLaserPrefab, new Vector2(roomBounds[0].x + i * (RoomWidth / vertLaserCount),
+                vertLaserSpawnHeight), Quaternion.identity).GetComponent<NovaVertLaser>();
+            ls.initPosition = new Vector2(roomBounds[0].x + i * (RoomWidth / vertLaserCount), vertLaserSpawnHeight);
+            ls.activationTime = laserDelay;
+            ls.activeTime = laserExistTime;
+            yield return new WaitForSeconds(laserDelay);
+        }
+        yield return new WaitForSeconds(attackFinishDelay);
 
         State = AIState.idle;
     }
@@ -165,14 +178,13 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
 
         //spawn attack and animate
         yield return new WaitForSeconds(arrivalAttackDelay);
-        GameObject laser = Instantiate(laserPrefab, transform.position, Quaternion.identity);
-        laser.GetComponent<Laser>().targetPosition = playerTransform.position;
-        laser.SetActive(false);
+        NovaDirectedLaser ls = Instantiate(directedLaserPrefab, transform.position, Quaternion.identity).GetComponent<NovaDirectedLaser>();
+        ls.targetPosition = playerTransform.position;
+        ls.initPosition = transform.position;
         yield return new WaitForSeconds(laserDelay);
-        laser.SetActive(true);
-        laser.GetComponent<LineRenderer>().startColor = new Color(255, 255, 255, 255);
+        ls.DamageActive();
         yield return new WaitForSeconds(laserExistTime);
-        Destroy(laser);
+        Destroy(ls.gameObject);
         yield return new WaitForSeconds(attackFinishDelay);
 
         State = AIState.idle;
