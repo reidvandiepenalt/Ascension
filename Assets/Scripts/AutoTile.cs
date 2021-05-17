@@ -11,6 +11,7 @@ public class AutoTile : MonoBehaviour
     private Material matCopy;
     public void Awake()
     {
+        //get the renderer and scale the texture to size of transform
         Rend = GetComponent<Renderer>();
         matCopy = new Material(Rend.material);
         Rend.material = matCopy;

@@ -16,6 +16,7 @@ public class EnemyGFX : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //flip image based on velocity
         if(aiPath.desiredVelocity.x > 0.01f)
         {
             transform.localScale = new Vector3(-1f, 1f, 1f);

@@ -9,8 +9,6 @@ public class Camera_Follow : MonoBehaviour
     FocusArea focusArea;
 
     public float verticalOffset;
-
-
     
     public float lookAheadDistX;
     public float lookSmoothTimeX;
@@ -28,19 +26,23 @@ public class Camera_Follow : MonoBehaviour
 
     bool lookAheadStopped;
 
-    private void Start()
+    public void Start()
     {
         focusArea = new FocusArea(target.collider.bounds);
     }
 
-    private void LateUpdate()
+    public void LateUpdate()
     {
+        //update focus area
         focusArea.Update(target.collider.bounds);
 
+        //set focus position
         Vector2 focusPosition = focusArea.center + Vector2.up * verticalOffset;
 
+        //if moving set target to look ahead
         if (focusArea.velocity.x != 0)
         {
+            //left or right
             lookAheadDirX = Mathf.Sign(focusArea.velocity.x);
             if (Input.GetAxisRaw("Horizontal") == 0)
             {
@@ -73,16 +75,19 @@ public class Camera_Follow : MonoBehaviour
             targetLookAheadY = 0;
         }
 
-
+        //smooth movement
         currentLookAheadX = Mathf.SmoothDamp(currentLookAheadX, targetLookAheadX, ref smoothLookVelocityX, lookSmoothTimeX);
         currentLookAheadY = Mathf.SmoothDamp(currentLookAheadY, targetLookAheadY, ref smoothLookVelocityY, lookSmoothTimeY);
 
+        //adjust position
         focusPosition += Vector2.up * currentLookAheadY;
         focusPosition += Vector2.right * currentLookAheadX;
-
         transform.position = (Vector3)focusPosition + Vector3.forward * -10;
     }
 
+    /// <summary>
+    /// Area to focus the camera on
+    /// </summary>
     struct FocusArea
     {
         public Vector2 center, velocity;
@@ -99,6 +104,10 @@ public class Camera_Follow : MonoBehaviour
             center = new Vector2(targetBounds.center.x, targetBounds.center.y);
         }
 
+        /// <summary>
+        /// Updates the focus are to the target bounds
+        /// </summary>
+        /// <param name="targetBounds"></param>
         public void Update(Bounds targetBounds)
         {
             float shiftX = 0;
@@ -128,6 +137,4 @@ public class Camera_Follow : MonoBehaviour
             velocity = new Vector2(shiftX, (Mathf.Abs(shiftY)>0.1)?shiftY:0);
         }
     }
-
-
 }

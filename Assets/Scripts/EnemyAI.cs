@@ -27,11 +27,13 @@ public abstract class EnemyAI : MonoBehaviour,  IEnemy
 
     private void OnDrawGizmos()
     {
+        //draw agro area
         Gizmos.DrawWireSphere(transform.position, aggroDistance);
     }
 
     protected virtual void Start()
     {
+        //set up
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
         health = maxHealth;
@@ -41,6 +43,7 @@ public abstract class EnemyAI : MonoBehaviour,  IEnemy
 
     protected virtual void UpdatePath()
     {
+        //Update path
         if (seeker.IsDone())
         {
             seeker.StartPath(rb.position, target.position, OnPathComplete);
@@ -49,6 +52,7 @@ public abstract class EnemyAI : MonoBehaviour,  IEnemy
 
     protected virtual void OnPathComplete(Path p)
     {
+        //get new path on completion of calculation
         if (!p.error)
         {
             path = p;
@@ -63,6 +67,7 @@ public abstract class EnemyAI : MonoBehaviour,  IEnemy
             return;
         }
 
+        //reached end of path
         if (currentWaypoint >= path.vectorPath.Count)
         {
             reachedEndOfPath = true;
@@ -73,27 +78,36 @@ public abstract class EnemyAI : MonoBehaviour,  IEnemy
             reachedEndOfPath = false;
         }
 
+        //move in the direction of the next waypoint
         Vector2 direction = ((Vector2)path.vectorPath[currentWaypoint] - rb.position).normalized;
-        Vector2 force = direction * speed * Time.deltaTime;
+        Vector2 toMove = direction * speed * Time.deltaTime;
 
-        rb.AddForce(force);
+        //force vs position?
+        transform.position += (Vector3)toMove;
 
+        //distance to next waypoint
         float distance = Vector2.Distance(rb.position, path.vectorPath[currentWaypoint]);
 
+        //update waypoint if close to next one
         if (distance < nextWaypointDistance)
         {
             currentWaypoint++;
         }
 
-        if (force.x >= 0.01f)
+        //flip based on moving left or right
+        if (toMove.x >= 0.01f)
         {
             enemyGFX.transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, 1f);
-        } else if (force.x <= -0.01f)
+        } else if (toMove.x <= -0.01f)
         {
             enemyGFX.transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, 1f);
         }
     }
 
+    /// <summary>
+    /// Enemy takes damage
+    /// </summary>
+    /// <param name="damageAmount">Damage to take</param>
     public virtual void TakeDamage(int damageAmount)
     {
         health = health - damageAmount;
@@ -105,7 +119,11 @@ public abstract class EnemyAI : MonoBehaviour,  IEnemy
         }
     }
 
-    public virtual void Stun(float timer)
+    /// <summary>
+    /// Stuns the enemy
+    /// </summary>
+    /// <param name="timer">Time to stay stunned</param>
+    public virtual void Stun(float stunTime)
     {
         print("stunned");
     }

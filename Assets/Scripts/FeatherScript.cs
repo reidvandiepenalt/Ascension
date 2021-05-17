@@ -15,6 +15,7 @@ public class FeatherScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //set up
         rb = gameObject.GetComponent<Rigidbody2D>();
         gameObject.transform.eulerAngles = new Vector3(0, 0, angle - 90);
         angle *= Mathf.Deg2Rad;
@@ -26,6 +27,7 @@ public class FeatherScript : MonoBehaviour
     void Update()
     {
         timer += Time.deltaTime;
+        //despawn
         if (timer > despawnTime)
         {
             Destroy(gameObject);
@@ -34,6 +36,7 @@ public class FeatherScript : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        //despawn on ground/wall
         if (collision.tag == "Inanimate")
         {
             Destroy(gameObject);

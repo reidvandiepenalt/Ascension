@@ -13,9 +13,10 @@ public class BoomerangScript : MonoBehaviour
     public float scale = 1.0f;
 
     // Start is called before the first frame update
-    void Start()
+    public void Start()
     {
         rb = gameObject.GetComponent<Rigidbody2D>();
+        //set initial velocity based on direction
         if (left)
         {
             rb.velocity = new Vector2(-speed, 0);
@@ -24,12 +25,13 @@ public class BoomerangScript : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    public void Update()
     {
         gameObject.transform.Rotate(new Vector3(0, 0, 4));
 
         timer += Time.deltaTime;
 
+        //turn around
         if (left && timer >= 0.75f)
         {
             rb.velocity = new Vector2(rb.velocity.x + stepper, 0);
@@ -38,13 +40,16 @@ public class BoomerangScript : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x - stepper, 0);
         }
 
+        //despawn
         if (timer >= despawnTime)
         {
             Destroy(gameObject);
         }
     }
-    private void OnTriggerEnter2D(Collider2D collision)
+
+    public void OnTriggerEnter2D(Collider2D collision)
     {
+        //if it hits ground/wall, destory or rebound
         if (collision.CompareTag("Inanimate"))
         {
             if(timer < 0.80)

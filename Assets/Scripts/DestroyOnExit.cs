@@ -7,6 +7,7 @@ public class DestroyOnExit : StateMachineBehaviour
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        //destroy the game object attacked to the animator when the animation finishes playing
         Destroy(animator.gameObject, stateInfo.length);
     }
 

@@ -304,6 +304,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 535330546, guid: a16044c0828eed144b2c86497434c800, type: 3}
+      propertyPath: speed
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 145461275010295758, guid: a16044c0828eed144b2c86497434c800,
         type: 3}
       propertyPath: m_LocalRotation.z
@@ -1153,10 +1157,11 @@ MonoBehaviour:
   omniProjSpeed: 40
   omniDegRange: 220
   omniProjCount: 11
-  vertLaserCount: 12
-  laserDelay: 0.5
-  laserExistTime: 0.5
+  vertLaserCount: 16
+  laserDelay: 0.3
+  laserExistTime: 0.2
   vertLaserSpawnHeight: 14.75
+  vertLaserSpawnInterval: 0.1
 --- !u!4 &7449971772262371205 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8120835749589728402, guid: 645259a54d8963d4cb3d3d2c2bc6f8f1,

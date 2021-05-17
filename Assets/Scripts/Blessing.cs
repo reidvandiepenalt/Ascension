@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Template for a blessing
+/// </summary>
 [CreateAssetMenu]
 public class Blessing : ScriptableObject
 {

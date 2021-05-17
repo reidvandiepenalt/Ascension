@@ -29,6 +29,7 @@ public class BlessingInventory : MonoBehaviour, ICanvas
 
     private void OnValidate()
     {
+        //in editor, get all storage slots and add to blessingStorageSlots
         if (blessingsStorage != null)
         {
             blessingStorageSlots = blessingsStorage.GetComponentsInChildren<BlessingSlot>();
@@ -43,25 +44,38 @@ public class BlessingInventory : MonoBehaviour, ICanvas
                 GameObject.Instantiate(activeBlessCounterPrefab, counterGrid);
         }
 
+        //equip all equipped blessings
         for(int i = 0; i < blessingStorageSlots.Length; i++)
         {
             if (blessingStorageSlots[i].Blessing.equipped) { blessingStorageSlots[i].AddBlessing(true); }
         }
 
+        //set selected
         EventSystem.current.SetSelectedGameObject(blessingStorageSlots[0].gameObject);
         superMenu.SelectedGameObject = EventSystem.current.currentSelectedGameObject;
     }
 
+    /// <summary>
+    /// Update description text to selected blessing
+    /// </summary>
+    /// <param name="selected">Selected blessing</param>
     public void UpdateDescriptions(Blessing selected)
     {
         headerText.text = selected.ItemName;
         descriptionText.text = selected.description;
     }
 
+    /// <summary>
+    /// Adds blessing to equipped blessings
+    /// </summary>
+    /// <param name="blessing">Blessing to equip</param>
+    /// <returns>Returns true if blessing was equipped, false otherwise</returns>
     public bool AddBlessing(Blessing blessing)
     {
+        //check if there is room to equip
         if (IsFull(blessing.cost)) { return false; }
 
+        //Get rid of counter tokens
         for(int i = 0; i < blessing.cost; i++)
         {
             Destroy(counterGrid.GetChild(i).gameObject);
@@ -69,6 +83,7 @@ public class BlessingInventory : MonoBehaviour, ICanvas
 
         PlayerTestScript.blessingTotal -= blessing.cost;
 
+        //Add blessing to equipped grid
         ActiveBlessingSlots.Add(Instantiate(activeBlessSlotPrefab, activeBlessGrid).GetComponent<BlessingSlot>()); ;
         ActiveBlessingSlots[ActiveBlessingSlots.Count - 1].Blessing = blessing;
         ActiveBlessingSlots[ActiveBlessingSlots.Count - 1].Blessing.blessScript.Equip(player);
@@ -76,18 +91,27 @@ public class BlessingInventory : MonoBehaviour, ICanvas
         return true;
     }
 
+    /// <summary>
+    /// Remove the selected blessing
+    /// </summary>
+    /// <param name="blessSlot">Blessing to remove</param>
+    /// <returns>Returns true if blessing was removed</returns>
     public bool RemoveBlessing(BlessingSlot blessSlot)
     {
+        //check if blessing is equipped
         if (!ActiveBlessingSlots.Contains(blessSlot)) { return false; }
 
+        //update player
         blessSlot.Blessing.blessScript.Unequip(player);
 
+        //add back space/counters
         PlayerTestScript.blessingTotal += blessSlot.Blessing.cost;
         for(int i = 0; i < blessSlot.Blessing.cost; i++)
         {
             GameObject.Instantiate(activeBlessCounterPrefab, counterGrid);
         }
 
+        //remove from active grid and add back to collected grid
         int index = ActiveBlessingSlots.IndexOf(blessSlot);
         if (ActiveBlessingSlots.Count > 1)
         {
@@ -120,19 +144,31 @@ public class BlessingInventory : MonoBehaviour, ICanvas
         return true;
     }
 
+    /// <summary>
+    /// Checks if there is space to equip blessing
+    /// </summary>
     public bool IsFull(int cost)
     {
         return cost > PlayerTestScript.blessingTotal;
     }
 
+
+    /// <summary>
+    /// Updates selections
+    /// </summary>
     public void UpdatedSelection(GameObject newSelection, GameObject oldSelection)
     {
         if (newSelection.CompareTag("BlessSlot"))
         {
+            //update the description text
             UpdateDescriptions(newSelection.GetComponent<BlessingSlot>().Blessing);
         }
     }
 
+
+    /// <summary>
+    /// Do closing set up as needed
+    /// </summary>
     public void Closing()
     {
         

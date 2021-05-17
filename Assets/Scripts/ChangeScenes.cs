@@ -14,9 +14,10 @@ public class ChangeScenes : MonoBehaviour
 
     private void Awake()
     {
+        //fade the screen in
         if (fadeInPanel != null)
         {
-            GameObject panel = Instantiate(fadeInPanel, Vector3.zero, Quaternion.identity) as GameObject;
+            GameObject panel = Instantiate(fadeInPanel, Vector3.zero, Quaternion.identity);
             Destroy(panel, fadeWait);
         }
     }
@@ -25,6 +26,7 @@ public class ChangeScenes : MonoBehaviour
     {
         if (collision.CompareTag("Player") && !collision.isTrigger)
         {
+            //set player starting position to the new scenes entry position
             positionStorage.initialValue = transitionPosition;
             StartCoroutine(FadeCo());
         }
@@ -32,6 +34,7 @@ public class ChangeScenes : MonoBehaviour
 
     public IEnumerator FadeCo()
     {
+        //fade screen then load it
         if(fadeOutPanel != null)
         {
             Instantiate(fadeOutPanel, Vector3.zero, Quaternion.identity);

@@ -13,20 +13,28 @@ public class FlyerTest : EnemyAI
         InvokeRepeating("CheckDist", 0f, 1f);
     }
 
+    /// <summary>
+    /// Check distance to target position and aggro if needed
+    /// </summary>
     override protected void CheckDist()
     {
         float dist = Vector2.Distance(rb.position, target.position);
 
+        //aggro
         if (dist <= aggroDistance)
         {
             InvokeRepeating("UpdatePath", 0f, 0.5f);
         }
+        //deaggro
         if (dist >= stopDistance)
         {
             CancelInvoke("UpdatePath");
         }
     }
 
+    /// <summary>
+    /// Updates the path based on target position
+    /// </summary>
     override protected void UpdatePath()
     {
         if (seeker.IsDone())
@@ -37,6 +45,7 @@ public class FlyerTest : EnemyAI
 
     override protected void OnPathComplete(Path p)
     {
+        ///set new path when done calculating
         if (!p.error)
         {
             path = p;
@@ -61,18 +70,23 @@ public class FlyerTest : EnemyAI
             reachedEndOfPath = false;
         }
 
+        //calculate direction and move towards it
         Vector2 direction = ((Vector2)path.vectorPath[currentWaypoint] - rb.position).normalized;
         Vector2 force = direction * speed * Time.deltaTime;
 
+        //force is more floaty, but could use position instead
         rb.AddForce(force);
 
+        //distance to next waypoint
         float distance = Vector2.Distance(rb.position, path.vectorPath[currentWaypoint]);
 
+        //update waypoint
         if (distance < nextWaypointDistance)
         {
             currentWaypoint++;
         }
 
+        //flip gfx
         if (force.x >= 0.01f)
         {
             enemyGFX.transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, 1f);

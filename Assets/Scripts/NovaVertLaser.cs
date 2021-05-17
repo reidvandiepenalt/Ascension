@@ -5,7 +5,6 @@ using UnityEngine;
 public class NovaVertLaser : MonoBehaviour
 {
     public int damage;
-    public Vector2 initPosition;
     public LayerMask playerLayer;
     public LayerMask groundLayer;
     public float activationTime, activeTime;
@@ -18,7 +17,11 @@ public class NovaVertLaser : MonoBehaviour
     {
         //sets the position of second point to that of the first collision of ground in the direction of target position
         lr = GetComponent<LineRenderer>();
-        lr.SetPosition(0, initPosition);
+        RaycastHit2D topCheck = Physics2D.Raycast(transform.position, Vector2.up, Mathf.Infinity, groundLayer);
+        if (topCheck.collider)
+        {
+            lr.SetPosition(0, topCheck.point);
+        }
         RaycastHit2D hit;
         if (hit = Physics2D.Raycast(transform.position, Vector2.down, Mathf.Infinity, groundLayer))
         {

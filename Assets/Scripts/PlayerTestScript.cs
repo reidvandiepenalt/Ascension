@@ -181,6 +181,7 @@ public class PlayerTestScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //set up
         state = PlayerState.idle;
         controller = GetComponent<Controller2D>();
         anim = GetComponent<Animator>();
@@ -193,11 +194,14 @@ public class PlayerTestScript : MonoBehaviour
 
         currentCharge = maxJumpVelocity / 2;
 
+
+        //ui set up
         pauseCanvas = Instantiate(PauseCanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
         inGameMenuCanvas = Instantiate(InGameMenuCanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
         settingsCanvas = Instantiate(SettingsCanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
         UICanvas = Instantiate(UICanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
 
+        //set cameras
         pauseCanvas.GetComponent<Canvas>().worldCamera = mainCam;
         inGameMenuCanvas.GetComponent<Canvas>().worldCamera = mainCam;
         settingsCanvas.GetComponent<Canvas>().worldCamera = mainCam;
@@ -213,7 +217,7 @@ public class PlayerTestScript : MonoBehaviour
         //change?
         currentHealth.Value = maxHealth.Value;
 
-
+        //set up skill ui's if unlocked
         if (slamUnlock)
         {
             slamUIScript = Instantiate(slamUI, skillsGrid.transform).GetComponent<ProgressBarScript>();
@@ -258,17 +262,24 @@ public class PlayerTestScript : MonoBehaviour
             UISkillScripts.Add(dashUIScript);
         }
 
-
+        //set position to starting position of room?
         transform.position = startingPosition.initialValue;
     }
 
+    /// <summary>
+    /// Sets the directional input to given input
+    /// </summary>
     public void SetDirectionalInput(Vector2 input)
     {
         directionalInput = input;
     }
 
+    /// <summary>
+    /// What to do when jump button is down
+    /// </summary>
     public void OnJumpDown()
     {
+        //basic jump
         if (controller.collisions.below && (state == PlayerState.idle || state == PlayerState.walking || state == PlayerState.attacking))//jump
         {
             velocity.y = maxJumpVelocity;
@@ -283,6 +294,7 @@ public class PlayerTestScript : MonoBehaviour
             doubleJumpUsed = true;
             state = PlayerState.gliding;
             anim.SetTrigger("DoubleJump");
+            //if upgraded, spawn stun objects
             if (doubleJumpUpgrade)
             {
                 RaycastHit2D hit = Physics2D.Raycast(gameObject.transform.position, Vector2.down, doubleJumpStunRange, LayerMask.GetMask("Ground"));
@@ -297,6 +309,9 @@ public class PlayerTestScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Glides on jump held
+    /// </summary>
     public void OnJumpHeld()
     {
         if (velocity.y < 0 && (state == PlayerState.idle || state == PlayerState.gliding) && !controller.collisions.below)
@@ -307,6 +322,9 @@ public class PlayerTestScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Stop gliding on jump up
+    /// </summary>
     public void OnJumpUp()
     {
         state = PlayerState.idle;
@@ -320,22 +338,26 @@ public class PlayerTestScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //don't do anything if in a pause menu
         if (PauseMenu.IsPaused || InventoryMenu.InInventory)
         {
             return;
         }
 
+        //If moving left, set direction to left
         if (directionalInput.x < 0 && !facingLeft && (state != PlayerState.backstepping && state != PlayerState.dashing && state != PlayerState.slamming))
         {
             facingLeft = true;
             transform.localScale = new Vector3(-1 * transform.localScale.x, transform.localScale.y, transform.localScale.z);
         }
+        //same but for right
         else if (directionalInput.x > 0 && facingLeft && (state != PlayerState.backstepping && state != PlayerState.dashing && state != PlayerState.slamming))
         {
             facingLeft = false;
             transform.localScale = new Vector3(-1 * transform.localScale.x, transform.localScale.y, transform.localScale.z);
         }
 
+        //Set to walking/not walking
         if (directionalInput.x != 0 && controller.collisions.below)
         {
             anim.SetBool("Walking", true);
@@ -346,8 +368,10 @@ public class PlayerTestScript : MonoBehaviour
             if (state == PlayerState.walking) { state = PlayerState.idle; }
         }
 
+        //Calc velocity
         CalculateVelocity();
 
+        //Attack and skills
         if (Time.time >= nextAttackTime)
         {
             if(state == PlayerState.attacking) { state = PlayerState.idle; }
@@ -386,11 +410,13 @@ public class PlayerTestScript : MonoBehaviour
             Dash();
         }
         
+        //invincible anim effect
         if (hitInvincible)
         {
             SpriteBlinkingEffect();
         }
 
+        //terminal velocity
         if(velocity.y < terminalVelocity * Time.deltaTime) { velocity.y = terminalVelocity * Time.deltaTime; }
         controller.Move(velocity * Time.deltaTime, directionalInput);
 
@@ -408,6 +434,9 @@ public class PlayerTestScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Calculates the players velocity based on state and input
+    /// </summary>
     void CalculateVelocity()
     {
         if (state == PlayerState.gliding || state == PlayerState.idle || 
@@ -419,6 +448,9 @@ public class PlayerTestScript : MonoBehaviour
         velocity.y += gravity * Time.deltaTime;
     }
 
+    /// <summary>
+    /// Charge jump skill
+    /// </summary>
     void ChargeJump()
     {
         if (controller.collisions.below && Input.GetKey(KeyCode.LeftControl) && chargeJumpUnlock)
@@ -446,42 +478,52 @@ public class PlayerTestScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Basic attack
+    /// </summary>
     void Attack()
     {
         state = PlayerState.attacking;
         float angle;
+        //determine attack direction
         if (Input.GetAxisRaw("Horizontal") == 0) {
             if (Input.GetAxisRaw("Vertical") == 0)
             {
                 angle = (Mathf.Atan2(0, 1 * (facingLeft ? -1 : 1)) * Mathf.Rad2Deg - 90);
-            } else { angle = (Mathf.Atan2(Input.GetAxisRaw("Vertical"), 0) * Mathf.Rad2Deg - 90); }
-        } else { angle = Mathf.Atan2(Input.GetAxisRaw("Vertical"), Input.GetAxisRaw("Horizontal")) * Mathf.Rad2Deg - 90;
-        }
+            } 
+            else { angle = (Mathf.Atan2(Input.GetAxisRaw("Vertical"), 0) * Mathf.Rad2Deg - 90); }
+        } 
+        else { angle = Mathf.Atan2(Input.GetAxisRaw("Vertical"), Input.GetAxisRaw("Horizontal")) * Mathf.Rad2Deg - 90; }
 
+        //set anim
         anim.SetTrigger("Attack");
 
+        //instantiate attack object
         GameObject a = Instantiate(attack, transform.position, Quaternion.AngleAxis(angle, Vector3.forward), gameObject.transform);
         a.transform.localScale = new Vector3(6, 6, 6);
-
         attackPoint.localPosition = new Vector3(attackDistance * Mathf.Cos((angle + 90 + (facingLeft?0:180)) * Mathf.Deg2Rad), attackDistance * Mathf.Sin((angle + 90) * Mathf.Deg2Rad), 0);
 
+        //see if enemies are hit and do damage
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
-
         foreach(Collider2D enemy in hitEnemies)
         {
             ComboInc();
-            enemy.GetComponent<EnemyAI>().TakeDamage(attackDamage);
+            enemy.GetComponent<IEnemy>().TakeDamage(attackDamage);
         }
     }
 
     private void OnDrawGizmosSelected()
     {
+        //debug gizmos
         if (attackPoint == null) { return; }
         Gizmos.DrawWireSphere(attackPoint.position, attackRange);
         if(dashHitbox == null) { return; }
         Gizmos.DrawWireSphere(dashHitbox.position, dashHBRange);
     }
 
+    /// <summary>
+    /// Combo increased
+    /// </summary>
     public void ComboInc()
     {
         foreach (ProgressBarScript progressBarScript in UISkillScripts)
@@ -490,6 +532,9 @@ public class PlayerTestScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Combo reset
+    /// </summary>
     public void ComboReset()
     {
         foreach (ProgressBarScript script in UISkillScripts)
@@ -498,16 +543,23 @@ public class PlayerTestScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Player takes damage
+    /// </summary>
+    /// <param name="damage">Amount of damage taken</param>
     public void TakeDamage(int damage)
     {
+        //Only take damage if not invincible
         if (!hitInvincible && !skillInvincible)
         {
+            //guarding
             if (state == PlayerState.guarding)
             {
                 guardTypeScripts.Unguard(true);
                 hitInvincible = true;
                 return;
             }
+            //not guarding
             currentHealth.Value -= damage;
             playerHealthSignal.RaiseSignal();
             if (currentHealth.Value <= 0 && !dead)
@@ -523,15 +575,22 @@ public class PlayerTestScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Unfinished function for respawning player at their last spawn point
+    /// </summary>
     public void Respawn()
     {
         gameObject.transform.position = spawnPoint;
         
     }
 
+    /// <summary>
+    /// Unworking function for making player sprite blink when invincible
+    /// </summary>
     private void SpriteBlinkingEffect() //not working
     {
         invincTotalTimer += Time.deltaTime;
+        //no longer invinc to reset to opaque
         if (invincTotalTimer >= invincLength)
         {
             hitInvincible = false;
@@ -544,6 +603,7 @@ public class PlayerTestScript : MonoBehaviour
             return;
         }
 
+        //alternate between opaque and translucent
         invincIntervalTimer += Time.deltaTime;
         if (invincIntervalTimer >= invincIntervalLength)
         {
@@ -564,12 +624,14 @@ public class PlayerTestScript : MonoBehaviour
                 opaque = true;
             }
         }
-
-
     }
 
+    /// <summary>
+    /// Function for player backstep skill
+    /// </summary>
     private void Backstep()
     {
+        //start backstep
         if ((state == PlayerState.idle || state == PlayerState.walking) && Input.GetButtonDown("Shift") 
             && backstepUIScript.charge >= 1 && controller.collisions.below)
         {
@@ -577,6 +639,7 @@ public class PlayerTestScript : MonoBehaviour
             state = PlayerState.backstepping;
             anim.SetTrigger("Backstep");
             velocity = new Vector2(velocity.x, backstepJump);
+            //stun enemy in front of player
             if (facingLeft)
             {
                 RaycastHit2D hit = Physics2D.Raycast(gameObject.transform.position, Vector2.left, backstepStunRange, LayerMask.GetMask("Enemies"));
@@ -600,6 +663,7 @@ public class PlayerTestScript : MonoBehaviour
                 }
             }
         }
+        //if backstepping, move back quickly
         if (backstepTimer < backstepCD && state == PlayerState.backstepping)
         {
             if (backstepTimer > backstepMoveTimer && state == PlayerState.backstepping)
@@ -608,6 +672,7 @@ public class PlayerTestScript : MonoBehaviour
             }
             backstepTimer += Time.deltaTime;
         }
+        //backstep finished
         else if (backstepTimer >= backstepCD)
         {
             backstepTimer = 0;
@@ -615,9 +680,13 @@ public class PlayerTestScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Function for player dash skill
+    /// </summary>
     private void Dash()
     {
         Vector2 dashDirection;
+        //start dashing
         if ((state == PlayerState.gliding || state == PlayerState.idle || state == PlayerState.walking)
             && dashUpgrade && Input.GetKeyDown("u") && dashUIScript.charge >= 1) //upgraded dash
         {
@@ -625,6 +694,7 @@ public class PlayerTestScript : MonoBehaviour
             dashUIScript.ResetCombo();
             anim.SetBool("Dashing", true);
             state = PlayerState.dashing;
+            //determine direction
             if (Input.GetAxisRaw("Horizontal") == 0 && Input.GetAxisRaw("Vertical") == 0)
             {
                 dashDirection = new Vector2((facingLeft) ? -1 : 1, 0);
@@ -642,10 +712,11 @@ public class PlayerTestScript : MonoBehaviour
             dashDirection = new Vector2((facingLeft) ? -dashSpeed : dashSpeed, 0);
             dashAngle = (facingLeft) ? math.PI : 0;
             velocity = dashDirection;
-        } else if (state == PlayerState.dashing)
+        } //if dashing, move at dash speed
+        else if (state == PlayerState.dashing)
         {
             dashTimer += Time.deltaTime;
-
+            //if hit an enemy, bounce upward
             if (dashDidHit)
             {
                 dashTimer = 0;
@@ -661,6 +732,7 @@ public class PlayerTestScript : MonoBehaviour
                 return;
             }
 
+            //stop dashing
             if (dashTimer >= dashTime)
             {
                 dashTimer = 0;
@@ -670,6 +742,7 @@ public class PlayerTestScript : MonoBehaviour
                 return;
             }
 
+            //determine if dash hit enemies
             if (!dashDidHit && !controller.collisions.below)
             {
                 dashHitbox.localPosition = new Vector3(dashHBDistance * Mathf.Cos((float)(dashAngle + (facingLeft ? 0 : Math.PI))), dashHBDistance * Mathf.Sin(dashAngle), 0);
@@ -684,15 +757,23 @@ public class PlayerTestScript : MonoBehaviour
                 }
             }
 
+            //set velocity
             velocity = new Vector3(dashSpeed * Mathf.Cos(dashAngle), dashSpeed * Mathf.Sin(dashAngle));
         }
     }
 
+    /// <summary>
+    /// Disables skill invincibility
+    /// </summary>
     public void StopSkillInvinc()
     {
         skillInvincible = false;
     }
 
+    /// <summary>
+    /// Function for switching the feather shot skill from blessings
+    /// </summary>
+    /// <param name="type">Type to switch to</param>
     public void ChangeFeather(FeatherTypes type)
     {
         switch (type)

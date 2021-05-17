@@ -9,9 +9,10 @@ public class AttackInteract : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D target)
     {
+        //deal damage if target collision is an enemy and increase combo
         if (target.gameObject.tag == "Enemy")
         {
-            target.gameObject.GetComponent<EnemyAI>().TakeDamage(attackDamage);
+            target.gameObject.GetComponent<IEnemy>().TakeDamage(attackDamage);
             player.GetComponent<PlayerTestScript>().ComboInc();
         }
     }
