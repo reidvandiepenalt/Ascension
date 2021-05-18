@@ -9,14 +9,15 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
     public Transform playerTransform;
 
     public GameObject directedLaserPrefab, projectilePrefab, vertLaserPrefab;
+    public Collider2D collider;
     public Transform target;
 
     public LayerMask ground;
-    public float timeToMove;
+    public float speed;
     public float arrivalAttackDelay, attackFinishDelay;
     public float directedProjDelay, directedProjSpeed;
     public float omniProjSpeed, omniDegRange;
-    public int omniProjCount, vertLaserCount;
+    public int omniProjCount, vertLaserCount, directedProjCount;
     public float laserDelay, laserExistTime;
     public float vertLaserSpawnHeight, vertLaserSpawnInterval;
 
@@ -24,6 +25,7 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
     int currentWaypoint;
     bool reachedEndOfPath;
 
+    float dist { get { return (transform.position - target.position).magnitude; } }
     float RoomWidth { get { return roomBounds[1].x - roomBounds[0].x; } }
     float RoomHeight { get { return roomBounds[0].y - roomBounds[1].y; } }
 
@@ -281,18 +283,18 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
 
         //spawn attack and animate
         yield return new WaitForSeconds(arrivalAttackDelay);
-        for(int i = 0; i < 3; i++)
+        for(int i = 0; i < directedProjCount; i++)
         {
-            NovaProjectileScript proj = Instantiate(projectilePrefab, transform.position, Quaternion.identity).GetComponent<NovaProjectileScript>();
+            NovaProjectileScript proj = Instantiate(projectilePrefab, transform.position + (Vector3.up), Quaternion.identity).GetComponent<NovaProjectileScript>();
             proj.speed = directedProjSpeed;
             proj.DestroyOnWall = true;
             if (playerTransform.position.x > transform.position.x)
             {
-                proj.targetPosition = Physics2D.Raycast(transform.position, Vector2.right, 60, ground).point;
+                proj.targetPosition = Physics2D.Raycast(proj.transform.position, Vector2.right, 60, ground).point;
             }
             else
             {
-                proj.targetPosition = Physics2D.Raycast(transform.position, Vector2.left, 60, ground).point;
+                proj.targetPosition = Physics2D.Raycast(proj.transform.position, Vector2.left, 60, ground).point;
             }
             StartCoroutine(proj.DirectedProj());
             yield return new WaitForSeconds(directedProjDelay);
@@ -313,6 +315,7 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
         {
             Vector2 vertex = transform.position;
             Vector2 endpoint = target.position;
+            float timeToMove = dist / speed;
             int numSteps = (int)(60f * timeToMove);
             float stepDist = (endpoint.y - vertex.y) / numSteps;
 
@@ -338,6 +341,7 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
         {
             Vector2 vertex = transform.position;
             Vector2 endpoint = target.position;
+            float timeToMove = dist / speed;
             int numSteps = (int)(60f * timeToMove);
             float stepDist = (endpoint.x - vertex.x) / numSteps;
 
@@ -363,6 +367,7 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
     // Start is called before the first frame update
     protected void Start()
     {
+        collider = GetComponent<Collider2D>();
         ground = LayerMask.GetMask("Ground");
         reachedEndOfPath = false;
         path = new Queue<Vector2>();

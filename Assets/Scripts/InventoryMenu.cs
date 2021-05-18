@@ -97,6 +97,9 @@ public class InventoryMenu : MonoBehaviour
             }
         }
 
+        //do nothing if not in pause menu
+        if (!InInventory) { return; }
+
         //selection handling
         if (EventSystem.current.currentSelectedGameObject == null)
         {
