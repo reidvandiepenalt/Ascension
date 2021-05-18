@@ -61,11 +61,17 @@ public class ProgressBarScript : MonoBehaviour
         lastCharge = charge;
     }
 
+    /// <summary>
+    /// Increase the combo by one
+    /// </summary>
     public void IncreaseCombo()
     {
         currentCombo += 1;
     }
 
+    /// <summary>
+    /// Resets the combo and skill to 0/default
+    /// </summary>
     public void ResetCombo()
     {
         currentCombo = 0;
@@ -75,6 +81,9 @@ public class ProgressBarScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Ran out of time to use skill
+    /// </summary>
     public void Expired()
     {
         currentCombo -= charge * comboToCharge;
@@ -84,6 +93,9 @@ public class ProgressBarScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Updates the mask fill
+    /// </summary>
     void UpdateFill()
     {
         currentExpireTime += Time.deltaTime;
@@ -97,11 +109,17 @@ public class ProgressBarScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Upgrades the given skill
+    /// </summary>
     void Upgrade() {
         upgraded = true;
         uiImage.sprite = upgradeImage;
     }
 
+    /// <summary>
+    /// Downgrades the given skill
+    /// </summary>
     void Downgrade()
     {
         upgraded = false;

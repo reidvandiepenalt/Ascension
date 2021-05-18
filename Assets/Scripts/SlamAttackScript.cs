@@ -21,6 +21,7 @@ public class SlamAttackScript : MonoBehaviour
     {
         CalculateDamage();
         rb = gameObject.GetComponent<Rigidbody2D>();
+        //left vs right set velocity
         if (!right)
         {
             gameObject.transform.localScale = new Vector3(-gameObject.transform.localScale.x, gameObject.transform.localScale.y, gameObject.transform.localScale.z);
@@ -34,6 +35,7 @@ public class SlamAttackScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //despawn
         stepper += Time.deltaTime;
         if (stepper > time)
         {
@@ -41,6 +43,9 @@ public class SlamAttackScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Calculates the damage of the attack using a logistic curve
+    /// </summary>
     void CalculateDamage()
     {
         damage = Mathf.RoundToInt(maxDamage / (1 + rate * (math.exp((fallDistance - 4) * -expRate))));

@@ -4,16 +4,17 @@ using UnityEngine;
 
 public class UnscaledTimeParticle : MonoBehaviour
 {
-    ParticleSystem particleSystem;
+    new ParticleSystem particleSystem;
 
     private void Start()
     {
-        particleSystem = this.GetComponent<ParticleSystem>();
+        particleSystem = GetComponent<ParticleSystem>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        //ignore timescale in animations
         if(Time.timeScale < 1.0f)
         {
             particleSystem.Simulate(Time.unscaledDeltaTime, true, false);

@@ -30,6 +30,7 @@ public class InventoryMenu : MonoBehaviour
         get { return selectedGameObject; }
         set
         {
+            //fades ui elements when they are set?
             if (value != null)
             {
                 if (highlightInst != null && Canvases[CanvasIndex].CompareTag("BlessInventory"))
@@ -68,7 +69,6 @@ public class InventoryMenu : MonoBehaviour
                     StartCoroutine(highlightInst.GetComponent<HighlightScript>().Fade(0f, 0.5f, 0.2f, false));
                 }
             }
-            
         }
     }
 
@@ -76,16 +76,19 @@ public class InventoryMenu : MonoBehaviour
     {
         //Load current canvas?
 
+        //get all three canvases scripts
         canvasScripts[0] = null; //Canvases[0].GetComponent<MapCanvasScript>();
         canvasScripts[1] = Canvases[1].GetComponent<BlessingInventory>();
-        canvasScripts[2] = null;
+        canvasScripts[2] = null; //Canvases[2].GetComponent<SwordInvetoryScript>();
 
+        //canvas scripts setups
         Canvases[1].GetComponent<BlessingInventory>().player = player;
     }
 
     // Update is called once per frame
     void Update()
     {
+        //pause/unpause
         if (Input.GetKeyDown(KeyCode.Tab) && !PauseMenu.IsPaused)
         {
             if (InInventory)
@@ -111,8 +114,12 @@ public class InventoryMenu : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// To be called when exiting menu (resuming game)
+    /// </summary>
     void Resume()
     {
+        //close each canvas
         foreach(ICanvas canvas in canvasScripts)
         {
             if(canvas != null)
@@ -121,6 +128,7 @@ public class InventoryMenu : MonoBehaviour
             }
         }
 
+        //set canvases and others inactive
         Canvases[1].SetActive(false);
         foreach (GameObject arrow in Arrows)
         {
@@ -131,8 +139,12 @@ public class InventoryMenu : MonoBehaviour
         Time.timeScale = 1f;
     }
 
+    /// <summary>
+    /// To be called when entering the menu (game being paused)
+    /// </summary>
     void Pause()
     {
+        //activate ui elements and canvases
         Canvases[1].SetActive(true);
         foreach (GameObject arrow in Arrows)
         {
@@ -146,8 +158,13 @@ public class InventoryMenu : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(inventoryFirstSlot);
     }
 
+    /// <summary>
+    /// Scroll one canvas left or right
+    /// </summary>
+    /// <param name="direction">1 for right, -1 for left</param>
     public void Scroll(int direction)
     {
+        //animate canvas movements and bring new canvas to center
         Vector3[] positions = new Vector3[] { Canvases[0].transform.position, Canvases[1].transform.position, Canvases[2].transform.position };
         if (direction >= 0) //right
         {
@@ -168,9 +185,11 @@ public class InventoryMenu : MonoBehaviour
         Canvases = temp;
     }
 
+    /// <summary>
+    /// Deactivates a given canvas
+    /// </summary>
     void DeactivateCanvas(GameObject canvas)
     {
         canvas.SetActive(false);
     }
-
 }

@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Interface for properties all enemies should have
+/// </summary>
 public interface IEnemy
 {
     int Health { get; set; }

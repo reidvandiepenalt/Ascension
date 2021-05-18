@@ -18,12 +18,14 @@ public class GuardUIScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //subtract based on time
         current -= Time.deltaTime;
         GetCurrentFill();
     }
 
     void GetCurrentFill()
     {
+        //update ui fill
         float fillAmount = current / maximum;
         if (fillAmount >= 0)
         {

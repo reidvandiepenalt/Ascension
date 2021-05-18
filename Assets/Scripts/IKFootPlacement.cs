@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Failed attempt at creating smart foot placement for slopes, might revisit
+/// </summary>
 public class IKFootPlacement : MonoBehaviour
 {
     Animator anim;

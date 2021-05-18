@@ -31,12 +31,16 @@ public class Controller2D : MonoBehaviour
         CalculateRaySpacing();
     }
 
+    /// <summary>
+    /// Moves the player based on given move distance
+    /// </summary>
     public void Move(Vector2 moveDistance, Vector2 input)
     {
         UpdateRaycastOrigins();
         collisions.Reset();
         collisions.moveDistanceOld = moveDistance;
 
+        //call collision functions
         if(moveDistance.y < 0)
         {
             DescendSlope(ref moveDistance);
@@ -50,10 +54,16 @@ public class Controller2D : MonoBehaviour
             VerticalCollisions(ref moveDistance);
         }
 
+        //move based on collision-modified distance
         transform.Translate(moveDistance);
+        //update physics engine
         Physics.SyncTransforms();
     }
 
+    /// <summary>
+    /// Check for collisions in the horizontal direction
+    /// </summary>
+    /// <param name="moveDistance">Direction being moved</param>
     void HorizontalCollisions(ref Vector2 moveDistance)
     {
         float directionX = Mathf.Sign(moveDistance.x);
@@ -101,6 +111,10 @@ public class Controller2D : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Check for collisions in y axis
+    /// </summary>
+    /// <param name="moveDistance">Current move distance</param>
     void VerticalCollisions(ref Vector2 moveDistance)
     {
         float directionY = Mathf.Sign(moveDistance.y);
@@ -162,6 +176,11 @@ public class Controller2D : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Climbs up a slope if on one
+    /// </summary>
+    /// <param name="moveDistance">Current move distance</param>
+    /// <param name="slopeAngle">Angle of slope</param>
     void ClimbSlope(ref Vector2 moveDistance, float slopeAngle)
     {
         float moveDistanceDirection = Mathf.Abs(moveDistance.x);
@@ -176,6 +195,10 @@ public class Controller2D : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Smoothly descends a slope if on one
+    /// </summary>
+    /// <param name="moveDistance">Current move distance</param>
     void DescendSlope(ref Vector2 moveDistance)
     {
         float directionX = Mathf.Sign(moveDistance.x);
@@ -205,6 +228,9 @@ public class Controller2D : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Update raycasts to current position
+    /// </summary>
     void UpdateRaycastOrigins()
     {
         Bounds bounds = collider.bounds;
@@ -216,6 +242,9 @@ public class Controller2D : MonoBehaviour
         raycastOrigins.topRight = new Vector2(bounds.max.x, bounds.max.y);
     }
 
+    /// <summary>
+    /// Calculate spacing between collision detection rays
+    /// </summary>
     void CalculateRaySpacing()
     {
         Bounds bounds = collider.bounds;
@@ -231,16 +260,25 @@ public class Controller2D : MonoBehaviour
         verticalRaySpacing = bounds.size.x / (verticalRayCount - 1);
     }
 
+    /// <summary>
+    /// Resets falling through a platform
+    /// </summary>
     void ResetFallingThrough()
     {
         collisions.fallingThroughPlatform = false;
     }
 
+    /// <summary>
+    /// Structure to hold raycast origins
+    /// </summary>
     struct RaycastOrigins
     {
         public Vector2 topLeft, topRight, bottomLeft, bottomRight;
     }
 
+    /// <summary>
+    /// Holds information about current collisions
+    /// </summary>
     public struct CollisionInfo
     {
         public bool above, below, left, right, climbingSlope, descendingSlope, fallingThroughPlatform;

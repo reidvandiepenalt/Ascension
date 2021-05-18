@@ -14,14 +14,16 @@ public class GustScript : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D target)
     {
+        //deal damage on hit
         if (target.gameObject.tag == "Enemy")
         {
-            target.gameObject.GetComponent<EnemyAI>().Stun(stunTime);
+            target.gameObject.GetComponent<IEnemy>().Stun(stunTime);
         }
     }
 
     private void Start()
     {
+        //set speed and flip if needed
         rb = gameObject.GetComponent<Rigidbody2D>();
         rb.velocity = new Vector2(speed, rb.velocity.y);
         if (left)
@@ -33,6 +35,7 @@ public class GustScript : MonoBehaviour
 
     private void Update()
     {
+        //despawn
         timer += Time.deltaTime;
         if (timer > time)
         {
