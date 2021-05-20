@@ -10,6 +10,7 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
 
     public GameObject directedLaserPrefab, projectilePrefab, vertLaserPrefab;
     public Collider2D collider;
+    public Animator anim;
     public Transform target;
 
     public LayerMask ground;
@@ -128,6 +129,7 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
         yield return new WaitWhile(() => !reachedEndOfPath);
 
         //spawn attack and animate
+        anim.SetBool("RaiseArms", true);
         yield return new WaitForSeconds(arrivalAttackDelay);
         bool leftToRight = (playerTransform.position.x > transform.position.x);
         for(int i = 0; i < vertLaserCount; i++)
@@ -148,6 +150,7 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
             ls.activeTime = laserExistTime;
             yield return new WaitForSeconds(vertLaserSpawnInterval);
         }
+        anim.SetBool("RaiseArms", false);
         yield return new WaitForSeconds(attackFinishDelay);
 
         State = AIState.idle;
