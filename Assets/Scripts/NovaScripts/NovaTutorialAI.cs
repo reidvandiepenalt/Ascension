@@ -6,10 +6,10 @@ using System;
 public class NovaTutorialAI : MonoBehaviour, IEnemy
 {
     public Vector2[] roomBounds = new Vector2[2];
-    public Transform playerTransform;
+    public Transform playerTransform, leftArmSolver, rightArmSolver, rightLaserSpawn, leftLaserSpawn;
 
     public GameObject directedLaserPrefab, projectilePrefab, vertLaserPrefab;
-    public Collider2D collider;
+    public Collider2D playerCollider;
     public Animator anim;
     public Transform target;
 
@@ -193,13 +193,40 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
 
         //spawn attack and animate
         yield return new WaitForSeconds(arrivalAttackDelay);
-        NovaDirectedLaser ls = Instantiate(directedLaserPrefab, transform.position, Quaternion.identity).GetComponent<NovaDirectedLaser>();
-        ls.targetPosition = playerTransform.position;
-        ls.initPosition = transform.position;
+        bool left = playerTransform.position.x < transform.position.x;
+        Vector3 laserSpawn;
+        if (left)
+        {
+            anim.SetBool("LaserLeft", true);
+            leftArmSolver.position = playerCollider.bounds.center;
+            //Physics2D.SyncTransforms();
+            laserSpawn = leftLaserSpawn.position;
+        }
+        else
+        {
+            anim.SetBool("LaserRight", true);
+            rightArmSolver.position = playerCollider.bounds.center;
+            //Physics2D.SyncTransforms();
+            laserSpawn = rightLaserSpawn.position;
+        }
+        NovaDirectedLaser ls = Instantiate(directedLaserPrefab, laserSpawn, Quaternion.identity).GetComponent<NovaDirectedLaser>();
+        ls.targetPosition = playerCollider.bounds.center;
+        ls.initPosition = laserSpawn;
+        
         yield return new WaitForSeconds(laserDelay);
         ls.DamageActive();
         yield return new WaitForSeconds(laserExistTime);
         Destroy(ls.gameObject);
+        if (left)
+        {
+            anim.SetBool("LaserLeft", false);
+            //reset solver?
+        }
+        else
+        {
+            anim.SetBool("LaserRight", false);
+            //reset solver?
+        }
         yield return new WaitForSeconds(attackFinishDelay);
 
         State = AIState.idle;
@@ -370,13 +397,13 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
     // Start is called before the first frame update
     protected void Start()
     {
-        collider = GetComponent<Collider2D>();
         ground = LayerMask.GetMask("Ground");
         reachedEndOfPath = false;
         path = new Queue<Vector2>();
         currentWaypoint = 0;
         rng = new System.Random();
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+        playerCollider = playerTransform.gameObject.GetComponent<BoxCollider2D>();
 
         //dialogue?
 

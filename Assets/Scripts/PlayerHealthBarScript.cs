@@ -23,7 +23,7 @@ public class PlayerHealthBarScript : MonoBehaviour
     {
         if(PlayerCurrentHealth.Value == 0)
         {
-            GameObject.Destroy(hp[0]);
+            Destroy(hp[0]);
             hp.Clear();
             return;
         }
@@ -46,8 +46,11 @@ public class PlayerHealthBarScript : MonoBehaviour
         {
             for (int i = 0; i < -diff; i++)
             {
-                GameObject.Destroy(hp[hp.Count - 1]);
-                hp.RemoveAt(hp.Count - 1);
+                try { Destroy(hp[hp.Count - 1]); }
+                catch { Destroy(hp[0]); }
+                try { hp.RemoveAt(hp.Count - 1); }
+                catch { hp.Clear(); }
+                
             }
         }
     }

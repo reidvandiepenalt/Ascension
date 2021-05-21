@@ -57,7 +57,7 @@ public class Controller2D : MonoBehaviour
         //move based on collision-modified distance
         transform.Translate(moveDistance);
         //update physics engine
-        Physics.SyncTransforms();
+        Physics2D.SyncTransforms();
     }
 
     /// <summary>
