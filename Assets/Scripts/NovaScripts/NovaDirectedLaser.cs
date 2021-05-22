@@ -23,10 +23,15 @@ public class NovaDirectedLaser : MonoBehaviour
             if (hit.collider)
             {
 
-                lr.SetPosition(1, hit.point);
+                lr.SetPosition(1, (hit.point - initPosition).normalized * 3 + initPosition);
+                lr.SetPosition(2, hit.point);
             }
         }
-        else lr.SetPosition(1, (targetPosition - (Vector2)transform.position).normalized * 5000);
+        else
+        {
+            lr.SetPosition(1, (targetPosition - (Vector2)transform.position).normalized * 3);
+            lr.SetPosition(2, (targetPosition - (Vector2)transform.position).normalized * 5000);
+        }
     }
 
     // Update is called once per frame
@@ -50,7 +55,5 @@ public class NovaDirectedLaser : MonoBehaviour
     public void DamageActive()
     {
         damaging = true;
-        lr.startWidth = 1;
-        lr.endWidth = 1;
     }
 }
