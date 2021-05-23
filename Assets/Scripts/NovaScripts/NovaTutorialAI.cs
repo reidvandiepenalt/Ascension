@@ -9,7 +9,7 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
     public Transform playerTransform, leftArmSolver, rightArmSolver, rightLaserSpawn, leftLaserSpawn;
 
     public GameObject directedLaserPrefab, projectilePrefab, vertLaserPrefab;
-    public Collider2D playerCollider;
+    public Collider2D playerCollider, contactCollider;
     public Animator anim;
     public Transform target;
 
@@ -431,6 +431,23 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
         //move
         transform.position = path.Dequeue();
         currentWaypoint++;
+    }
+
+    /// <summary>
+    /// Turn the boss invincible or back to vincible
+    /// </summary>
+    /// <param name="on"></param>
+    void SetInvincible(bool on)
+    {
+        //add some sort of afterimage effect
+        if (on)
+        {
+            contactCollider.enabled = false;
+        }
+        else
+        {
+            contactCollider.enabled = true;
+        }
     }
 
     /// <summary>
