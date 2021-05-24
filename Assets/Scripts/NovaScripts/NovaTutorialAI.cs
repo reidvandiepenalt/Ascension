@@ -196,19 +196,26 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
         if (left)
         {
             anim.SetBool("LaserLeft", true);
+            Debug.Log("Before pos: " + leftArmSolver.localPosition.ToString());
             leftArmSolver.position = (playerCollider.bounds.center - transform.position).normalized * 1.5f + transform.position;
-            Physics2D.SyncTransforms();
+            Debug.Log("Target local pos: " + ((playerCollider.bounds.center - transform.position).normalized * 1.5f + transform.position).ToString());
+            Debug.Log("After pos: " + leftArmSolver.localPosition.ToString());
         }
         else
         {
             anim.SetBool("LaserRight", true);
+            Debug.Log("Before pos: " + rightArmSolver.localPosition.ToString());
             rightArmSolver.position = (playerCollider.bounds.center - transform.position).normalized * 1.5f + transform.position;
-            Physics2D.SyncTransforms();
+            Debug.Log("Target world pos: " + ((playerCollider.bounds.center - transform.position).normalized * 1.5f + transform.position).ToString());
+            Debug.Log("After pos: " + rightArmSolver.localPosition.ToString());
         }
 
         yield return new WaitForSeconds(arrivalAttackDelay);
 
+        //laser
         Vector3 laserSpawn = left? leftLaserSpawn.position : rightLaserSpawn.position;
+        Debug.Log("late position left: " + leftArmSolver.localPosition.ToString());
+        Debug.Log("late position right: " + rightArmSolver.localPosition.ToString());
         NovaDirectedLaser ls = Instantiate(directedLaserPrefab, laserSpawn, Quaternion.identity).GetComponent<NovaDirectedLaser>();
         ls.targetPosition = playerCollider.bounds.center;
         ls.initPosition = laserSpawn;
