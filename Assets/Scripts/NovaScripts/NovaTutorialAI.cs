@@ -6,7 +6,7 @@ using System;
 public class NovaTutorialAI : MonoBehaviour, IEnemy
 {
     public Vector2[] roomBounds = new Vector2[2];
-    public Transform playerTransform, leftArmSolver, rightArmSolver;
+    public Transform playerTransform, leftArmSolver, rightArmSolver, rightLaserSpawn, leftLaserSpawn;
 
     public GameObject directedLaserPrefab, projectilePrefab, vertLaserPrefab;
     public Collider2D playerCollider, contactCollider;
@@ -197,16 +197,18 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
         {
             anim.SetBool("LaserLeft", true);
             leftArmSolver.position = (playerCollider.bounds.center - transform.position).normalized * 1.5f + transform.position;
+            Physics2D.SyncTransforms();
         }
         else
         {
             anim.SetBool("LaserRight", true);
             rightArmSolver.position = (playerCollider.bounds.center - transform.position).normalized * 1.5f + transform.position;
+            Physics2D.SyncTransforms();
         }
 
         yield return new WaitForSeconds(arrivalAttackDelay);
 
-        Vector3 laserSpawn = left? leftArmSolver.position : rightArmSolver.position;
+        Vector3 laserSpawn = left? leftLaserSpawn.position : rightLaserSpawn.position;
         NovaDirectedLaser ls = Instantiate(directedLaserPrefab, laserSpawn, Quaternion.identity).GetComponent<NovaDirectedLaser>();
         ls.targetPosition = playerCollider.bounds.center;
         ls.initPosition = laserSpawn;
@@ -338,7 +340,6 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
     void GeneratePath()
     {
         reachedEndOfPath = false;
-        if(playerTransform == null) { return; }
         //final x closer to player
         if (Math.Abs(target.position.x - playerTransform.position.x) < Math.Abs(transform.position.x - playerTransform.position.x))
         {
@@ -455,7 +456,6 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
     /// <param name="damageAmount"></param>
     public void TakeDamage(int damageAmount)
     {
-        Debug.Log("took damage");
         Health -= damageAmount;
 
         if(health < 0)

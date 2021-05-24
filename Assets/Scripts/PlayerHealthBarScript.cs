@@ -47,7 +47,7 @@ public class PlayerHealthBarScript : MonoBehaviour
             for (int i = 0; i < -diff; i++)
             {
                 try { Destroy(hp[hp.Count - 1]); }
-                catch { }
+                catch { Destroy(hp[0]); }
                 try { hp.RemoveAt(hp.Count - 1); }
                 catch { hp.Clear(); }
                 
