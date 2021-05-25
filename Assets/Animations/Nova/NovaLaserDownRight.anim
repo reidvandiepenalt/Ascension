@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: NovaDirectedLaserLeft
+  m_Name: NovaLaserDownRight
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -20,7 +20,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: {x: -6.926048, y: 3.762, z: 0}
+        value: {x: -0.0065755844, y: -0.38720608, z: 0}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
@@ -30,16 +30,19 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: LeftArm LimbSolver2D/LeftArm Target
+    path: RightArm LimbSolver2D/RightArm Target
   m_ScaleCurves: []
   m_FloatCurves: []
   m_PPtrCurves:
   - curve:
     - time: 0
-      value: {fileID: -4092129849352217449, guid: 3481ddcdd86247a448b98fcc0e96175a,
+      value: {fileID: 7294749346089966141, guid: 3481ddcdd86247a448b98fcc0e96175a,
+        type: 3}
+    - time: 1
+      value: {fileID: -8707314023498487429, guid: 9ff7afebb0251da4fa26431b427709ce,
         type: 3}
     attribute: m_Sprite
-    path: LeftForearm
+    path: RightForearm
     classID: 212
     script: {fileID: 0}
   m_SampleRate: 60
@@ -50,32 +53,33 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 2985589856
+      path: 1243277130
       attribute: 0
       script: {fileID: 0}
       typeID: 212
       customType: 23
       isPPtrCurve: 1
     - serializedVersion: 2
-      path: 530488303
+      path: 3561540802
       attribute: 1
       script: {fileID: 0}
       typeID: 4
       customType: 0
       isPPtrCurve: 0
     pptrCurveMapping:
-    - {fileID: -4092129849352217449, guid: 3481ddcdd86247a448b98fcc0e96175a, type: 3}
+    - {fileID: 7294749346089966141, guid: 3481ddcdd86247a448b98fcc0e96175a, type: 3}
+    - {fileID: -8707314023498487429, guid: 9ff7afebb0251da4fa26431b427709ce, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.016666668
+    m_StopTime: 1.0166667
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
     m_HasAdditiveReferencePose: 0
-    m_LoopTime: 0
+    m_LoopTime: 1
     m_LoopBlend: 0
     m_LoopBlendOrientation: 0
     m_LoopBlendPositionY: 0
@@ -91,7 +95,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: -6.926048
+        value: -0.0065755844
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -102,7 +106,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.x
-    path: LeftArm LimbSolver2D/LeftArm Target
+    path: RightArm LimbSolver2D/RightArm Target
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -110,7 +114,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 3.762
+        value: -0.38720608
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -121,7 +125,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.y
-    path: LeftArm LimbSolver2D/LeftArm Target
+    path: RightArm LimbSolver2D/RightArm Target
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -140,7 +144,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.z
-    path: LeftArm LimbSolver2D/LeftArm Target
+    path: RightArm LimbSolver2D/RightArm Target
     classID: 4
     script: {fileID: 0}
   m_EulerEditorCurves: []
