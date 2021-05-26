@@ -212,8 +212,6 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
 
         //reset anim
         anim.SetBool("Laser", false);
-        anim.SetFloat("LaserX", 0);
-        anim.SetFloat("LaserY", 0);
 
         yield return new WaitForSeconds(attackFinishDelay);
 
