@@ -757,6 +757,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1863916375}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2120794481 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 433001054, guid: e9705bc7298dc4642b6416ecb34a337c,
+    type: 3}
+  m_PrefabInstance: {fileID: 744967364065394871}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &744967364065394871
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -764,6 +770,23 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 433001057, guid: e9705bc7298dc4642b6416ecb34a337c, type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 433001057, guid: e9705bc7298dc4642b6416ecb34a337c, type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 433001057, guid: e9705bc7298dc4642b6416ecb34a337c, type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.key0.a
+      value: 0.9411765
+      objectReference: {fileID: 0}
+    - target: {fileID: 744967364065394867, guid: e9705bc7298dc4642b6416ecb34a337c,
+        type: 3}
+      propertyPath: afterImage
+      value: 
+      objectReference: {fileID: 2120794481}
     - target: {fileID: 744967364065394867, guid: e9705bc7298dc4642b6416ecb34a337c,
         type: 3}
       propertyPath: playerTransform

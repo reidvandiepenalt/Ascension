@@ -7,6 +7,7 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
 {
     public Vector2[] roomBounds = new Vector2[2];
     public Transform playerTransform, leftArmSolver, rightArmSolver, rightLaserSpawn, leftLaserSpawn;
+    public GameObject afterImage;
 
     public GameObject directedLaserPrefab, projectilePrefab, vertLaserPrefab;
     public Collider2D playerCollider, contactCollider;
@@ -129,6 +130,7 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
         yield return new WaitWhile(() => !reachedEndOfPath);
 
         //spawn attack and animate
+        afterImage.SetActive(false);
         anim.SetBool("RaiseArms", true);
         yield return new WaitForSeconds(arrivalAttackDelay);
         bool leftToRight = (playerTransform.position.x > transform.position.x);
@@ -152,6 +154,7 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
         }
         anim.SetBool("RaiseArms", false);
         yield return new WaitForSeconds(attackFinishDelay);
+        afterImage.SetActive(true);
 
         State = AIState.idle;
     }
@@ -192,6 +195,7 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
         yield return new WaitWhile(() => !reachedEndOfPath);
 
         //animate
+        afterImage.SetActive(false);
         bool left = playerTransform.position.x <= transform.position.x;
         anim.SetBool("Laser", true);
         anim.SetFloat("LaserX", (playerCollider.bounds.center - transform.position).normalized.x);
@@ -214,6 +218,7 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
         anim.SetBool("Laser", false);
 
         yield return new WaitForSeconds(attackFinishDelay);
+        afterImage.SetActive(true);
 
         State = AIState.idle;
     }
@@ -255,6 +260,7 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
 
         //spawn attack and animate
         //spawn projectiles in a cone evenly spaced
+        afterImage.SetActive(false);
         yield return new WaitForSeconds(arrivalAttackDelay);
         for(int i = -omniProjCount / 2; i <= omniProjCount / 2; i++)
         {
@@ -270,6 +276,7 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
             StartCoroutine(proj.DirectedProj());
         }
         yield return new WaitForSeconds(attackFinishDelay);
+        afterImage.SetActive(true);
 
         State = AIState.idle;
     }
@@ -298,6 +305,7 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
         yield return new WaitWhile(() => !reachedEndOfPath);
 
         //spawn attack and animate
+        afterImage.SetActive(true);
         yield return new WaitForSeconds(arrivalAttackDelay);
         for(int i = 0; i < directedProjCount; i++)
         {
@@ -316,6 +324,7 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
             yield return new WaitForSeconds(directedProjDelay);
         }
         yield return new WaitForSeconds(attackFinishDelay);
+        afterImage.SetActive(true);
 
         State = AIState.idle;
     }
