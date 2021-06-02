@@ -120,7 +120,7 @@ public class PlayerTestScript : MonoBehaviour
     GameObject UICanvas;
     Camera mainCam;
 
-    GameObject skillsGrid;
+    SkillsGridManager skillsGrid;
 
     public delegate void FeatherShot();
     [SerializeField] public FeatherShot fs;
@@ -212,7 +212,7 @@ public class PlayerTestScript : MonoBehaviour
         pauseUIScript.settingMenuUI = settingsCanvas;
         inGameMenuCanvas.GetComponent<InventoryMenu>().SkillsUICanvas = UICanvas;
         inGameMenuCanvas.GetComponent<InventoryMenu>().player = this;
-        skillsGrid = Instantiate(SkillGridPrefab, UICanvas.transform);
+        skillsGrid = UICanvas.GetComponentInChildren<SkillsGridManager>();
 
         //change?
         currentHealth.Value = maxHealth.Value;
@@ -220,7 +220,7 @@ public class PlayerTestScript : MonoBehaviour
         //set up skill ui's if unlocked
         if (slamUnlock)
         {
-            slamUIScript = Instantiate(slamUI, skillsGrid.transform).GetComponent<ProgressBarScript>();
+            slamUIScript = skillsGrid.AddIcon(slamUI).GetComponent<ProgressBarScript>();
             slamTypeScripts.slamUIScript = slamUIScript;
             slamUIScript.comboToCharge = slamComboCount;
             slam = slamTypeScripts.DefaultSlam;
@@ -228,7 +228,7 @@ public class PlayerTestScript : MonoBehaviour
         }
         if (sprayUnlock)
         {
-            sprayUIScript = Instantiate(sprayUI, skillsGrid.transform).GetComponent<ProgressBarScript>();
+            sprayUIScript = skillsGrid.AddIcon(sprayUI).GetComponent<ProgressBarScript>();
             sprayTypeScripts.sprayUIScript = sprayUIScript;
             sprayUIScript.comboToCharge = sprayComboCount;
             spray = sprayTypeScripts.DefaultSpray;
@@ -236,7 +236,7 @@ public class PlayerTestScript : MonoBehaviour
         }
         if (shootUnlock)
         {
-            shotUIScript = Instantiate(shotUI, skillsGrid.transform).GetComponent<ProgressBarScript>();
+            shotUIScript = skillsGrid.AddIcon(shotUI).GetComponent<ProgressBarScript>();
             featherShotsScript.shotUIScript = shotUIScript;
             featherShotsScript.shotUIScript.comboToCharge = shootComboCount;
             fs = featherShotsScript.DefaultShot;
@@ -244,20 +244,20 @@ public class PlayerTestScript : MonoBehaviour
         }
         if (guardUnlock)
         {
-            guardUIScript = Instantiate(guardUI, skillsGrid.transform).GetComponent<GuardUIScript>();
+            guardUIScript = skillsGrid.AddIcon(guardUI).GetComponent<GuardUIScript>();
             guardTypeScripts.guardUIScript = guardUIScript;
             guardUIScript.maximum = guardTypeScripts.hitguardCD;
             guard = guardTypeScripts.DefaultGuard;
         }
         if (backstepUnlock)
         {
-            backstepUIScript = Instantiate(backstepUI, skillsGrid.transform).GetComponent<ProgressBarScript>();
+            backstepUIScript = skillsGrid.AddIcon(backstepUI).GetComponent<ProgressBarScript>();
             backstepUIScript.comboToCharge = backstepComboCount;
             UISkillScripts.Add(backstepUIScript);
         }
         if (dashUnlock)
         {
-            dashUIScript = Instantiate(dashUI, skillsGrid.transform).GetComponent<ProgressBarScript>();
+            dashUIScript = skillsGrid.AddIcon(dashUI).GetComponent<ProgressBarScript>();
             dashUIScript.comboToCharge = dashComboCount;
             UISkillScripts.Add(dashUIScript);
         }
