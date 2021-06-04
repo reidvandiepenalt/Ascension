@@ -5,7 +5,6 @@ using System.Linq;
 using TMPro;
 using Unity.Mathematics;
 using UnityEditor.Experimental.SceneManagement;
-using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UI;
 
