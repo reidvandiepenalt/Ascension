@@ -4,6 +4,13 @@ using UnityEngine;
 using Unity.Mathematics;
 using System;
 
+public enum SlamSwapTypes
+{
+    Default,
+    Wave,
+    Poison
+}
+
 public class SlamTypes : MonoBehaviour
 {
     public PlayerTestScript playerScript;
@@ -58,5 +65,13 @@ public class SlamTypes : MonoBehaviour
     }
 
 
+    public void Wave()
+    {
 
+    }
+
+    public void Poison()
+    {
+
+    }
 }

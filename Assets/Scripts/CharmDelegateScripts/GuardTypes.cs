@@ -2,6 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum GuardSwapTypes
+{
+    Default,
+    QuickCharge,
+    Retaliation
+}
+
 public class GuardTypes : MonoBehaviour
 {
     [SerializeField] public float hitguardCD = 1.00f;
@@ -35,5 +42,17 @@ public class GuardTypes : MonoBehaviour
         }
         anim.SetBool("Guarding", false);
         playerScript.state = PlayerTestScript.PlayerState.idle;
+    }
+
+
+    public void QuickCharge()
+    {
+
+    }
+
+
+    public void Retaliation()
+    {
+
     }
 }

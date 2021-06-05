@@ -133,7 +133,7 @@ public class PlayerTestScript : MonoBehaviour
     public delegate void Guard();
     [SerializeField] public Guard guard;
 
-    public FeatherShotTypes featherShotsScript;
+    public FeatherShotTypes featherShotsScripts;
     public SlamTypes slamTypeScripts;
     public SprayTypes sprayTypeScripts;
     public GuardTypes guardTypeScripts;
@@ -236,9 +236,9 @@ public class PlayerTestScript : MonoBehaviour
         if (shootUnlock)
         {
             shotUIScript = skillsGrid.AddIcon(shotUI).GetComponent<ProgressBarScript>();
-            featherShotsScript.shotUIScript = shotUIScript;
-            featherShotsScript.shotUIScript.comboToCharge = shootComboCount;
-            fs = featherShotsScript.DefaultShot;
+            featherShotsScripts.shotUIScript = shotUIScript;
+            featherShotsScripts.shotUIScript.comboToCharge = shootComboCount;
+            fs = featherShotsScripts.DefaultShot;
             UISkillScripts.Add(shotUIScript);
         }
         if (guardUnlock)
@@ -778,16 +778,64 @@ public class PlayerTestScript : MonoBehaviour
         switch (type)
         {
             case FeatherTypes.Default:
-                fs = featherShotsScript.DefaultShot;
+                fs = featherShotsScripts.DefaultShot;
                 break;
             case FeatherTypes.Fireball:
-                fs = featherShotsScript.Fireball;
+                fs = featherShotsScripts.Fireball;
                 break;
             case FeatherTypes.Boomerang:
-                fs = featherShotsScript.BoomerangShot;
+                fs = featherShotsScripts.BoomerangShot;
                 break;
             case FeatherTypes.BallLightning:
-                fs = featherShotsScript.BallLightning;
+                fs = featherShotsScripts.BallLightning;
+                break;
+        }
+    }
+
+    public void ChangeGuard(GuardSwapTypes type)
+    {
+        switch (type)
+        {
+            case GuardSwapTypes.Default:
+                guard = guardTypeScripts.DefaultGuard;
+                break;
+            case GuardSwapTypes.QuickCharge:
+                guard = guardTypeScripts.QuickCharge;
+                break;
+            case GuardSwapTypes.Retaliation:
+                guard = guardTypeScripts.Retaliation;
+                break;
+        }
+    }
+
+    public void ChangeSlam(SlamSwapTypes type)
+    {
+        switch (type)
+        {
+            case SlamSwapTypes.Default:
+                slam = slamTypeScripts.DefaultSlam;
+                break;
+            case SlamSwapTypes.Wave:
+                slam = slamTypeScripts.Wave;
+                break;
+            case SlamSwapTypes.Poison:
+                slam = slamTypeScripts.Poison;
+                break;
+        }
+    }
+
+    public void ChangeSpray(SpraySwapTypes type)
+    {
+        switch (type)
+        {
+            case SpraySwapTypes.Default:
+                spray = sprayTypeScripts.DefaultSpray;
+                break;
+            case SpraySwapTypes.Lightning:
+                spray = sprayTypeScripts.LightningStrike;
+                break;
+            case SpraySwapTypes.MoreFeathers:
+                spray = sprayTypeScripts.MoreFeathers;
                 break;
         }
     }

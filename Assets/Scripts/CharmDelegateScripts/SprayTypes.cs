@@ -2,6 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum SpraySwapTypes
+{
+    Default,
+    Lightning,
+    MoreFeathers
+}
+
 public class SprayTypes : MonoBehaviour
 {
     public PlayerTestScript playerScript;
@@ -47,5 +54,16 @@ public class SprayTypes : MonoBehaviour
                 sprayTimer = 0.0f;
             }
         }
+    }
+
+
+    public void LightningStrike()
+    {
+
+    }
+
+    public void MoreFeathers()
+    {
+
     }
 }
