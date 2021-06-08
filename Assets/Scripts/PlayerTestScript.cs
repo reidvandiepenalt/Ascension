@@ -34,7 +34,12 @@ public class PlayerTestScript : MonoBehaviour
     public Transform attackPoint;
     public float attackRange = 0.5f;
     public float attackDistance = 10f;
-    public int attackDamage = 50;
+    public int baseAttackDamage = 10;
+    public int AttackDamage { get => (int)(baseAttackDamage * (rtsrEnabled ? rtsrDamageMod : 1) * (polarityEnabled ? polarityDamageMod : 1)); }
+    public float rtsrDamageMod = 1.5f;
+    public bool rtsrEnabled = false;
+    public float polarityDamageMod = 1.2f;
+    public bool polarityEnabled = false;
     public LayerMask enemyLayers;
 
     public IntValue currentHealth, maxHealth;
@@ -507,7 +512,7 @@ public class PlayerTestScript : MonoBehaviour
         foreach(Collider2D enemy in hitEnemies)
         {
             ComboInc();
-            enemy.GetComponent<IEnemy>().TakeDamage(attackDamage);
+            enemy.GetComponent<IEnemy>().TakeDamage(AttackDamage);
         }
     }
 
@@ -752,7 +757,7 @@ public class PlayerTestScript : MonoBehaviour
                 {
                     dashDidHit = true;
                     ComboInc();
-                    enemy.GetComponent<EnemyAI>().TakeDamage(attackDamage);
+                    enemy.GetComponent<EnemyAI>().TakeDamage(AttackDamage);
                 }
             }
 
