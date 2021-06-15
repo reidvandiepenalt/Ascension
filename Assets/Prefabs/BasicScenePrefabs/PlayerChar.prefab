@@ -242,7 +242,11 @@ MonoBehaviour:
   attackPoint: {fileID: 4085828968590569646}
   attackRange: 1.25
   attackDistance: 9.5
-  attackDamage: 50
+  baseAttackDamage: 10
+  rtsrDamageMod: 1.5
+  rtsrEnabled: 0
+  polarityDamageMod: 1.2
+  polarityEnabled: 0
   enemyLayers:
     serializedVersion: 2
     m_Bits: 2048
@@ -1275,12 +1279,12 @@ PrefabInstance:
     - target: {fileID: -1649784004688123515, guid: 54402d116b9f02843812c72545f4ed1a,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -35.505405
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -1649784004688123515, guid: 54402d116b9f02843812c72545f4ed1a,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -10.634722
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -1649784004688123515, guid: 54402d116b9f02843812c72545f4ed1a,
         type: 3}
@@ -1655,7 +1659,7 @@ PrefabInstance:
     - target: {fileID: 1716906605428090218, guid: 54402d116b9f02843812c72545f4ed1a,
         type: 3}
       propertyPath: m_Name
-      value: Player Char
+      value: PlayerChar
       objectReference: {fileID: 0}
     - target: {fileID: 1716906605428090218, guid: 54402d116b9f02843812c72545f4ed1a,
         type: 3}
