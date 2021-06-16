@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class ChangeScenes : MonoBehaviour
 {
     public string levelName;
-    public Vector2 transitionPosition;
+    public Vector2 startPosition;
     public VectorValue positionStorage;
     public GameObject fadeInPanel;
     public GameObject fadeOutPanel;
@@ -27,7 +27,7 @@ public class ChangeScenes : MonoBehaviour
         if (collision.CompareTag("Player") && !collision.isTrigger)
         {
             //set player starting position to the new scenes entry position
-            positionStorage.initialValue = transitionPosition;
+            positionStorage.storedValue = startPosition;
             StartCoroutine(FadeCo());
         }
     }
