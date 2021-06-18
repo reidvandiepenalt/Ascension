@@ -288,11 +288,10 @@ public class PlayerTestScript : MonoBehaviour
         {
             velocity.y = maxJumpVelocity;
             controller.collisions.below = false;
-            doubleJumpUsed = false;
             state = PlayerState.idle;
         }
         else if (doubleJumpUnlock && !doubleJumpUsed && !controller.collisions.below && 
-            (state == PlayerState.idle || state == PlayerState.gliding))//doublejump
+            (state == PlayerState.idle || state == PlayerState.gliding || state == PlayerState.walking))//doublejump
         {
             velocity.y = maxJumpVelocity;
             doubleJumpUsed = true;
@@ -318,7 +317,7 @@ public class PlayerTestScript : MonoBehaviour
     /// </summary>
     public void OnJumpHeld()
     {
-        if (velocity.y < 0 && (state == PlayerState.idle || state == PlayerState.gliding) && !controller.collisions.below)
+        if (velocity.y < 0 && (state == PlayerState.idle || state == PlayerState.gliding || state == PlayerState.walking) && !controller.collisions.below)
         {
             state = PlayerState.gliding;
             velocity.y = glideSpeed;
@@ -424,6 +423,10 @@ public class PlayerTestScript : MonoBehaviour
         if(velocity.y < terminalVelocity * Time.deltaTime) { velocity.y = terminalVelocity * Time.deltaTime; }
         controller.Move(velocity * Time.deltaTime, directionalInput);
 
+        if(controller.collisions.below && doubleJumpUsed)
+        {
+            doubleJumpUsed = false;
+        }
         if (controller.collisions.above || controller.collisions.below)
         {
             velocity.y = 0;
