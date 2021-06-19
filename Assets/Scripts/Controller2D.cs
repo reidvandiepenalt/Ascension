@@ -6,7 +6,7 @@ using UnityEngine;
 public class Controller2D : MonoBehaviour
 {
     const float skinWidth = 0.01f;
-    const float distBetweenRays = 0.25f;
+    const float distBetweenRays = 0.1f;
     public LayerMask collisionMask;
     public BoxCollider2D collider;
     RaycastOrigins raycastOrigins;
@@ -79,6 +79,11 @@ public class Controller2D : MonoBehaviour
                 float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
                 if(slopeAngle <= maxClimbAngle)
                 {
+                    if(!collisions.below && i != 0)
+                    {
+                        break;
+                    }
+
                     if (collisions.descendingSlope)
                     {
                         collisions.descendingSlope = false;
