@@ -36,7 +36,7 @@ public class PatrolEnemyTest : EnemyAI
             patrolling = Patrolling.right;
         }
         InvokeRepeating("CheckDist", 0f, 0.1f);
-        InvokeRepeating("UpdatePath", 0f, 0.1f);
+        InvokeRepeating("UpdatePath", 0f, 0.2f);
     }
 
     /// <summary>
@@ -99,7 +99,7 @@ public class PatrolEnemyTest : EnemyAI
         }
 
         //move toward next waypoint
-        Vector2 direction = new Vector2(Mathf.Sign(((Vector2)path.vectorPath[currentWaypoint] - rb.position).x), 0);
+        Vector2 direction = new Vector2((patrolling == Patrolling.left) ? -1 : 1, 0);
         Vector3 toMove = direction * speed * Time.deltaTime;
         transform.position += toMove;
 
@@ -129,8 +129,8 @@ public class PatrolEnemyTest : EnemyAI
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, Mathf.Infinity, layerMask);
         if (hit)
         {
-            leftPatrolPoint.position = new Vector2(hit.collider.bounds.min.x, hit.collider.bounds.max.y);
-            rightPatrolPoint.position = hit.collider.bounds.max;
+            leftPatrolPoint.position = new Vector2(hit.collider.bounds.min.x + 0.05f, hit.collider.bounds.max.y);
+            rightPatrolPoint.position = new Vector2(hit.collider.bounds.max.x - 0.05f, hit.collider.bounds.max.y);
         }
     }
 }
