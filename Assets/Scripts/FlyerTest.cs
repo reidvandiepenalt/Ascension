@@ -89,11 +89,11 @@ public class FlyerTest : EnemyAI
         //flip gfx
         if (force.x >= 0.01f)
         {
-            enemyGFX.transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, 1f);
+            enemyGFX.transform.localScale = new Vector3(-Mathf.Abs(enemyGFX.transform.localScale.x), enemyGFX.transform.localScale.y, 1f);
         }
         else if (force.x <= -0.01f)
         {
-            enemyGFX.transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, 1f);
+            enemyGFX.transform.localScale = new Vector3(Mathf.Abs(enemyGFX.transform.localScale.x), enemyGFX.transform.localScale.y, 1f);
         }
     }
 }

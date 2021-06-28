@@ -267,7 +267,7 @@ public class PlayerTestScript : MonoBehaviour
         }
 
         //set position to starting position of room?
-        //transform.position = startingPosition.storedValue;
+        transform.position = startingPosition.storedValue;
     }
 
     /// <summary>

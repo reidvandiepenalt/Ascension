@@ -8,6 +8,7 @@ public class PatrolEnemyTest : EnemyAI
     public Transform leftPatrolPoint;
     public Transform rightPatrolPoint;
     public Patrolling initDirection;
+    public LayerMask layerMask;
 
     Patrolling patrolling;
 
@@ -21,6 +22,8 @@ public class PatrolEnemyTest : EnemyAI
     {
         base.Start();
 
+        GetPoints();
+
         //starting direction
         if(initDirection == Patrolling.left)
         {
@@ -33,7 +36,7 @@ public class PatrolEnemyTest : EnemyAI
             patrolling = Patrolling.right;
         }
         InvokeRepeating("CheckDist", 0f, 0.1f);
-        InvokeRepeating("UpdatePath", 0f, 0.5f);
+        InvokeRepeating("UpdatePath", 0f, 0.1f);
     }
 
     /// <summary>
@@ -44,7 +47,7 @@ public class PatrolEnemyTest : EnemyAI
         float dist = Mathf.Abs(rb.position.x - target.position.x);
 
         //turn around point
-        if (dist < nextWaypointDistance * 1.1f)
+        if (dist < nextWaypointDistance * 1.5f)
         {
             if (patrolling == Patrolling.left)
             {
@@ -114,7 +117,20 @@ public class PatrolEnemyTest : EnemyAI
         }
         else if (toMove.x <= -0.01f)
         {
-            enemyGFX.transform.localScale = new Vector3(-1f, 1f, 1f);
+            enemyGFX.transform.localScale = new Vector3(1f, 1f, 1f);
+        }
+    }
+
+    /// <summary>
+    /// Spawn points at edges of current platform
+    /// </summary>
+    void GetPoints()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, Mathf.Infinity, layerMask);
+        if (hit)
+        {
+            leftPatrolPoint.position = new Vector2(hit.collider.bounds.min.x, hit.collider.bounds.max.y);
+            rightPatrolPoint.position = hit.collider.bounds.max;
         }
     }
 }

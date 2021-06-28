@@ -10,6 +10,7 @@ public class ChangeScenes : MonoBehaviour
     public VectorValue positionStorage;
     public GameObject fadeInPanel;
     public GameObject fadeOutPanel;
+    Transform player;
     public float fadeWait;
 
     private void Awake()
@@ -28,6 +29,7 @@ public class ChangeScenes : MonoBehaviour
         {
             //set player starting position to the new scenes entry position
             positionStorage.storedValue = startPosition;
+            player = collision.transform;
             StartCoroutine(FadeCo());
         }
     }
