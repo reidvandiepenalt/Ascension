@@ -8,9 +8,9 @@ public class ChangeScenes : MonoBehaviour
     public string levelName;
     public Vector2 startPosition;
     public VectorValue positionStorage;
+    public BoolValue loadFromTransition;
     public GameObject fadeInPanel;
     public GameObject fadeOutPanel;
-    Transform player;
     public float fadeWait;
 
     private void Awake()
@@ -28,8 +28,8 @@ public class ChangeScenes : MonoBehaviour
         if (collision.CompareTag("Player") && !collision.isTrigger)
         {
             //set player starting position to the new scenes entry position
+            loadFromTransition.Value = true;
             positionStorage.storedValue = startPosition;
-            player = collision.transform;
             StartCoroutine(FadeCo());
         }
     }

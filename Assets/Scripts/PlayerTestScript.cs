@@ -152,7 +152,8 @@ public class PlayerTestScript : MonoBehaviour
     private List<ProgressBarScript> UISkillScripts = new List<ProgressBarScript>(5);
 
 
-    public VectorValue startingPosition;
+    public VectorValue transitionPosition;
+    public BoolValue loadFromTransition;
     [SerializeField] Vector3 spawnPoint;
     public Vector3 SpawnPoint
     {
@@ -266,8 +267,12 @@ public class PlayerTestScript : MonoBehaviour
             UISkillScripts.Add(dashUIScript);
         }
 
-        //set position to starting position of room?
-        transform.position = startingPosition.storedValue;
+        if (loadFromTransition.Value)
+        {
+            transform.position = transitionPosition.storedValue;
+            loadFromTransition.Value = false;
+        }
+        
     }
 
     /// <summary>
