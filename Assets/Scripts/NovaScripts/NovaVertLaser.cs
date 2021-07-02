@@ -45,7 +45,7 @@ public class NovaVertLaser : MonoBehaviour
         {
             if (hit.collider.gameObject.CompareTag("Player"))
             {
-                hit.collider.gameObject.GetComponent<PlayerTestScript>().TakeDamage(damage);
+                hit.collider.gameObject.GetComponent<PlayerTestScript>().TakeDamage(damage, false);
             }
         }
     }

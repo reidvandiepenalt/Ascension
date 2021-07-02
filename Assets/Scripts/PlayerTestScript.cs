@@ -100,6 +100,10 @@ public class PlayerTestScript : MonoBehaviour
     private bool dashDidHit = false;
     public float dashBounceVelocity = 10f;
 
+    Collider2D lastGround;
+    bool grounded;
+    public LayerMask groundMask;
+
     Animator anim;
     public GameObject attack;
     public GameObject gustStun;
@@ -271,7 +275,9 @@ public class PlayerTestScript : MonoBehaviour
             transform.position = transitionPosition.storedValue;
             loadFromTransition.Value = false;
         }
-        
+
+        lastGround = Physics2D.Raycast(transform.position, Vector2.down, 1f, groundMask).collider;
+        Debug.Log(Physics2D.Raycast(transform.position, Vector2.down, 1f, groundMask).ToString());
     }
 
     /// <summary>
@@ -443,6 +449,17 @@ public class PlayerTestScript : MonoBehaviour
         {
             anim.SetBool("InAir", false);
         }
+
+
+        //update last ground
+        if(controller.collisions.below && !grounded)
+        {
+            grounded = true;
+            lastGround = Physics2D.Raycast(transform.position, Vector2.down, 1f, groundMask).collider;
+        }else if(grounded && !controller.collisions.below)
+        {
+            grounded = false;
+        }
     }
 
     /// <summary>
@@ -558,7 +575,7 @@ public class PlayerTestScript : MonoBehaviour
     /// Player takes damage
     /// </summary>
     /// <param name="damage">Amount of damage taken</param>
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage, bool setToGround)
     {
         //Only take damage if not invincible
         if (!hitInvincible && !skillInvincible)
@@ -582,7 +599,29 @@ public class PlayerTestScript : MonoBehaviour
             {
                 hitInvincible = true;
                 ComboReset();
+                if (setToGround)
+                {
+                    SetToLastGround();
+                }
             }
+        }
+    }
+
+    /// <summary>
+    /// Sets the player to their last ground position
+    /// </summary>
+    public void SetToLastGround()
+    {
+        Debug.Log(lastGround.transform.position.ToString());
+        if(lastGround.bounds.center.x < transform.position.x)
+        {
+            transform.position = new Vector3(lastGround.bounds.max.x - (lastGround.bounds.extents.x / 4),
+                lastGround.bounds.max.y, transform.position.z);
+        }
+        else
+        {
+            transform.position = new Vector3(lastGround.bounds.min.x + (lastGround.bounds.extents.x / 4),
+                lastGround.bounds.max.y, transform.position.z);
         }
     }
 
