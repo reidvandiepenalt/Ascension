@@ -101,8 +101,8 @@ public class PlayerTestScript : MonoBehaviour
     public float dashBounceVelocity = 10f;
 
     Collider2D lastGround;
-    bool grounded;
     public LayerMask groundMask;
+    float groundOffset;
 
     Animator anim;
     public GameObject attack;
@@ -276,8 +276,8 @@ public class PlayerTestScript : MonoBehaviour
             loadFromTransition.Value = false;
         }
 
-        lastGround = Physics2D.Raycast(transform.position, Vector2.down, 1f, groundMask).collider;
-        Debug.Log(Physics2D.Raycast(transform.position, Vector2.down, 1f, groundMask).ToString());
+        groundOffset = gameObject.GetComponent<BoxCollider2D>().bounds.extents.y;
+        InvokeRepeating("UpdateLastGround", 0f, 0.33f);
     }
 
     /// <summary>
@@ -448,17 +448,23 @@ public class PlayerTestScript : MonoBehaviour
         else if(controller.collisions.below)
         {
             anim.SetBool("InAir", false);
+            UpdateLastGround();
         }
+    }
 
-
+    /// <summary>
+    /// Updates the last ground collider in storage
+    /// </summary>
+    void UpdateLastGround()
+    {
         //update last ground
-        if(controller.collisions.below && !grounded)
+        if (controller.collisions.below)
         {
-            grounded = true;
-            lastGround = Physics2D.Raycast(transform.position, Vector2.down, 1f, groundMask).collider;
-        }else if(grounded && !controller.collisions.below)
-        {
-            grounded = false;
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 5f, groundMask);
+            if (hit)
+            {
+                lastGround = hit.collider;
+            }
         }
     }
 
@@ -612,16 +618,15 @@ public class PlayerTestScript : MonoBehaviour
     /// </summary>
     public void SetToLastGround()
     {
-        Debug.Log(lastGround.transform.position.ToString());
         if(lastGround.bounds.center.x < transform.position.x)
         {
             transform.position = new Vector3(lastGround.bounds.max.x - (lastGround.bounds.extents.x / 4),
-                lastGround.bounds.max.y, transform.position.z);
+                lastGround.bounds.max.y + groundOffset, transform.position.z);
         }
         else
         {
             transform.position = new Vector3(lastGround.bounds.min.x + (lastGround.bounds.extents.x / 4),
-                lastGround.bounds.max.y, transform.position.z);
+                lastGround.bounds.max.y + groundOffset, transform.position.z);
         }
     }
 
