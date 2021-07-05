@@ -100,9 +100,8 @@ public class PlayerTestScript : MonoBehaviour
     private bool dashDidHit = false;
     public float dashBounceVelocity = 10f;
 
-    Collider2D lastGround;
+    Vector3 lastGround;
     public LayerMask groundMask;
-    float groundOffset;
 
     Animator anim;
     public GameObject attack;
@@ -276,7 +275,6 @@ public class PlayerTestScript : MonoBehaviour
             loadFromTransition.Value = false;
         }
 
-        groundOffset = gameObject.GetComponent<BoxCollider2D>().bounds.extents.y;
         InvokeRepeating("UpdateLastGround", 0f, 0.33f);
     }
 
@@ -458,13 +456,9 @@ public class PlayerTestScript : MonoBehaviour
     void UpdateLastGround()
     {
         //update last ground
-        if (controller.collisions.below)
+        if (controller.collisions.below && !controller.collisions.onSpikes)
         {
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 5f, groundMask);
-            if (hit)
-            {
-                lastGround = hit.collider;
-            }
+            lastGround = transform.position;
         }
     }
 
@@ -603,12 +597,14 @@ public class PlayerTestScript : MonoBehaviour
             }
             else if (!dead)
             {
-                hitInvincible = true;
                 ComboReset();
                 if (setToGround)
                 {
+                    //add screen fade and animations
                     SetToLastGround();
+                    return;
                 }
+                hitInvincible = true;
             }
         }
     }
@@ -618,16 +614,7 @@ public class PlayerTestScript : MonoBehaviour
     /// </summary>
     public void SetToLastGround()
     {
-        if(lastGround.bounds.center.x < transform.position.x)
-        {
-            transform.position = new Vector3(lastGround.bounds.max.x - (lastGround.bounds.extents.x / 4),
-                lastGround.bounds.max.y + groundOffset, transform.position.z);
-        }
-        else
-        {
-            transform.position = new Vector3(lastGround.bounds.min.x + (lastGround.bounds.extents.x / 4),
-                lastGround.bounds.max.y + groundOffset, transform.position.z);
-        }
+        transform.position = lastGround;
     }
 
     /// <summary>

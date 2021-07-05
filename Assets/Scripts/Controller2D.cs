@@ -29,6 +29,7 @@ public class Controller2D : MonoBehaviour
     private void Start()
     {
         CalculateRaySpacing();
+        collisions.onSpikes = false;
     }
 
     /// <summary>
@@ -76,6 +77,41 @@ public class Controller2D : MonoBehaviour
 
             if (hit)
             {
+                if (hit.collider.CompareTag("Right"))
+                {
+                    if (directionX == 1 || hit.distance == 0)
+                    {
+                        continue;
+                    }
+                    if (collisions.movingThroughWall)
+                    {
+                        continue;
+                    }
+                    if (playerInput.x == 1)
+                    {
+                        collisions.movingThroughWall = true;
+                        Invoke("ResetMovingThrough", 0.5f);
+                        continue;
+                    }
+                }
+                if (hit.collider.CompareTag("Left"))
+                {
+                    if (directionX == -1 || hit.distance == 0)
+                    {
+                        continue;
+                    }
+                    if (collisions.movingThroughWall)
+                    {
+                        continue;
+                    }
+                    if (playerInput.x == -1)
+                    {
+                        collisions.movingThroughWall = true;
+                        Invoke("ResetMovingThrough", 0.5f);
+                        continue;
+                    }
+                }
+
                 float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
                 if(slopeAngle <= maxClimbAngle)
                 {
@@ -132,6 +168,16 @@ public class Controller2D : MonoBehaviour
 
             if (hit)
             {
+                if(hit.collider.CompareTag("Left") || hit.collider.CompareTag("Right"))
+                {
+                    collisions.below = true;
+                    break;
+                }
+                if (hit.collider.CompareTag("Spike"))
+                {
+                    collisions.onSpikes = true;
+                }
+
                 if (hit.collider.CompareTag("Through"))
                 {
                     if(directionY == 1 || hit.distance == 0)
@@ -274,6 +320,14 @@ public class Controller2D : MonoBehaviour
     }
 
     /// <summary>
+    /// Resets moving through a half wall
+    /// </summary>
+   void ResetMovingThrough()
+    {
+        collisions.movingThroughWall = false;
+    }
+
+    /// <summary>
     /// Structure to hold raycast origins
     /// </summary>
     struct RaycastOrigins
@@ -286,7 +340,7 @@ public class Controller2D : MonoBehaviour
     /// </summary>
     public struct CollisionInfo
     {
-        public bool above, below, left, right, climbingSlope, descendingSlope, fallingThroughPlatform;
+        public bool above, below, left, right, climbingSlope, descendingSlope, fallingThroughPlatform, movingThroughWall, onSpikes;
         public float slopeAngle, slopeAngleOld;
         public Vector2 moveDistanceOld;
 
