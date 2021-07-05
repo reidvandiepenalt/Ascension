@@ -22,7 +22,7 @@ public abstract class EnemyAI : MonoBehaviour,  IEnemy
     protected Rigidbody2D rb;
     public GameObject enemyGFX;
 
-    public int Health { get => health; set => health = value; }
+    public int Health { get; set; }
     public int MaxHealth { get => maxHealth; set => maxHealth = value; }
 
     private void OnDrawGizmos()
@@ -97,10 +97,10 @@ public abstract class EnemyAI : MonoBehaviour,  IEnemy
         //flip based on moving left or right
         if (toMove.x >= 0.01f)
         {
-            enemyGFX.transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, 1f);
+            enemyGFX.transform.localScale = new Vector3(-Mathf.Abs(enemyGFX.transform.localScale.x), enemyGFX.transform.localScale.y, 1f);
         } else if (toMove.x <= -0.01f)
         {
-            enemyGFX.transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, 1f);
+            enemyGFX.transform.localScale = new Vector3(Mathf.Abs(enemyGFX.transform.localScale.x), enemyGFX.transform.localScale.y, 1f);
         }
     }
 
@@ -114,8 +114,8 @@ public abstract class EnemyAI : MonoBehaviour,  IEnemy
 
         if (health < 0)
         {
-            print("Killed");//die
-            health = maxHealth;
+            //die
+            Destroy(gameObject);
         }
     }
 
@@ -125,6 +125,5 @@ public abstract class EnemyAI : MonoBehaviour,  IEnemy
     /// <param name="timer">Time to stay stunned</param>
     public virtual void Stun(float stunTime)
     {
-        print("stunned");
     }
 }
