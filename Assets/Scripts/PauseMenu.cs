@@ -5,9 +5,6 @@ using UnityEngine.EventSystems;
 
 public class PauseMenu : MonoBehaviour
 {
-
-    public static bool IsPaused = false;
-
     public GameObject pauseMenuUI, settingMenuUI, SkillsUI;
 
     public GameObject pauseFirstButton, optionsFirstButton, optionsClosedButton;
@@ -21,13 +18,13 @@ public class PauseMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && !InventoryMenu.InInventory)
+        if (Input.GetKeyDown(KeyCode.Escape) && !Pause.isPaused)
         {
-            if (IsPaused)
+            if (Pause.isPaused)
             {
                 Resume();
             }
-            else { Pause(); }
+            else { SetPause(); }
         }
     }
 
@@ -36,15 +33,15 @@ public class PauseMenu : MonoBehaviour
         pauseMenuUI.SetActive(false);
         SkillsUI.SetActive(true);
         Time.timeScale = 1f;
-        IsPaused = false;
+        Pause.isPaused = false;
     }
 
-    void Pause()
+    void SetPause()
     {
         pauseMenuUI.SetActive(true);
         SkillsUI.SetActive(false);
         Time.timeScale = 0f;
-        IsPaused = true;
+        Pause.isPaused = true;
 
         //clear selected object
         EventSystem.current.SetSelectedGameObject(null);

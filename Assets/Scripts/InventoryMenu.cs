@@ -8,8 +8,6 @@ using System;
 
 public class InventoryMenu : MonoBehaviour
 {
-    public static bool InInventory = false;
-
     public GameObject inventoryFirstSlot;
     public GameObject SkillsUICanvas;
     [SerializeField] GameObject[] Canvases;
@@ -89,19 +87,19 @@ public class InventoryMenu : MonoBehaviour
     void Update()
     {
         //pause/unpause
-        if (Input.GetKeyDown(KeyCode.Tab) && !PauseMenu.IsPaused)
+        if (Input.GetKeyDown(KeyCode.Tab) && !Pause.isPaused)
         {
-            if (InInventory)
+            if (Pause.isPaused)
             {
                 Resume();
             } else
             {
-                Pause();
+                SetPause();
             }
         }
 
         //do nothing if not in pause menu
-        if (!InInventory) { return; }
+        if (!Pause.isPaused) { return; }
 
         //selection handling
         if (EventSystem.current.currentSelectedGameObject == null)
@@ -135,14 +133,14 @@ public class InventoryMenu : MonoBehaviour
             arrow.SetActive(false);
         }
         SkillsUICanvas.SetActive(true);
-        InInventory = false;
+        Pause.isPaused = false;
         Time.timeScale = 1f;
     }
 
     /// <summary>
     /// To be called when entering the menu (game being paused)
     /// </summary>
-    void Pause()
+    void SetPause()
     {
         //activate ui elements and canvases
         Canvases[1].SetActive(true);
@@ -151,7 +149,7 @@ public class InventoryMenu : MonoBehaviour
             arrow.SetActive(true);
         }
         SkillsUICanvas.SetActive(false);
-        InInventory = true;
+        Pause.isPaused = true;
         Time.timeScale = 0f;
 
         EventSystem.current.SetSelectedGameObject(null);

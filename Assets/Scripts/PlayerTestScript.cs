@@ -9,6 +9,8 @@ using UnityEngine.UI;
 
 public class PlayerTestScript : MonoBehaviour
 {
+    public bool inDialogue;
+
     public Controller2D controller;
     public float speed;
     public float maxJumpHeight;
@@ -291,6 +293,11 @@ public class PlayerTestScript : MonoBehaviour
     /// </summary>
     public void OnJumpDown()
     {
+        //don't do anything if in a pause menu
+        if (Pause.isPaused)
+        {
+            return;
+        }
         //basic jump
         if (controller.collisions.below && (state == PlayerState.idle || state == PlayerState.walking || state == PlayerState.attacking))//jump
         {
@@ -325,6 +332,11 @@ public class PlayerTestScript : MonoBehaviour
     /// </summary>
     public void OnJumpHeld()
     {
+        //don't do anything if in a pause menu
+        if (Pause.isPaused)
+        {
+            return;
+        }
         if (velocity.y < 0 && (state == PlayerState.idle || state == PlayerState.gliding || state == PlayerState.walking) && !controller.collisions.below)
         {
             state = PlayerState.gliding;
@@ -338,6 +350,11 @@ public class PlayerTestScript : MonoBehaviour
     /// </summary>
     public void OnJumpUp()
     {
+        //don't do anything if in a pause menu
+        if (Pause.isPaused)
+        {
+            return;
+        }
         state = PlayerState.idle;
         anim.SetBool("Gliding", false);
         if (velocity.y > minJumpVelocity) //going up
@@ -350,7 +367,7 @@ public class PlayerTestScript : MonoBehaviour
     void Update()
     {
         //don't do anything if in a pause menu
-        if (PauseMenu.IsPaused || InventoryMenu.InInventory)
+        if (Pause.isPaused)
         {
             return;
         }

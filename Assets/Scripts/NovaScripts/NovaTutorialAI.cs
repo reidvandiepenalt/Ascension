@@ -400,14 +400,15 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
         playerCollider = playerTransform.gameObject.GetComponent<BoxCollider2D>();
 
-        //dialogue?
-
         //pick attack
-        PickAttack();
+        //PickAttack();
     }
 
     protected void FixedUpdate()
     {
+        //if paused, do nothing
+        if (Pause.isPaused) { return; }
+
         //catch case
         if (path == null)
         {
