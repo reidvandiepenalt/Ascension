@@ -17,7 +17,6 @@ public class MummyScript : MonoBehaviour, IEnemy
     public Transform player;
     private Vector2 target;
     public LayerMask groundLayer;
-    public Collider2D cone;
     private ContactFilter2D filter;
     private Rigidbody2D rb;
     private Collider2D collider;
@@ -25,6 +24,8 @@ public class MummyScript : MonoBehaviour, IEnemy
     public float yRange = 5f;
     public float distFromEdge = 3;
     public float speed = 10;
+    public float maxJumpRange = 25f;
+    public float maxJumpAngleDeg = 40f;
     private float yOffset;
     public GameObject enemyGFX;
 
@@ -158,23 +159,25 @@ public class MummyScript : MonoBehaviour, IEnemy
     /// </summary>
     void FindNextPlatform()
     {
-        if (target.x < transform.position.x)
+        List<Collider2D> results = new List<Collider2D>();
+
+        float jumpAngleDelta = maxJumpAngleDeg / 5;
+        float angleToPlayer = Vector2.SignedAngle(Vector2.right, player.position);
+        for(int i = -5; i <= 5; i++)
         {
-            cone.transform.rotation.eulerAngles.Set(0, 0, 45);
-        }
-        else
-        {
-            cone.transform.rotation.eulerAngles.Set(0, 0, -45);
+            float angle = angleToPlayer + (jumpAngleDelta * i);
+            results.Add(Physics2D.Raycast(transform.position, new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad) + transform.position.x,
+                Mathf.Sin(angle * Mathf.Deg2Rad) + transform.position.y), maxJumpRange, groundLayer).collider);
         }
 
-        Collider2D[] results = new Collider2D[0];
-        int total = cone.OverlapCollider(filter, results);
+        //adjust to consider player position as well?
+        int total = results.Count;
         if(total == 0) { return; }
         Vector2 closestPoint = results[0].ClosestPoint(transform.position);
         Collider2D closestPlatform = results[0];
         if(total > 1)
         {
-            for(int i = 1; i < results.Length; i++)
+            for(int i = 1; i < results.Count; i++)
             {
                 Vector2 temp = results[i].ClosestPoint(transform.position);
                 if(Vector2.Distance(temp, transform.position) < Vector2.Distance(closestPoint, transform.position))
