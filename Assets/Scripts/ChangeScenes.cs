@@ -34,6 +34,13 @@ public class ChangeScenes : MonoBehaviour
         }
     }
 
+    public void LoadScene()
+    {
+        loadFromTransition.Value = true;
+        positionStorage.storedValue = startPosition;
+        StartCoroutine(FadeCo());
+    }
+
     public IEnumerator FadeCo()
     {
         //fade screen then load it

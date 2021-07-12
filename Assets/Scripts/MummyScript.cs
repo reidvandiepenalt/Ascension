@@ -5,7 +5,28 @@ using Pathfinding;
 
 public class MummyScript : MonoBehaviour, IEnemy
 {
-    public AIPath aiPath;
+    enum State
+    {
+        jumping,
+        attacking,
+        walking
+    }
+
+
+    private State state = State.walking;
+    public Transform player;
+    private Vector2 target;
+    public LayerMask groundLayer;
+    public Collider2D cone;
+    private ContactFilter2D filter;
+    private Rigidbody2D rb;
+    private Collider2D collider;
+    public float attackRange = 10f;
+    public float yRange = 5f;
+    public float distFromEdge = 3;
+    public float speed = 10;
+    private float yOffset;
+    public GameObject enemyGFX;
 
     public int Health { get; set; }
     public int MaxHealth { get; set; }
@@ -27,10 +48,165 @@ public class MummyScript : MonoBehaviour, IEnemy
     void Start()
     {
         Health = MaxHealth;
+        filter = new ContactFilter2D();
+        filter.SetLayerMask(groundLayer);
+        player = GameObject.FindGameObjectWithTag("Player").transform;
+        rb = GetComponent<Rigidbody2D>();
+        collider = GetComponent<Collider2D>();
+        yOffset = rb.centerOfMass.y;
+
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 10f, groundLayer);
+        if (hit)
+        {
+            target = new Vector2((player.position.x < transform.position.x)?hit.collider.bounds.min.x + 0.5f:
+                hit.collider.bounds.max.x - 0.5f, transform.position.y);
+        }
+
+        InvokeRepeating("CheckDist", 0.5f, 0.25f);
     }
 
     void FixedUpdate()
     {
+        if (Pause.isPaused) { return; }
 
+        switch (state)
+        {
+            case State.jumping:
+                //check if landed
+                if(Physics2D.Raycast(transform.position, Vector2.down, collider.bounds.extents.y + 0.5f, groundLayer))
+                {
+                    state = State.walking;
+                }
+                return;
+            case State.attacking:
+                return;
+            case State.walking:
+                break;
+        }
+
+        Vector3 toMove = Vector3.zero;
+        if (Mathf.Abs(transform.position.y - player.position.y) < yRange)
+        {
+            //left
+            if(player.position.x < transform.position.x)
+            {
+                toMove = Vector2.left * speed * Time.deltaTime;
+                target = new Vector2(Physics2D.Raycast(transform.position, Vector2.down, 10f, groundLayer)
+                    .collider.bounds.min.x + 0.5f, transform.position.y);
+                if((toMove + transform.position).x < target.x)
+                {
+                    FindNextPlatform();
+                    return;
+                }
+            }
+            //right
+            else
+            {
+                toMove = Vector2.right * speed * Time.deltaTime;
+                target = new Vector2(Physics2D.Raycast(transform.position, Vector2.down, 10f, groundLayer)
+                    .collider.bounds.max.x - 0.5f, transform.position.y);
+                if ((toMove + transform.position).x > target.x)
+                {
+                    FindNextPlatform();
+                    return;
+                }
+            }
+            transform.position += toMove;
+        }
+        else
+        {
+            Vector2 direction = (target.x < transform.position.x) ? Vector2.left : Vector2.right;
+            toMove = direction * speed * Time.deltaTime;
+            transform.position += toMove;
+        }
+        
+
+        //update gfx
+        if (toMove.x >= 0.01f)
+        {
+            enemyGFX.transform.localScale = new Vector3(-1f, 1f, 1f);
+        }
+        else if (toMove.x <= -0.01f)
+        {
+            enemyGFX.transform.localScale = new Vector3(1f, 1f, 1f);
+        }
+    }
+
+    /// <summary>
+    /// Checks the distance between mummy and target and mummy and player
+    /// </summary>
+    void CheckDist()
+    {
+        //within attack range
+        if(Mathf.Abs(transform.position.y - player.position.y) < yRange 
+            && Mathf.Abs(transform.position.x - player.position.x) < attackRange)
+        {
+
+            Attack();
+            return;
+        }
+
+        //close to edge
+        if(Mathf.Abs(transform.position.x - target.x) < distFromEdge)
+        {
+            FindNextPlatform();
+        }
+    }
+
+    /// <summary>
+    /// Update the target by evaluating nearby platforms in the direction of motion
+    /// </summary>
+    void FindNextPlatform()
+    {
+        if (target.x < transform.position.x)
+        {
+            cone.transform.rotation.eulerAngles.Set(0, 0, 45);
+        }
+        else
+        {
+            cone.transform.rotation.eulerAngles.Set(0, 0, -45);
+        }
+
+        Collider2D[] results = new Collider2D[0];
+        int total = cone.OverlapCollider(filter, results);
+        if(total == 0) { return; }
+        Vector2 closestPoint = results[0].ClosestPoint(transform.position);
+        Collider2D closestPlatform = results[0];
+        if(total > 1)
+        {
+            for(int i = 1; i < results.Length; i++)
+            {
+                Vector2 temp = results[i].ClosestPoint(transform.position);
+                if(Vector2.Distance(temp, transform.position) < Vector2.Distance(closestPoint, transform.position))
+                {
+                    closestPoint = temp;
+                    closestPlatform = results[i];
+                }
+            }
+        }
+        Jump(closestPoint, closestPlatform);
+        target = new Vector2((player.transform.position.x < transform.position.x)
+            ? closestPlatform.bounds.min.x + 0.5f : closestPlatform.bounds.max.x - 0.5f, closestPlatform.bounds.max.y + yOffset);
+    }
+
+    /// <summary>
+    /// Add a force to the rigidbody that will make the mummy land on the platform
+    /// </summary>
+    void Jump(Vector2 closestPoint, Collider2D platform)
+    {
+        state = State.jumping;
+        Vector2 landingPoint = new Vector2(closestPoint.x, platform.bounds.max.y);
+        landingPoint += (closestPoint.x < transform.position.x) ? Vector2.left : Vector2.right;
+
+        float yVel = (landingPoint.y - transform.position.y) + Physics2D.gravity.y / 2;
+        float xVel = landingPoint.x - transform.position.x;
+
+        rb.velocity = new Vector2(xVel, yVel + 1);
+    }
+
+    IEnumerator Attack()
+    {
+        //state = State.attacking;
+        return null;
     }
 }
