@@ -9,11 +9,12 @@ public class MummyScript : MonoBehaviour, IEnemy
     {
         jumping,
         attacking,
-        walking
+        walking,
+        idle
     }
 
 
-    private State state = State.walking;
+    private State state = State.idle;
     public Transform player;
     private Vector2 target;
     public LayerMask groundLayer;
@@ -28,6 +29,7 @@ public class MummyScript : MonoBehaviour, IEnemy
     public float maxJumpAngleDeg = 40f;
     private float yOffset;
     public GameObject enemyGFX;
+    public float aggroRange;
 
     public int Health { get; set; }
     public int MaxHealth { get; set; }
@@ -74,15 +76,19 @@ public class MummyScript : MonoBehaviour, IEnemy
         {
             case State.jumping:
                 //check if landed
-                if(Physics2D.Raycast(transform.position, Vector2.down, collider.bounds.extents.y + 0.5f, groundLayer))
+                RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, collider.bounds.extents.y + 0.5f, groundLayer);
+                if (hit)
                 {
                     state = State.walking;
+                    target = new Vector2((player.transform.position.x < transform.position.x) ? hit.collider.bounds.min.x + 0.5f : hit.collider.bounds.max.x - 0.5f, transform.position.y);
                 }
                 return;
             case State.attacking:
                 return;
             case State.walking:
                 break;
+            case State.idle:
+                return;
         }
 
         Vector3 toMove = Vector3.zero;
@@ -92,7 +98,7 @@ public class MummyScript : MonoBehaviour, IEnemy
             if(player.position.x < transform.position.x)
             {
                 toMove = Vector2.left * speed * Time.deltaTime;
-                target = new Vector2(Physics2D.Raycast(transform.position, Vector2.down, 10f, groundLayer)
+                target = new Vector2(Physics2D.Raycast(transform.position, Vector2.down, Mathf.Infinity, groundLayer)
                     .collider.bounds.min.x + 0.5f, transform.position.y);
                 if((toMove + transform.position).x < target.x)
                 {
@@ -108,7 +114,6 @@ public class MummyScript : MonoBehaviour, IEnemy
                     .collider.bounds.max.x - 0.5f, transform.position.y);
                 if ((toMove + transform.position).x > target.x)
                 {
-                    FindNextPlatform();
                     return;
                 }
             }
@@ -138,6 +143,12 @@ public class MummyScript : MonoBehaviour, IEnemy
     /// </summary>
     void CheckDist()
     {
+        if(Vector2.Distance(player.transform.position, transform.position) > aggroRange) { state = State.idle; return; } 
+        else
+        {
+            state = State.walking;
+        }
+        if(!(state == State.walking)) { return; }
         //within attack range
         if(Mathf.Abs(transform.position.y - player.position.y) < yRange 
             && Mathf.Abs(transform.position.x - player.position.x) < attackRange)
@@ -146,11 +157,11 @@ public class MummyScript : MonoBehaviour, IEnemy
             Attack();
             return;
         }
-
-        //close to edge
-        if(Mathf.Abs(transform.position.x - target.x) < distFromEdge)
+        if (Mathf.Abs(transform.position.x - target.x) < distFromEdge 
+            || Mathf.Abs(transform.position.y - player.position.y) > yRange)
         {
             FindNextPlatform();
+            return;
         }
     }
 
@@ -161,14 +172,17 @@ public class MummyScript : MonoBehaviour, IEnemy
     {
         List<Collider2D> results = new List<Collider2D>();
 
-        float jumpAngleDelta = maxJumpAngleDeg / 5;
-        float angleToPlayer = Vector2.SignedAngle(Vector2.right, player.position);
+        float jumpAngleDelta = maxJumpAngleDeg / 5f;
+        float angleToPlayer = Vector2.SignedAngle(Vector2.right, player.position - transform.position);
         for(int i = -5; i <= 5; i++)
         {
             float angle = angleToPlayer + (jumpAngleDelta * i);
-            results.Add(Physics2D.Raycast(transform.position, new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad) + transform.position.x,
-                Mathf.Sin(angle * Mathf.Deg2Rad) + transform.position.y), maxJumpRange, groundLayer).collider);
+            results.Add(Physics2D.Raycast(transform.position, new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad),
+                Mathf.Sin(angle * Mathf.Deg2Rad)), maxJumpRange, groundLayer).collider);
         }
+        //remove above and below
+        results.Remove(Physics2D.Raycast(transform.position, Vector2.down, maxJumpRange, groundLayer).collider);
+        results.Remove(Physics2D.Raycast(transform.position, Vector2.up, maxJumpRange, groundLayer).collider);
 
         //adjust to consider player position as well?
         int total = results.Count;
@@ -179,6 +193,7 @@ public class MummyScript : MonoBehaviour, IEnemy
         {
             for(int i = 1; i < results.Count; i++)
             {
+                if(results[i] == null) { break; }
                 Vector2 temp = results[i].ClosestPoint(transform.position);
                 if(Vector2.Distance(temp, transform.position) < Vector2.Distance(closestPoint, transform.position))
                 {
@@ -187,9 +202,8 @@ public class MummyScript : MonoBehaviour, IEnemy
                 }
             }
         }
+        if(closestPlatform == null || closestPoint == null) { return; }
         Jump(closestPoint, closestPlatform);
-        target = new Vector2((player.transform.position.x < transform.position.x)
-            ? closestPlatform.bounds.min.x + 0.5f : closestPlatform.bounds.max.x - 0.5f, closestPlatform.bounds.max.y + yOffset);
     }
 
     /// <summary>
