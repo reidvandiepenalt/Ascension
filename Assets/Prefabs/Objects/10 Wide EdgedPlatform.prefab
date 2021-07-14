@@ -9,9 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9060404717964960112}
-  m_Layer: 0
+  - component: {fileID: 4559266349335009333}
+  m_Layer: 9
   m_Name: 10 Wide EdgedPlatform
-  m_TagString: Untagged
+  m_TagString: Inanimate
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -33,6 +34,35 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!60 &4559266349335009333
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 707023427600131186}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: -6.04751, y: 0.5133052}
+      - {x: -4.9678016, y: -0.5294415}
+      - {x: 5.010162, y: -0.5040255}
+      - {x: 6.029695, y: 0.5108448}
 --- !u!1001 &441719201592683688
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -100,7 +130,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: ContrastTriangle
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 31833380484063876, guid: f10214850af406d4f89345099495bbac, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: f10214850af406d4f89345099495bbac, type: 3}
 --- !u!4 &454957074315873834 stripped
 Transform:
@@ -175,7 +206,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: ContrastTriangle (1)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 31833380484063876, guid: f10214850af406d4f89345099495bbac, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: f10214850af406d4f89345099495bbac, type: 3}
 --- !u!4 &6031428902185356823 stripped
 Transform:
@@ -250,7 +282,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: 10 Wide Platform Variant
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8124039557655038336, guid: 0c0c9eba071775d49979270d03c7d0c4, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 0c0c9eba071775d49979270d03c7d0c4, type: 3}
 --- !u!4 &8117178717506096799 stripped
 Transform:

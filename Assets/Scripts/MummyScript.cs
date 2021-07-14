@@ -185,25 +185,29 @@ public class MummyScript : MonoBehaviour, IEnemy
         results.Remove(Physics2D.Raycast(transform.position, Vector2.up, maxJumpRange, groundLayer).collider);
 
         //adjust to consider player position as well?
-        int total = results.Count;
-        if(total == 0) { return; }
-        Vector2 closestPoint = results[0].ClosestPoint(transform.position);
+        for (int i = 0; i < results.Count; i++)
+        {
+            if(results[i] == null) { results.RemoveAt(i); i--; }
+        }
+
+        if(results.Count == 0) { return; }
+        Vector2 closestPointToPlayer = results[0].ClosestPoint(player.position);
         Collider2D closestPlatform = results[0];
-        if(total > 1)
+        if(results.Count > 1)
         {
             for(int i = 1; i < results.Count; i++)
             {
                 if(results[i] == null) { break; }
-                Vector2 temp = results[i].ClosestPoint(transform.position);
-                if(Vector2.Distance(temp, transform.position) < Vector2.Distance(closestPoint, transform.position))
+                Vector2 temp = results[i].ClosestPoint(player.position);
+                if(Vector2.Distance(temp, player.position) < Vector2.Distance(closestPointToPlayer, player.position))
                 {
-                    closestPoint = temp;
+                    closestPointToPlayer = temp;
                     closestPlatform = results[i];
                 }
             }
         }
-        if(closestPlatform == null || closestPoint == null) { return; }
-        Jump(closestPoint, closestPlatform);
+        if(closestPlatform == null || closestPointToPlayer == null) { return; }
+        Jump(closestPointToPlayer, closestPlatform);
     }
 
     /// <summary>
@@ -215,10 +219,13 @@ public class MummyScript : MonoBehaviour, IEnemy
         Vector2 landingPoint = new Vector2(closestPoint.x, platform.bounds.max.y);
         landingPoint += (closestPoint.x < transform.position.x) ? Vector2.left : Vector2.right;
 
+        transform.position = landingPoint + (Vector2.up * yOffset);
+
+        /*/
         float yVel = (landingPoint.y - transform.position.y) + Physics2D.gravity.y / 2;
         float xVel = landingPoint.x - transform.position.x;
 
-        rb.velocity = new Vector2(xVel, yVel + 1);
+        rb.velocity = new Vector2(xVel, yVel + 1);/*/
     }
 
     IEnumerator Attack()
