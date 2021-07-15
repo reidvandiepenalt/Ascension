@@ -5,7 +5,7 @@ using Pathfinding;
 
 public class MummyScript : MonoBehaviour, IEnemy
 {
-    enum State
+    public enum State
     {
         jumping,
         attacking,
@@ -14,7 +14,7 @@ public class MummyScript : MonoBehaviour, IEnemy
     }
 
 
-    private State state = State.idle;
+    public State state = State.idle;
     public Transform player;
     private Vector2 target;
     public LayerMask groundLayer;
@@ -27,6 +27,7 @@ public class MummyScript : MonoBehaviour, IEnemy
     public float speed = 10;
     public float maxJumpRange = 25f;
     public float maxJumpAngleDeg = 40f;
+    public float jumpTime = 0.75f;
     private float yOffset;
     public GameObject enemyGFX;
     public float aggroRange;
@@ -76,7 +77,8 @@ public class MummyScript : MonoBehaviour, IEnemy
         {
             case State.jumping:
                 //check if landed
-                RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, collider.bounds.extents.y + 0.5f, groundLayer);
+                RaycastHit2D hit = Physics2D.Raycast(new Vector2(collider.bounds.center.x, collider.bounds.min.y), 
+                    Vector2.down, yOffset + 0.25f, groundLayer);
                 if (hit)
                 {
                     state = State.walking;
@@ -110,7 +112,7 @@ public class MummyScript : MonoBehaviour, IEnemy
             else
             {
                 toMove = Vector2.right * speed * Time.deltaTime;
-                target = new Vector2(Physics2D.Raycast(transform.position, Vector2.down, 10f, groundLayer)
+                target = new Vector2(Physics2D.Raycast(transform.position, Vector2.down, Mathf.Infinity, groundLayer)
                     .collider.bounds.max.x - 0.5f, transform.position.y);
                 if ((toMove + transform.position).x > target.x)
                 {
@@ -144,11 +146,13 @@ public class MummyScript : MonoBehaviour, IEnemy
     void CheckDist()
     {
         if(Vector2.Distance(player.transform.position, transform.position) > aggroRange) { state = State.idle; return; } 
-        else
+        else if(state == State.idle)
         {
             state = State.walking;
         }
+
         if(!(state == State.walking)) { return; }
+
         //within attack range
         if(Mathf.Abs(transform.position.y - player.position.y) < yRange 
             && Mathf.Abs(transform.position.x - player.position.x) < attackRange)
@@ -168,8 +172,9 @@ public class MummyScript : MonoBehaviour, IEnemy
     /// <summary>
     /// Update the target by evaluating nearby platforms in the direction of motion
     /// </summary>
-    void FindNextPlatform()
+    int FindNextPlatform()
     {
+        if(state == State.jumping) { return 0; }
         List<Collider2D> results = new List<Collider2D>();
 
         float jumpAngleDelta = maxJumpAngleDeg / 5f;
@@ -181,8 +186,8 @@ public class MummyScript : MonoBehaviour, IEnemy
                 Mathf.Sin(angle * Mathf.Deg2Rad)), maxJumpRange, groundLayer).collider);
         }
         //remove above and below
-        results.Remove(Physics2D.Raycast(transform.position, Vector2.down, maxJumpRange, groundLayer).collider);
-        results.Remove(Physics2D.Raycast(transform.position, Vector2.up, maxJumpRange, groundLayer).collider);
+        results.Remove(Physics2D.Raycast(transform.position, Vector2.down, Mathf.Infinity, groundLayer).collider);
+        results.Remove(Physics2D.Raycast(transform.position, Vector2.up, Mathf.Infinity, groundLayer).collider);
 
         //adjust to consider player position as well?
         for (int i = 0; i < results.Count; i++)
@@ -190,7 +195,7 @@ public class MummyScript : MonoBehaviour, IEnemy
             if(results[i] == null) { results.RemoveAt(i); i--; }
         }
 
-        if(results.Count == 0) { return; }
+        if(results.Count == 0) { return 0; }
         Vector2 closestPointToPlayer = results[0].ClosestPoint(player.position);
         Collider2D closestPlatform = results[0];
         if(results.Count > 1)
@@ -206,8 +211,9 @@ public class MummyScript : MonoBehaviour, IEnemy
                 }
             }
         }
-        if(closestPlatform == null || closestPointToPlayer == null) { return; }
+        if(closestPlatform == null || closestPointToPlayer == null) { return 0; }
         Jump(closestPointToPlayer, closestPlatform);
+        return results.Count;
     }
 
     /// <summary>
@@ -218,14 +224,14 @@ public class MummyScript : MonoBehaviour, IEnemy
         state = State.jumping;
         Vector2 landingPoint = new Vector2(closestPoint.x, platform.bounds.max.y);
         landingPoint += (closestPoint.x < transform.position.x) ? Vector2.left : Vector2.right;
+        landingPoint += Vector2.up;
 
-        transform.position = landingPoint + (Vector2.up * yOffset);
+        //transform.position = landingPoint + (Vector2.up * yOffset);
+        
+        float yVel = (landingPoint.y - transform.position.y) / jumpTime - ((rb.gravityScale * Physics2D.gravity).y * jumpTime / 2);
+        float xVel = (landingPoint.x - transform.position.x) / jumpTime;
 
-        /*/
-        float yVel = (landingPoint.y - transform.position.y) + Physics2D.gravity.y / 2;
-        float xVel = landingPoint.x - transform.position.x;
-
-        rb.velocity = new Vector2(xVel, yVel + 1);/*/
+        rb.velocity = new Vector2(xVel, yVel);
     }
 
     IEnumerator Attack()

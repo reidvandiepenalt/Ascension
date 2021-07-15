@@ -1,35 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1281386592
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1281386593}
-  m_Layer: 11
-  m_Name: Target
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1281386593
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1281386592}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 8439016276479724415}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8439016275965293891
 GameObject:
   m_ObjectHideFlags: 0
@@ -89,8 +59,8 @@ CapsuleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.029834747, y: 6.652939}
-  m_Size: {x: 2.707695, y: 13.351166}
+  m_Offset: {x: 0.019989014, y: -0.49656677}
+  m_Size: {x: 3.0066223, y: 13.3013}
   m_Direction: 0
 --- !u!1 &8439016276479724414
 GameObject:
@@ -104,7 +74,6 @@ GameObject:
   - component: {fileID: 8439016276479724413}
   - component: {fileID: 8439016276479724412}
   - component: {fileID: 8439016276479724410}
-  - component: {fileID: 8439016276479724411}
   m_Layer: 11
   m_Name: Mummy
   m_TagString: Enemy
@@ -125,7 +94,6 @@ Transform:
   m_Children:
   - {fileID: 6808883390030343269}
   - {fileID: 8439016275965293888}
-  - {fileID: 1281386593}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -163,8 +131,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.0000038146973, y: 6.563446}
-  m_Size: {x: 3.2447128, y: 13.530212}
+  m_Offset: {x: -0.0000038146973, y: -0.5611572}
+  m_Size: {x: 3.2447128, y: 13.330933}
   m_Direction: 0
 --- !u!114 &8439016276479724410
 MonoBehaviour:
@@ -178,48 +146,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6221a5520029f52488549e2ff96e8f68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 50
-  maxHealth: 50
-  target: {fileID: 1281386593}
-  speed: 15
-  nextWaypointDistance: 1
-  aggroDistance: 20
-  stopDistance: 40
-  enemyGFX: {fileID: 5288703677468126469}
-  groundMask:
+  state: 3
+  player: {fileID: 0}
+  groundLayer:
     serializedVersion: 2
     m_Bits: 512
-  player: {fileID: 0}
-  distToChangePlatforms: 2
-  platformCone: {fileID: 0}
---- !u!114 &8439016276479724411
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8439016276479724414}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 373b52eb9bf8c40f785bb6947a1aee66, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  version: 1
-  drawGizmos: 1
-  detailedGizmos: 0
-  startEndModifier:
-    addPoints: 0
-    exactStartPoint: 3
-    exactEndPoint: 3
-    useRaycasting: 0
-    mask:
-      serializedVersion: 2
-      m_Bits: 4294967295
-    useGraphRaycasting: 0
-  traversableTags: -1
-  tagPenalties: 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-  graphMask:
-    value: 2147483647
+  attackRange: 10
+  yRange: 5
+  distFromEdge: 3
+  speed: 12
+  maxJumpRange: 25
+  maxJumpAngleDeg: 40
+  jumpTime: 0.75
+  enemyGFX: {fileID: 5288703677468126469}
+  aggroRange: 75
 --- !u!1001 &8439016274682008884
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -275,7 +215,7 @@ PrefabInstance:
     - target: {fileID: 3126461078598957393, guid: 83701506880b4a64d9a5f1ceb80ed0b1,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -7.16
       objectReference: {fileID: 0}
     - target: {fileID: 3126461078598957393, guid: 83701506880b4a64d9a5f1ceb80ed0b1,
         type: 3}
