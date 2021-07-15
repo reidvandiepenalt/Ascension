@@ -27,7 +27,7 @@ public class MummyScript : MonoBehaviour, IEnemy
     public float speed = 10;
     public float maxJumpRange = 25f;
     public float maxJumpAngleDeg = 40f;
-    public float jumpTime = 0.75f;
+    public float jumpDistToTime = 1f;
     private float yOffset;
     public GameObject enemyGFX;
     public float aggroRange;
@@ -77,8 +77,7 @@ public class MummyScript : MonoBehaviour, IEnemy
         {
             case State.jumping:
                 //check if landed
-                RaycastHit2D hit = Physics2D.Raycast(new Vector2(collider.bounds.center.x, collider.bounds.min.y), 
-                    Vector2.down, yOffset + 0.25f, groundLayer);
+                RaycastHit2D hit = Physics2D.Raycast(new Vector2(collider.bounds.center.x, collider.bounds.min.y), Vector2.down, 0.25f, groundLayer);
                 if (hit)
                 {
                     state = State.walking;
@@ -161,6 +160,14 @@ public class MummyScript : MonoBehaviour, IEnemy
             Attack();
             return;
         }
+        if(Mathf.Abs(transform.position.y - player.position.y) < yRange
+            && Mathf.Abs(transform.position.x - player.position.x) > attackRange)
+        {
+            RaycastHit2D hit = Physics2D.Raycast(transform.position,
+                    Vector2.down, yOffset + 0.25f, groundLayer);
+            target = new Vector2((player.transform.position.x < transform.position.x) 
+                ? hit.collider.bounds.min.x + 0.5f : hit.collider.bounds.max.x - 0.5f, transform.position.y);
+        }
         if (Mathf.Abs(transform.position.x - target.x) < distFromEdge 
             || Mathf.Abs(transform.position.y - player.position.y) > yRange)
         {
@@ -225,8 +232,7 @@ public class MummyScript : MonoBehaviour, IEnemy
         Vector2 landingPoint = new Vector2(closestPoint.x, platform.bounds.max.y);
         landingPoint += (closestPoint.x < transform.position.x) ? Vector2.left : Vector2.right;
         landingPoint += Vector2.up;
-
-        //transform.position = landingPoint + (Vector2.up * yOffset);
+        float jumpTime = (Vector2.Distance(landingPoint, transform.position)) / jumpDistToTime;
         
         float yVel = (landingPoint.y - transform.position.y) / jumpTime - ((rb.gravityScale * Physics2D.gravity).y * jumpTime / 2);
         float xVel = (landingPoint.x - transform.position.x) / jumpTime;
