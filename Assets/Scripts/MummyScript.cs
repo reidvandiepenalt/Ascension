@@ -252,14 +252,15 @@ public class MummyScript : MonoBehaviour, IEnemy
     /// <summary>
     /// Add a force to the rigidbody that will make the mummy land on the platform
     /// </summary>
-    void Jump(Vector2 closestPoint, Collider2D platform)
+    void Jump(Vector2 closestPointToPlayer, Collider2D platform)
     {
         state = State.jumping;
         Vector2 landingPoint = new Vector2(platform.ClosestPoint(transform.position).x, platform.bounds.max.y + (yOffset * 2) + 0.25f);
-        float jumpTime = (Vector2.Distance(landingPoint, transform.position)) / jumpDistToTime;
+        float jumpTime = Mathf.Max((Vector2.Distance(landingPoint, transform.position)) / jumpDistToTime, 0.15f);
         
-        float yVel = (landingPoint.y - collider.bounds.min.y) / jumpTime - ((rb.gravityScale * Physics2D.gravity).y * jumpTime / 2);
+        float yVel = Mathf.Clamp((landingPoint.y - collider.bounds.min.y) / jumpTime - ((rb.gravityScale * Physics2D.gravity).y * jumpTime / 2), 10f, 150);
         float xVel = (landingPoint.x - transform.position.x) / jumpTime;
+        if(xVel == 0) { xVel = (closestPointToPlayer.x - transform.position.x) / jumpTime; }
 
         rb.velocity = new Vector2(xVel, yVel);
     }
