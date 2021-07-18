@@ -255,11 +255,21 @@ public class MummyScript : MonoBehaviour, IEnemy
     void Jump(Vector2 closestPointToPlayer, Collider2D platform)
     {
         state = State.jumping;
-        Vector2 landingPoint = new Vector2(platform.ClosestPoint(transform.position).x, platform.bounds.max.y + (yOffset * 2) + 0.25f);
+        RaycastHit2D slopeTest = Physics2D.Raycast(new Vector2(platform.bounds.center.x, 
+            platform.bounds.center.y + (platform.bounds.extents.y / 2)), Vector2.down, platform.bounds.extents.y, groundLayer);
+        Vector2 landingPoint;
+        if (slopeTest.distance > platform.bounds.extents.y / 4) 
+        {
+            landingPoint = new Vector2(platform.ClosestPoint(transform.position).x, slopeTest.point.y + (yOffset * 2) + 0.25f);
+        }
+        else
+        {
+            landingPoint = new Vector2(platform.ClosestPoint(transform.position).x, platform.bounds.max.y + (yOffset * 2) + 0.25f);
+        }
         float jumpTime = Mathf.Max((Vector2.Distance(landingPoint, transform.position)) / jumpDistToTime, 0.15f);
         
         float yVel = Mathf.Clamp((landingPoint.y - collider.bounds.min.y) / jumpTime - ((rb.gravityScale * Physics2D.gravity).y * jumpTime / 2), 10f, 150);
-        float xVel = (landingPoint.x - transform.position.x) / jumpTime;
+        float xVel = Mathf.Clamp((landingPoint.x - transform.position.x) / jumpTime, 0, 150);
         if(xVel == 0) { xVel = (closestPointToPlayer.x - transform.position.x) / jumpTime; }
 
         rb.velocity = new Vector2(xVel, yVel);
