@@ -32,6 +32,7 @@ public class MummyScript : MonoBehaviour, IEnemy
     public GameObject enemyGFX;
     public float aggroRange;
     private bool doFindPlatform = false;
+    private float gravity;
 
     int horizontalRayCount;
     int verticalRayCount;
@@ -72,6 +73,7 @@ public class MummyScript : MonoBehaviour, IEnemy
         rb = GetComponent<Rigidbody2D>();
         collider = GetComponent<Collider2D>();
         yOffset = collider.bounds.extents.y;
+        gravity = rb.gravityScale * Physics2D.gravity.y;
 
         CalculateRaySpacing();
 
@@ -168,7 +170,12 @@ public class MummyScript : MonoBehaviour, IEnemy
             enemyGFX.transform.localScale = new Vector3(1f, 1f, 1f);
         }
 
-        Move(toMove * Time.deltaTime);
+        Move(toMove * Time.deltaTime + (Vector3)rb.velocity);
+
+        if (!collisions.descendingSlope && !collisions.climbingSlope)
+        {
+            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+        }
     }
 
     /// <summary>
@@ -181,7 +188,7 @@ public class MummyScript : MonoBehaviour, IEnemy
             state = State.idle; 
             return; 
         } 
-        else if(state == State.idle)
+        else if(state == State.idle && Vector2.Distance(player.transform.position, transform.position) < aggroRange)
         {
             state = State.walking;
         }
@@ -293,7 +300,7 @@ public class MummyScript : MonoBehaviour, IEnemy
         }
         float jumpTime = Mathf.Max((Vector2.Distance(landingPoint, transform.position)) / jumpDistToTime, 0.15f);
         
-        float yVel = Mathf.Clamp((landingPoint.y - collider.bounds.min.y) / jumpTime - ((Physics2D.gravity * rb.gravityScale).y * jumpTime / 2), 10f, 175);
+        float yVel = Mathf.Clamp((landingPoint.y - collider.bounds.min.y) / jumpTime - (gravity * jumpTime / 2), 10f, 175);
         float xVel = (landingPoint.x - transform.position.x) / jumpTime;
         if(xVel < 0) { xVel = Mathf.Clamp(xVel, -100, -5); }
         else { xVel = Mathf.Clamp(xVel, 5, 100); }
@@ -350,6 +357,7 @@ public class MummyScript : MonoBehaviour, IEnemy
             Vector2 rayOrigin = (directionX == -1) ? raycastOrigins.bottomLeft : raycastOrigins.bottomRight;
             rayOrigin += Vector2.up * (horizontalRaySpacing * i);
             RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.right * directionX, rayLength, groundLayer);
+            Debug.DrawRay(rayOrigin, Vector2.right * directionX * rayLength, Color.red, 5f);
 
             if (hit)
             {
@@ -406,6 +414,7 @@ public class MummyScript : MonoBehaviour, IEnemy
             Vector2 rayOrigin = (directionY == -1) ? raycastOrigins.bottomLeft : raycastOrigins.topLeft;
             rayOrigin += Vector2.right * (verticalRaySpacing * i + moveDistance.x);
             RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.up * directionY, rayLength, groundLayer);
+            Debug.DrawRay(rayOrigin, Vector2.up * directionY * rayLength, Color.red, 5f);
 
             if (hit)
             {
@@ -458,6 +467,7 @@ public class MummyScript : MonoBehaviour, IEnemy
             collisions.below = true;
             collisions.climbingSlope = true;
             collisions.slopeAngle = slopeAngle;
+            rb.constraints = RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation;
         }
     }
 
@@ -488,6 +498,7 @@ public class MummyScript : MonoBehaviour, IEnemy
                         collisions.slopeAngle = slopeAngle;
                         collisions.descendingSlope = true;
                         collisions.below = true;
+                        rb.constraints = RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation;
                     }
                 }
             }
