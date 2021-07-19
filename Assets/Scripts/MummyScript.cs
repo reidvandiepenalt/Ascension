@@ -170,7 +170,7 @@ public class MummyScript : MonoBehaviour, IEnemy
             enemyGFX.transform.localScale = new Vector3(1f, 1f, 1f);
         }
 
-        Move(toMove * Time.deltaTime + (Vector3)rb.velocity);
+        Move(toMove * Time.deltaTime);
 
         if (!collisions.descendingSlope && !collisions.climbingSlope)
         {
@@ -300,7 +300,7 @@ public class MummyScript : MonoBehaviour, IEnemy
         }
         float jumpTime = Mathf.Max((Vector2.Distance(landingPoint, transform.position)) / jumpDistToTime, 0.15f);
         
-        float yVel = Mathf.Clamp((landingPoint.y - collider.bounds.min.y) / jumpTime - (gravity * jumpTime / 2), 10f, 175);
+        float yVel = Mathf.Clamp((landingPoint.y - collider.bounds.min.y) / jumpTime - (gravity * jumpTime / 2), 10f, 150);
         float xVel = (landingPoint.x - transform.position.x) / jumpTime;
         if(xVel < 0) { xVel = Mathf.Clamp(xVel, -100, -5); }
         else { xVel = Mathf.Clamp(xVel, 5, 100); }
@@ -325,18 +325,10 @@ public class MummyScript : MonoBehaviour, IEnemy
         collisions.moveDistanceOld = moveDistance;
 
         //call collision functions
-        if (moveDistance.y < 0)
-        {
-            DescendSlope(ref moveDistance);
-        }
-        if (moveDistance.x != 0)
-        {
-            HorizontalCollisions(ref moveDistance);
-        }
-        if (moveDistance.y != 0)
-        {
-            VerticalCollisions(ref moveDistance);
-        }
+
+        DescendSlope(ref moveDistance);
+        HorizontalCollisions(ref moveDistance);
+        VerticalCollisions(ref moveDistance);
 
         //move based on collision-modified distance
         transform.Translate(moveDistance);
@@ -357,7 +349,6 @@ public class MummyScript : MonoBehaviour, IEnemy
             Vector2 rayOrigin = (directionX == -1) ? raycastOrigins.bottomLeft : raycastOrigins.bottomRight;
             rayOrigin += Vector2.up * (horizontalRaySpacing * i);
             RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.right * directionX, rayLength, groundLayer);
-            Debug.DrawRay(rayOrigin, Vector2.right * directionX * rayLength, Color.red, 5f);
 
             if (hit)
             {
@@ -414,7 +405,6 @@ public class MummyScript : MonoBehaviour, IEnemy
             Vector2 rayOrigin = (directionY == -1) ? raycastOrigins.bottomLeft : raycastOrigins.topLeft;
             rayOrigin += Vector2.right * (verticalRaySpacing * i + moveDistance.x);
             RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.up * directionY, rayLength, groundLayer);
-            Debug.DrawRay(rayOrigin, Vector2.up * directionY * rayLength, Color.red, 5f);
 
             if (hit)
             {
