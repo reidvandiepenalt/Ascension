@@ -9433,6 +9433,11 @@ PrefabInstance:
       objectReference: {fileID: 1051647674}
     - target: {fileID: 8439016276479724410, guid: e80f07960834d1348864b42cf797aa64,
         type: 3}
+      propertyPath: gravity
+      value: -80
+      objectReference: {fileID: 0}
+    - target: {fileID: 8439016276479724410, guid: e80f07960834d1348864b42cf797aa64,
+        type: 3}
       propertyPath: jumpDistToTime
       value: 24
       objectReference: {fileID: 0}
@@ -9440,6 +9445,11 @@ PrefabInstance:
         type: 3}
       propertyPath: maxJumpAngleDeg
       value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 8439016276479724410, guid: e80f07960834d1348864b42cf797aa64,
+        type: 3}
+      propertyPath: terminalVelocity
+      value: -12000
       objectReference: {fileID: 0}
     - target: {fileID: 8439016276479724413, guid: e80f07960834d1348864b42cf797aa64,
         type: 3}

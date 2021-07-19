@@ -19,8 +19,8 @@ public class MummyScript : MonoBehaviour, IEnemy
     private Vector2 target;
     public LayerMask groundLayer;
     private ContactFilter2D filter;
-    private Rigidbody2D rb;
     private Collider2D collider;
+    private Rigidbody2D rb;
     public float attackRange = 10f;
     public float yRange = 5f;
     public float distFromEdge = 3;
@@ -33,7 +33,6 @@ public class MummyScript : MonoBehaviour, IEnemy
     public float aggroRange;
     private bool doFindPlatform = false;
 
-
     int horizontalRayCount;
     int verticalRayCount;
 
@@ -44,7 +43,7 @@ public class MummyScript : MonoBehaviour, IEnemy
     float verticalRaySpacing;
     RaycastOrigins raycastOrigins;
     private CollisionInfo collisions;
-    const float skinWidth = 0.01f;
+    const float skinWidth = 0.05f;
     const float distBetweenRays = 0.2f;
 
     public int Health { get; set; }
@@ -66,14 +65,13 @@ public class MummyScript : MonoBehaviour, IEnemy
 
     void Start()
     {
-
         Health = MaxHealth;
         filter = new ContactFilter2D();
         filter.SetLayerMask(groundLayer);
         player = GameObject.FindGameObjectWithTag("Player").transform;
         rb = GetComponent<Rigidbody2D>();
         collider = GetComponent<Collider2D>();
-        yOffset = rb.centerOfMass.y;
+        yOffset = collider.bounds.extents.y;
 
         CalculateRaySpacing();
 
@@ -85,12 +83,14 @@ public class MummyScript : MonoBehaviour, IEnemy
             collisions.platform = hit.collider;
         }
 
-        InvokeRepeating("CheckDist", 0.5f, 0.25f);
+        InvokeRepeating("CheckDist", 0f, 0.25f);
     }
 
     void FixedUpdate()
     {
         if (Pause.isPaused) { return; }
+
+        Vector3 toMove = Vector3.zero;
 
         switch (state)
         {
@@ -114,13 +114,41 @@ public class MummyScript : MonoBehaviour, IEnemy
                         ? rightHit.collider.bounds.min.x + 0.5f : rightHit.collider.bounds.max.x - 0.5f, transform.position.y);
                     collisions.platform = rightHit.collider;
                 }
-                return;
+                break;
             case State.attacking:
-                return;
+                break;
             case State.walking:
+                if (Mathf.Abs(transform.position.y - player.position.y) < yRange)
+                {
+                    //left
+                    if (player.position.x < transform.position.x)
+                    {
+                        toMove = Vector2.left * speed;
+                        if ((toMove + transform.position).x < target.x)
+                        {
+                            FindNextPlatform();
+                            return;
+                        }
+                    }
+                    //right
+                    else
+                    {
+                        toMove = Vector2.right * speed;
+                        if ((toMove + transform.position).x > target.x)
+                        {
+                            FindNextPlatform();
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    Vector2 direction = (target.x < transform.position.x) ? Vector2.left : Vector2.right;
+                    toMove = direction * speed;
+                }
                 break;
             case State.idle:
-                return;
+                break;
         }
 
         if (doFindPlatform)
@@ -130,36 +158,6 @@ public class MummyScript : MonoBehaviour, IEnemy
             return;
         }
 
-        Vector3 toMove = Vector3.zero;
-        if (Mathf.Abs(transform.position.y - player.position.y) < yRange)
-        {
-            //left
-            if(player.position.x < transform.position.x)
-            {
-                toMove = Vector2.left * speed * Time.deltaTime;
-                if((toMove + transform.position).x < target.x)
-                {
-                    FindNextPlatform();
-                    return;
-                }
-            }
-            //right
-            else
-            {
-                toMove = Vector2.right * speed * Time.deltaTime;
-                if ((toMove + transform.position).x > target.x)
-                {
-                    FindNextPlatform();
-                    return;
-                }
-            }
-        }
-        else
-        {
-            Vector2 direction = (target.x < transform.position.x) ? Vector2.left : Vector2.right;
-            toMove = direction * speed * Time.deltaTime;
-        }
-        
         //update gfx
         if (toMove.x >= 0.01f)
         {
@@ -170,7 +168,7 @@ public class MummyScript : MonoBehaviour, IEnemy
             enemyGFX.transform.localScale = new Vector3(1f, 1f, 1f);
         }
 
-        Move(toMove);
+        Move(toMove * Time.deltaTime);
     }
 
     /// <summary>
@@ -295,7 +293,7 @@ public class MummyScript : MonoBehaviour, IEnemy
         }
         float jumpTime = Mathf.Max((Vector2.Distance(landingPoint, transform.position)) / jumpDistToTime, 0.15f);
         
-        float yVel = Mathf.Clamp((landingPoint.y - collider.bounds.min.y) / jumpTime - ((rb.gravityScale * Physics2D.gravity).y * jumpTime / 2), 10f, 175);
+        float yVel = Mathf.Clamp((landingPoint.y - collider.bounds.min.y) / jumpTime - ((Physics2D.gravity * rb.gravityScale).y * jumpTime / 2), 10f, 175);
         float xVel = (landingPoint.x - transform.position.x) / jumpTime;
         if(xVel < 0) { xVel = Mathf.Clamp(xVel, -100, -5); }
         else { xVel = Mathf.Clamp(xVel, 5, 100); }
