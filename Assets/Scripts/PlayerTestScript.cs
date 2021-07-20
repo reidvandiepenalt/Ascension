@@ -9,6 +9,8 @@ using UnityEngine.UI;
 
 public class PlayerTestScript : MonoBehaviour
 {
+    private bool debugInvinc = false;
+
     public bool inDialogue;
 
     public Controller2D controller;
@@ -372,6 +374,9 @@ public class PlayerTestScript : MonoBehaviour
             return;
         }
 
+        //debug invinc
+        if (Input.GetKeyDown(KeyCode.F1)) { debugInvinc = !debugInvinc; }
+
         //If moving left, set direction to left
         if (directionalInput.x < 0 && !facingLeft && (state != PlayerState.backstepping && state != PlayerState.dashing && state != PlayerState.slamming))
         {
@@ -594,6 +599,8 @@ public class PlayerTestScript : MonoBehaviour
     /// <param name="damage">Amount of damage taken</param>
     public void TakeDamage(int damage, bool setToGround)
     {
+        if (debugInvinc) { return; }
+
         //Only take damage if not invincible
         if (!hitInvincible && !skillInvincible)
         {
