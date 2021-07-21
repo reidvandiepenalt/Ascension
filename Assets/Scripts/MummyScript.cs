@@ -22,8 +22,8 @@ public class MummyScript : MonoBehaviour, IEnemy
     private Collider2D collider;
     private Rigidbody2D rb;
     public float attackRange = 10f;
-    public float yRange = 5f;
-    public float distFromEdge = 3;
+    public float yRange = 20f;
+    public float distFromEdge = 2f;
     public float speed = 10;
     public float maxJumpRange = 25f;
     public float maxJumpAngleDeg;
@@ -32,6 +32,7 @@ public class MummyScript : MonoBehaviour, IEnemy
     public GameObject enemyGFX;
     public float aggroRange;
     private bool doFindPlatform = false;
+    private bool goingToEdge = false;
     private float gravity;
 
     int horizontalRayCount;
@@ -120,42 +121,49 @@ public class MummyScript : MonoBehaviour, IEnemy
             case State.attacking:
                 break;
             case State.walking:
-                if (Mathf.Abs(transform.position.y - player.position.y) < yRange)
+                if (!goingToEdge)
                 {
-                    //left
-                    if (player.position.x < transform.position.x)
+                    target = player.position;
+                }
+                
+                Vector2 direction = (target.x < transform.position.x) ? Vector2.left : Vector2.right;
+                toMove = direction * speed;
+
+                //left
+                if (target.x < transform.position.x)
+                {
+                    //moving nearly past edge of platform
+                    if ((toMove + transform.position).x < collisions.platform.bounds.min.x + distFromEdge)
                     {
-                        toMove = Vector2.left * speed;
-                        if ((toMove + transform.position).x < target.x)
-                        {
-                            FindNextPlatform();
-                            return;
-                        }
-                    }
-                    //right
-                    else
-                    {
-                        toMove = Vector2.right * speed;
-                        if ((toMove + transform.position).x > target.x)
-                        {
-                            FindNextPlatform();
-                            return;
-                        }
+                        doFindPlatform = true;
+                        goingToEdge = false;
                     }
                 }
+                //right
                 else
                 {
-                    Vector2 direction = (target.x < transform.position.x) ? Vector2.left : Vector2.right;
-                    toMove = direction * speed;
+                    //moving nearly past edge of platform
+                    if ((toMove + transform.position).x > collisions.platform.bounds.max.x - distFromEdge)
+                    {
+                        doFindPlatform = true;
+                        goingToEdge = false;
+                    }
                 }
+                
                 break;
             case State.idle:
                 break;
         }
 
-        if (doFindPlatform)
+        //Jump to next platform if possible
+        if (doFindPlatform && !goingToEdge)
         {
-            FindNextPlatform();
+            if(FindNextPlatform() == 0)
+            {
+                goingToEdge = true;
+                target = new Vector2((transform.position.x > collisions.platform.bounds.center.x) 
+                    ? collisions.platform.bounds.max.x : collisions.platform.bounds.min.x, collisions.platform.bounds.max.y + yOffset);
+            }
             doFindPlatform = false;
             return;
         }
@@ -195,17 +203,6 @@ public class MummyScript : MonoBehaviour, IEnemy
 
         if(state != State.walking) { return; }
 
-        if(Physics2D.Raycast(player.position, Vector2.down, Mathf.Infinity, groundLayer).collider.bounds.center.Equals(collisions.platform.bounds.center))
-        {
-            target = new Vector2(player.position.x, collisions.platform.bounds.max.y);
-        }
-        else
-        {
-            target = new Vector2((player.transform.position.x < transform.position.x)
-                ? collisions.platform.bounds.min.x + 0.5f : collisions.platform.bounds.max.x - 0.5f, collisions.platform.bounds.max.y);
-        }
-        
-
         //within attack range
         /*/if(Mathf.Abs(transform.position.y - player.position.y) < yRange 
             && Mathf.Abs(transform.position.x - player.position.x) < attackRange)
@@ -215,14 +212,7 @@ public class MummyScript : MonoBehaviour, IEnemy
             return;
         }/*/
 
-        if(Mathf.Abs(transform.position.y - player.position.y) < yRange
-            && Mathf.Abs(transform.position.x - player.position.x) > attackRange)
-        {
-            target = new Vector2((player.transform.position.x < transform.position.x)
-                ? collisions.platform.bounds.min.x + 0.5f : collisions.platform.bounds.max.x - 0.5f, transform.position.y);
-        }
-
-        if (Mathf.Abs(transform.position.y - player.position.y) > yRange && Mathf.Abs(transform.position.x - target.x) < distFromEdge)
+        if (Mathf.Abs(transform.position.y - player.position.y) > yRange && Mathf.Abs(transform.position.x - player.position.x) < distFromEdge)
         {
             doFindPlatform = true;
             return;
@@ -258,18 +248,21 @@ public class MummyScript : MonoBehaviour, IEnemy
         //remove directly above
         results.Remove(Physics2D.Raycast(collider.bounds.min, Vector2.up, Mathf.Infinity, groundLayer).collider);
         results.Remove(Physics2D.Raycast(collider.bounds.max, Vector2.up, Mathf.Infinity, groundLayer).collider);
+        results.Remove(collisions.platform);
         
 
         if (results.Count == 0) { return 0; }
         Vector2 closestPointToPlayer = results[0].ClosestPoint(player.position);
         Collider2D closestPlatform = results[0];
+        float currentDist = Vector2.Distance(collisions.platform.ClosestPoint(player.position), player.position);
         if(results.Count > 1)
         {
             for(int i = 1; i < results.Count; i++)
             {
                 if(results[i] == null) { break; }
                 Vector2 temp = results[i].ClosestPoint(player.position);
-                if(Vector2.Distance(temp, player.position) < Vector2.Distance(closestPointToPlayer, player.position))
+                float dist = Vector2.Distance(temp, player.position);
+                if (dist < Vector2.Distance(closestPointToPlayer, player.position) && dist < currentDist)
                 {
                     closestPointToPlayer = temp;
                     closestPlatform = results[i];
