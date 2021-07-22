@@ -26,7 +26,7 @@ public class MummyScript : MonoBehaviour, IEnemy
     public float distFromEdge = 2f;
     public float speed = 10;
     public float maxJumpRange = 25f;
-    public float maxJumpAngleDeg;
+    public int maxJumpAngleDeg;
     public float jumpDistToTime = 1f;
     private float yOffset;
     public GameObject enemyGFX;
@@ -133,7 +133,7 @@ public class MummyScript : MonoBehaviour, IEnemy
                 if (target.x < transform.position.x)
                 {
                     //moving nearly past edge of platform
-                    if ((toMove + transform.position).x < collisions.platform.bounds.min.x + distFromEdge)
+                    if ((toMove * Time.deltaTime + transform.position).x < collisions.platform.bounds.min.x + distFromEdge)
                     {
                         doFindPlatform = true;
                         goingToEdge = false;
@@ -143,7 +143,7 @@ public class MummyScript : MonoBehaviour, IEnemy
                 else
                 {
                     //moving nearly past edge of platform
-                    if ((toMove + transform.position).x > collisions.platform.bounds.max.x - distFromEdge)
+                    if ((toMove * Time.deltaTime + transform.position).x > collisions.platform.bounds.max.x - distFromEdge)
                     {
                         doFindPlatform = true;
                         goingToEdge = false;
@@ -160,6 +160,7 @@ public class MummyScript : MonoBehaviour, IEnemy
         {
             if(FindNextPlatform() == 0)
             {
+                Debug.Log("Going to end");
                 goingToEdge = true;
                 target = new Vector2((transform.position.x > collisions.platform.bounds.center.x) 
                     ? collisions.platform.bounds.max.x : collisions.platform.bounds.min.x, collisions.platform.bounds.max.y + yOffset);
@@ -227,11 +228,11 @@ public class MummyScript : MonoBehaviour, IEnemy
         if(state == State.jumping) { return 0; }
         List<Collider2D> results = new List<Collider2D>();
 
-        float jumpAngleDelta = maxJumpAngleDeg / 5f;
+        int jumpAngleDelta = maxJumpAngleDeg / 5;
         float angleToPlayer = Vector2.SignedAngle(Vector2.right, player.position - transform.position);
-        for(int i = -6; i <= 6; i++)
+        for(int i = -jumpAngleDelta; i <= jumpAngleDelta; i++)
         {
-            float angle = angleToPlayer + (jumpAngleDelta * i);
+            float angle = angleToPlayer + (5 * i);
             Collider2D temp = Physics2D.Raycast(transform.position, new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad),
                 Mathf.Sin(angle * Mathf.Deg2Rad)), maxJumpRange, groundLayer).collider;
             if (!results.Contains(temp)) { results.Add(temp); }
@@ -252,6 +253,7 @@ public class MummyScript : MonoBehaviour, IEnemy
         
 
         if (results.Count == 0) { return 0; }
+
         Vector2 closestPointToPlayer = results[0].ClosestPoint(player.position);
         Collider2D closestPlatform = results[0];
         float currentDist = Vector2.Distance(collisions.platform.ClosestPoint(player.position), player.position);
@@ -270,7 +272,9 @@ public class MummyScript : MonoBehaviour, IEnemy
             }
         }
         if(closestPlatform == null || closestPointToPlayer == null) { return 0; }
+
         Jump(closestPointToPlayer, closestPlatform);
+        
         return results.Count;
     }
 
