@@ -121,7 +121,7 @@ public class MummyScript : MonoBehaviour, IEnemy
             case State.attacking:
                 break;
             case State.walking:
-                if (!goingToEdge)
+                if (!goingToEdge && Mathf.Abs(player.position.y - transform.position.y) < yRange)
                 {
                     target = player.position;
                 }
@@ -132,8 +132,8 @@ public class MummyScript : MonoBehaviour, IEnemy
                 //left
                 if (target.x < transform.position.x)
                 {
-                    //moving nearly past edge of platform
-                    if ((toMove * Time.deltaTime + transform.position).x < collisions.platform.bounds.min.x + distFromEdge)
+                    //moving nearly past edge of platform or target
+                    if ((toMove * Time.deltaTime + transform.position).x < collisions.platform.bounds.min.x + distFromEdge || (toMove * Time.deltaTime + transform.position).x < target.x)
                     {
                         doFindPlatform = true;
                         goingToEdge = false;
@@ -142,8 +142,8 @@ public class MummyScript : MonoBehaviour, IEnemy
                 //right
                 else
                 {
-                    //moving nearly past edge of platform
-                    if ((toMove * Time.deltaTime + transform.position).x > collisions.platform.bounds.max.x - distFromEdge)
+                    //moving nearly past edge of platform or target
+                    if ((toMove * Time.deltaTime + transform.position).x > collisions.platform.bounds.max.x - distFromEdge || (toMove * Time.deltaTime + transform.position).x > target.x)
                     {
                         doFindPlatform = true;
                         goingToEdge = false;
@@ -213,11 +213,19 @@ public class MummyScript : MonoBehaviour, IEnemy
             return;
         }/*/
 
+        //periodic check when going to edge
+        if (goingToEdge)
+        {
+            doFindPlatform = true;
+            goingToEdge = false;
+        }
+
         if (Mathf.Abs(transform.position.y - player.position.y) > yRange && Mathf.Abs(transform.position.x - player.position.x) < distFromEdge)
         {
             doFindPlatform = true;
             return;
         }
+
     }
 
     /// <summary>
@@ -242,7 +250,7 @@ public class MummyScript : MonoBehaviour, IEnemy
 
         for (int i = 0; i < results.Count; i++)
         {
-            if (results[i] == null) { results.RemoveAt(i); i--; }
+            if (results[i] == null) { results.RemoveAt(i); i--; break; }
         }
 
 
