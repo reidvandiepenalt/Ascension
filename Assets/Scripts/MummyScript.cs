@@ -35,6 +35,8 @@ public class MummyScript : MonoBehaviour, IEnemy
     private bool goingToEdge = false;
     private float gravity;
 
+    public Animator anim;
+
     int horizontalRayCount;
     int verticalRayCount;
 
@@ -105,6 +107,7 @@ public class MummyScript : MonoBehaviour, IEnemy
                     Vector2.down, 0.1f, groundLayer);
                 if (leftHit)
                 {
+                    anim.SetTrigger("Grounded");
                     state = State.walking;
                     target = new Vector2((player.transform.position.x < transform.position.x)
                         ? leftHit.collider.bounds.min.x + 0.5f : leftHit.collider.bounds.max.x - 0.5f, transform.position.y);
@@ -112,6 +115,7 @@ public class MummyScript : MonoBehaviour, IEnemy
                 }
                 else if (rightHit)
                 {
+                    anim.SetTrigger("Grounded");
                     state = State.walking;
                     target = new Vector2((player.transform.position.x < transform.position.x)
                         ? rightHit.collider.bounds.min.x + 0.5f : rightHit.collider.bounds.max.x - 0.5f, transform.position.y);
@@ -194,12 +198,14 @@ public class MummyScript : MonoBehaviour, IEnemy
     {
         if(Vector2.Distance(player.transform.position, transform.position) > aggroRange && state == State.walking)
         { 
-            state = State.idle; 
+            state = State.idle;
+            anim.SetBool("Walk", false);
             return; 
         } 
         else if(state == State.idle && Vector2.Distance(player.transform.position, transform.position) < aggroRange)
         {
             state = State.walking;
+            anim.SetBool("Walk", true);
         }
 
         if(state != State.walking) { return; }
@@ -311,6 +317,7 @@ public class MummyScript : MonoBehaviour, IEnemy
         else { xVel = Mathf.Clamp(xVel, 5, 100); }
 
         rb.velocity = new Vector2(xVel, yVel);
+        anim.SetTrigger("Jump");
     }
 
     IEnumerator Attack()
