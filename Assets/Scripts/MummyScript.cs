@@ -20,7 +20,6 @@ public class MummyScript : MonoBehaviour, IEnemy
     public LayerMask groundLayer;
     private ContactFilter2D filter;
     private Collider2D collider;
-    private Rigidbody2D rb;
     public float attackRange = 10f;
     public float yRange = 20f;
     public float distFromEdge = 2f;
@@ -34,6 +33,8 @@ public class MummyScript : MonoBehaviour, IEnemy
     private bool doFindPlatform = false;
     private bool goingToEdge = false;
     private float gravity;
+    public Vector2 velocity = Vector2.zero;
+    public float terminalVelocity;
 
     public Animator anim;
 
@@ -73,10 +74,10 @@ public class MummyScript : MonoBehaviour, IEnemy
         filter = new ContactFilter2D();
         filter.SetLayerMask(groundLayer);
         player = GameObject.FindGameObjectWithTag("Player").transform;
-        rb = GetComponent<Rigidbody2D>();
         collider = GetComponent<Collider2D>();
         yOffset = collider.bounds.extents.y;
-        gravity = rb.gravityScale * Physics2D.gravity.y;
+        gravity = -80;//same as player
+        terminalVelocity = gravity * 20;
 
         CalculateRaySpacing();
 
@@ -94,8 +95,6 @@ public class MummyScript : MonoBehaviour, IEnemy
     void FixedUpdate()
     {
         if (Pause.isPaused) { return; }
-
-        Vector3 toMove = Vector3.zero;
 
         switch (state)
         {
@@ -121,23 +120,33 @@ public class MummyScript : MonoBehaviour, IEnemy
                         ? rightHit.collider.bounds.min.x + 0.5f : rightHit.collider.bounds.max.x - 0.5f, transform.position.y);
                     collisions.platform = rightHit.collider;
                 }
+                if(leftHit && rightHit)
+                {
+                    if(leftHit.point.y != rightHit.point.y)
+                    {
+                        collisions.descendingSlope = true;
+                    }
+                }
                 break;
             case State.attacking:
                 break;
             case State.walking:
                 if (!goingToEdge && Mathf.Abs(player.position.y - transform.position.y) < yRange)
                 {
-                    target = player.position;
+                    if(Controller2D.CollisionInfo.lastPlatform == collisions.platform)
+                    {
+                        target = PlayerTestScript.lastGround;
+                    }
                 }
                 
-                Vector2 direction = (target.x < transform.position.x) ? Vector2.left : Vector2.right;
-                toMove = direction * speed;
+                int direction = (target.x < transform.position.x) ? -1 : 1;
+                velocity.x = direction * speed;
 
                 //left
                 if (target.x < transform.position.x)
                 {
                     //moving nearly past edge of platform or target
-                    if ((toMove * Time.deltaTime + transform.position).x < collisions.platform.bounds.min.x + distFromEdge || (toMove * Time.deltaTime + transform.position).x < target.x)
+                    if ((velocity.x * Time.deltaTime + transform.position.x) < collisions.platform.bounds.min.x + distFromEdge || (velocity.x * Time.deltaTime + transform.position.x) < target.x)
                     {
                         doFindPlatform = true;
                         goingToEdge = false;
@@ -147,7 +156,7 @@ public class MummyScript : MonoBehaviour, IEnemy
                 else
                 {
                     //moving nearly past edge of platform or target
-                    if ((toMove * Time.deltaTime + transform.position).x > collisions.platform.bounds.max.x - distFromEdge || (toMove * Time.deltaTime + transform.position).x > target.x)
+                    if ((velocity.x * Time.deltaTime + transform.position.x) > collisions.platform.bounds.max.x - distFromEdge || (velocity.x * Time.deltaTime + transform.position.x) > target.x)
                     {
                         doFindPlatform = true;
                         goingToEdge = false;
@@ -164,7 +173,6 @@ public class MummyScript : MonoBehaviour, IEnemy
         {
             if(FindNextPlatform() == 0)
             {
-                Debug.Log("Going to end");
                 goingToEdge = true;
                 target = new Vector2((transform.position.x > collisions.platform.bounds.center.x) 
                     ? collisions.platform.bounds.max.x : collisions.platform.bounds.min.x, collisions.platform.bounds.max.y + yOffset);
@@ -174,20 +182,22 @@ public class MummyScript : MonoBehaviour, IEnemy
         }
 
         //update gfx
-        if (toMove.x >= 0.01f)
+        if (velocity.x >= 0.01f)
         {
             enemyGFX.transform.localScale = new Vector3(-1f, 1f, 1f);
         }
-        else if (toMove.x <= -0.01f)
+        else if (velocity.x <= -0.01f)
         {
             enemyGFX.transform.localScale = new Vector3(1f, 1f, 1f);
         }
 
-        Move(toMove * Time.deltaTime);
+        velocity.y += gravity * Time.deltaTime;
+        velocity.y = Mathf.Max(velocity.y, terminalVelocity);
+        Move(velocity * Time.deltaTime);
 
-        if (!collisions.descendingSlope && !collisions.climbingSlope)
+        if(collisions.above || collisions.below)
         {
-            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+            velocity.y = 0;
         }
     }
 
@@ -316,7 +326,7 @@ public class MummyScript : MonoBehaviour, IEnemy
         if(xVel < 0) { xVel = Mathf.Clamp(xVel, -100, -5); }
         else { xVel = Mathf.Clamp(xVel, 5, 100); }
 
-        rb.velocity = new Vector2(xVel, yVel);
+        velocity = new Vector2(xVel, yVel);
         anim.SetTrigger("Jump");
     }
 
@@ -338,9 +348,18 @@ public class MummyScript : MonoBehaviour, IEnemy
 
         //call collision functions
 
-        DescendSlope(ref moveDistance);
-        HorizontalCollisions(ref moveDistance);
-        VerticalCollisions(ref moveDistance);
+        if (moveDistance.y < 0)
+        {
+            DescendSlope(ref moveDistance);
+        }
+        if (moveDistance.x != 0)
+        {
+            HorizontalCollisions(ref moveDistance);
+        }
+        if (moveDistance.y != 0)
+        {
+            VerticalCollisions(ref moveDistance);
+        }
 
         //move based on collision-modified distance
         transform.Translate(moveDistance);
@@ -469,7 +488,6 @@ public class MummyScript : MonoBehaviour, IEnemy
             collisions.below = true;
             collisions.climbingSlope = true;
             collisions.slopeAngle = slopeAngle;
-            rb.constraints = RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation;
         }
     }
 
@@ -500,7 +518,6 @@ public class MummyScript : MonoBehaviour, IEnemy
                         collisions.slopeAngle = slopeAngle;
                         collisions.descendingSlope = true;
                         collisions.below = true;
-                        rb.constraints = RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation;
                     }
                 }
             }

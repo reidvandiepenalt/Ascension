@@ -104,7 +104,7 @@ public class PlayerTestScript : MonoBehaviour
     private bool dashDidHit = false;
     public float dashBounceVelocity = 10f;
 
-    Vector3 lastGround;
+    public static Vector3 lastGround;
     public LayerMask groundMask;
 
     Animator anim;
@@ -201,7 +201,7 @@ public class PlayerTestScript : MonoBehaviour
         gravity = -(2 * maxJumpHeight) / Mathf.Pow(timeToJumpApex, 2);
         maxJumpVelocity = Mathf.Abs(gravity * timeToJumpApex);
         minJumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(gravity) * minJumpHeight);
-        terminalVelocity = -300f * maxJumpVelocity;
+        terminalVelocity = -20f * maxJumpVelocity;
 
         currentCharge = maxJumpVelocity / 2;
 
@@ -320,9 +320,9 @@ public class PlayerTestScript : MonoBehaviour
                 RaycastHit2D hit = Physics2D.Raycast(gameObject.transform.position, Vector2.down, doubleJumpStunRange, LayerMask.GetMask("Ground"));
                 if (hit.transform != null)
                 {
-                    float distance = gameObject.transform.position.y - hit.transform.position.y - 0.25f; //not perfect
-                    GameObject gust1 = Instantiate(gustStun, new Vector3(gameObject.transform.position.x, gameObject.transform.position.y - distance, gameObject.transform.position.z), Quaternion.identity);
-                    GameObject gust2 = Instantiate(gustStun, new Vector3(gameObject.transform.position.x, gameObject.transform.position.y - distance, gameObject.transform.position.z), Quaternion.identity);
+                    //not perfect
+                    GameObject gust1 = Instantiate(gustStun, hit.point, Quaternion.identity);
+                    Instantiate(gustStun, hit.point, Quaternion.identity);
                     gust1.GetComponent<GustScript>().left = true;
                 }
             }
@@ -374,7 +374,7 @@ public class PlayerTestScript : MonoBehaviour
             return;
         }
 
-        //debug invinc
+        //toggle debug invinc
         if (Input.GetKeyDown(KeyCode.F1)) { debugInvinc = !debugInvinc; }
 
         //If moving left, set direction to left
@@ -450,7 +450,7 @@ public class PlayerTestScript : MonoBehaviour
         }
 
         //terminal velocity
-        if(velocity.y < terminalVelocity * Time.deltaTime) { velocity.y = terminalVelocity * Time.deltaTime; }
+        if(velocity.y < terminalVelocity) { velocity.y = terminalVelocity; }
         controller.Move(velocity * Time.deltaTime, directionalInput);
 
         if(controller.collisions.below && doubleJumpUsed)

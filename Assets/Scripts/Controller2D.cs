@@ -173,9 +173,14 @@ public class Controller2D : MonoBehaviour
                     collisions.below = true;
                     break;
                 }
-                if (hit.collider.CompareTag("Spike"))
+                else if (hit.collider.CompareTag("Spike"))
                 {
                     collisions.onSpikes = true;
+                    break;
+                }
+                else
+                {
+                    CollisionInfo.lastPlatform = hit.collider;
                 }
 
                 if (hit.collider.CompareTag("Through"))
@@ -343,6 +348,7 @@ public class Controller2D : MonoBehaviour
         public bool above, below, left, right, climbingSlope, descendingSlope, fallingThroughPlatform, movingThroughWall, onSpikes;
         public float slopeAngle, slopeAngleOld;
         public Vector2 moveDistanceOld;
+        public static Collider2D lastPlatform = null;
 
         public void Reset()
         {
