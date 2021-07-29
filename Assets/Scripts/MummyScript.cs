@@ -264,17 +264,24 @@ public class MummyScript : MonoBehaviour, IEnemy
                 Mathf.Sin(angle * Mathf.Deg2Rad)) * maxJumpRange, Color.white, 5f);
         }
 
+        RaycastHit2D leftUp = Physics2D.Raycast(collider.bounds.min, Vector2.up, maxJumpRange, groundLayer);
+        RaycastHit2D rightUp = Physics2D.Raycast(collider.bounds.max, Vector2.up, maxJumpRange, groundLayer);
+
+        for (int i = 0; i < results.Count; i++)
+        {
+            if (results[i] == null) { results.RemoveAt(i); i--; }
+            //above
+            else if (leftUp.collider == results[i] || rightUp.collider == results[i]) { results.RemoveAt(i); i--; }
+            //below
+            else if (collisions.platform == results[i]) { results.RemoveAt(i); i--; }
+            //wall
+            else if (results[i].bounds.size.y / results[i].bounds.size.x >= 4) { results.RemoveAt(i); i--; }
+        }
+
         for (int i = 0; i < results.Count; i++)
         {
             if (results[i] == null) { results.RemoveAt(i); i--; break; }
         }
-
-
-        //remove directly above
-        results.Remove(Physics2D.Raycast(collider.bounds.min, Vector2.up, Mathf.Infinity, groundLayer).collider);
-        results.Remove(Physics2D.Raycast(collider.bounds.max, Vector2.up, Mathf.Infinity, groundLayer).collider);
-        results.Remove(collisions.platform);
-        
 
         if (results.Count == 0) { return 0; }
 
@@ -307,6 +314,9 @@ public class MummyScript : MonoBehaviour, IEnemy
     /// </summary>
     void Jump(Vector2 closestPointToPlayer, Collider2D platform)
     {
+        Debug.Log("x size: " + platform.bounds.size.x);
+        Debug.Log("y size: " + platform.bounds.size.y);
+
         state = State.jumping;
         RaycastHit2D slopeTest = Physics2D.Raycast(new Vector2(platform.bounds.center.x, 
             platform.bounds.center.y + (platform.bounds.extents.y / 2)), Vector2.down, platform.bounds.extents.y, groundLayer);
