@@ -131,7 +131,7 @@ public class MummyScript : MonoBehaviour, IEnemy
             case State.attacking:
                 break;
             case State.walking:
-                if (!goingToEdge && Mathf.Abs(player.position.y - transform.position.y) < yRange)
+                if (/*!goingToEdge &&*/ Mathf.Abs(player.position.y - transform.position.y) < yRange)
                 {
                     if(Controller2D.CollisionInfo.lastPlatform == collisions.platform)
                     {
@@ -169,10 +169,11 @@ public class MummyScript : MonoBehaviour, IEnemy
         }
 
         //Jump to next platform if possible
-        if (doFindPlatform && !goingToEdge)
+        if (doFindPlatform /*&& !goingToEdge*/)
         {
             if(FindNextPlatform() == 0)
             {
+                
                 goingToEdge = true;
                 target = new Vector2((transform.position.x > collisions.platform.bounds.center.x) 
                     ? collisions.platform.bounds.max.x : collisions.platform.bounds.min.x, collisions.platform.bounds.max.y + yOffset);
