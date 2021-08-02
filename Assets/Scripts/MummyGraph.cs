@@ -190,7 +190,11 @@ public class MummyGraph : MonoBehaviour, IEnemy
             velocity.y = 0;
         }
         if(path == null) { return; }
-        if(Vector2.Distance(transform.position, path.vectorPath[currentWaypoint]) < distFromEdge)
+        if(currentWaypoint >= path.vectorPath.Count)
+        {
+            return;
+        }
+        else if(Vector2.Distance(transform.position, path.vectorPath[currentWaypoint]) < distFromEdge)
         {
             currentWaypoint++;
             //reached next node of air
