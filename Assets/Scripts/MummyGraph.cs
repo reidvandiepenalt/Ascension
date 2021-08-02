@@ -162,16 +162,8 @@ public class MummyGraph : MonoBehaviour, IEnemy
                 {
                     if(currentWaypoint < path.vectorPath.Count)
                     {
-                        //next node is air
-                        if(path.path[currentWaypoint].Tag == 1)
-                        {
-                            //jump
-                        }
-                        else
-                        {
-                            Vector2 dir = (path.vectorPath[currentWaypoint] - transform.position).normalized;
-                            velocity += dir * speed;
-                        }
+                        Vector2 dir = (path.vectorPath[currentWaypoint] - transform.position).normalized;
+                        velocity += dir * speed;
                     }
                 }
                 break;
@@ -201,6 +193,11 @@ public class MummyGraph : MonoBehaviour, IEnemy
         if(Vector2.Distance(transform.position, path.vectorPath[currentWaypoint]) < distFromEdge)
         {
             currentWaypoint++;
+            //reached next node of air
+            if(path.path[currentWaypoint].Tag == 1)
+            {
+                Jump();
+            }
         }
     }
 
@@ -231,102 +228,34 @@ public class MummyGraph : MonoBehaviour, IEnemy
             Attack();
             return;
         }/*/
+
+        seeker.StartPath(transform.position, player.position);
     }
 
     /// <summary>
-    /// Update the target by evaluating nearby platforms in the direction of motion
+    /// Add velocity that will make the mummy land on the platform
     /// </summary>
-    int FindNextPlatform()
+    void Jump()
     {
-        if (state == State.jumping) { return 0; }
-        List<Collider2D> results = new List<Collider2D>();
+        state = State.jumping;
 
-        int jumpAngleDelta = maxJumpAngleDeg / 5;
-        float angleToPlayer = Vector2.SignedAngle(Vector2.right, player.position - transform.position);
-        for (int i = -jumpAngleDelta; i <= jumpAngleDelta; i++)
+        for(int i = currentWaypoint; i < path.path.Count; i++)
         {
-            float angle = angleToPlayer + (5 * i);
-            Collider2D temp = Physics2D.Raycast(transform.position, new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad),
-                Mathf.Sin(angle * Mathf.Deg2Rad)), 30, groundLayer).collider;
-            if (!results.Contains(temp)) { results.Add(temp); }
-            Debug.DrawRay(transform.position, new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad),
-                Mathf.Sin(angle * Mathf.Deg2Rad)) * 30, Color.white, 5f);
-        }
-
-        RaycastHit2D leftUp = Physics2D.Raycast(collider.bounds.min, Vector2.up, 30, groundLayer);
-        RaycastHit2D rightUp = Physics2D.Raycast(collider.bounds.max, Vector2.up, 30, groundLayer);
-
-        for (int i = 0; i < results.Count; i++)
-        {
-            if (results[i] == null) { results.RemoveAt(i); i--; }
-            //above
-            else if (leftUp.collider == results[i] || rightUp.collider == results[i]) { results.RemoveAt(i); i--; }
-            //below
-            else if (collisions.platform == results[i]) { results.RemoveAt(i); i--; }
-            //wall
-            else if (results[i].bounds.size.y / results[i].bounds.size.x >= 4) { results.RemoveAt(i); i--; }
-        }
-
-        for (int i = 0; i < results.Count; i++)
-        {
-            if (results[i] == null) { results.RemoveAt(i); i--; break; }
-        }
-
-        if (results.Count == 0) { return 0; }
-
-        Vector2 closestPointToPlayer = results[0].ClosestPoint(player.position);
-        Collider2D closestPlatform = results[0];
-        float currentDist = Vector2.Distance(collisions.platform.ClosestPoint(player.position), player.position);
-        if (results.Count > 1)
-        {
-            for (int i = 1; i < results.Count; i++)
+            if(path.path[i].Tag == 0)
             {
-                if (results[i] == null) { break; }
-                Vector2 temp = results[i].ClosestPoint(player.position);
-                float dist = Vector2.Distance(temp, player.position);
-                if (dist < Vector2.Distance(closestPointToPlayer, player.position) && dist < currentDist)
-                {
-                    closestPointToPlayer = temp;
-                    closestPlatform = results[i];
-                }
+                Vector2 landingPoint = path.vectorPath[i];
+                float jumpTime = Mathf.Max((Vector2.Distance(landingPoint, transform.position)) / jumpDistToTime, 0.15f);
+
+                float yVel = Mathf.Clamp((landingPoint.y - collider.bounds.min.y) / jumpTime - (gravity * jumpTime / 2), 10f, 150);
+                float xVel = (landingPoint.x - transform.position.x) / jumpTime;
+                if (xVel < 0) { xVel = Mathf.Clamp(xVel, -100, -5); }
+                else { xVel = Mathf.Clamp(xVel, 5, 100); }
+
+                velocity = new Vector2(xVel, yVel);
+                anim.SetTrigger("Jump");
+                return;
             }
         }
-        if (closestPlatform == null || closestPointToPlayer == null) { return 0; }
-
-        Jump(closestPointToPlayer, closestPlatform);
-
-        return results.Count;
-    }
-
-    /// <summary>
-    /// Add a force to the rigidbody that will make the mummy land on the platform
-    /// </summary>
-    void Jump(Vector2 closestPointToPlayer, Collider2D platform)
-    {
-        Debug.Log("x size: " + platform.bounds.size.x);
-        Debug.Log("y size: " + platform.bounds.size.y);
-
-        state = State.jumping;
-        RaycastHit2D slopeTest = Physics2D.Raycast(new Vector2(platform.bounds.center.x,
-            platform.bounds.center.y + (platform.bounds.extents.y / 2)), Vector2.down, platform.bounds.extents.y, groundLayer);
-        Vector2 landingPoint;
-        if (slopeTest.distance > platform.bounds.extents.y / 4)
-        {
-            landingPoint = new Vector2(platform.ClosestPoint(transform.position).x, slopeTest.point.y + (yOffset * 2) + 0.5f);
-        }
-        else
-        {
-            landingPoint = new Vector2(platform.ClosestPoint(transform.position).x, platform.bounds.max.y + (yOffset * 2) + 0.25f);
-        }
-        float jumpTime = Mathf.Max((Vector2.Distance(landingPoint, transform.position)) / jumpDistToTime, 0.15f);
-
-        float yVel = Mathf.Clamp((landingPoint.y - collider.bounds.min.y) / jumpTime - (gravity * jumpTime / 2), 10f, 150);
-        float xVel = (landingPoint.x - transform.position.x) / jumpTime;
-        if (xVel < 0) { xVel = Mathf.Clamp(xVel, -100, -5); }
-        else { xVel = Mathf.Clamp(xVel, 5, 100); }
-
-        velocity = new Vector2(xVel, yVel);
-        anim.SetTrigger("Jump");
     }
 
     IEnumerator Attack()
