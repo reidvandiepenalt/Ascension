@@ -135,17 +135,15 @@ public class MummyGraph : MonoBehaviour, IEnemy
                 {
                     anim.SetTrigger("Grounded");
                     state = State.walking;
-                    target = new Vector2((player.transform.position.x < transform.position.x)
-                        ? leftHit.collider.bounds.min.x + 0.5f : leftHit.collider.bounds.max.x - 0.5f, transform.position.y);
                     collisions.platform = leftHit.collider;
+                    seeker.StartPath(transform.position, player.position);
                 }
                 else if (rightHit)
                 {
                     anim.SetTrigger("Grounded");
                     state = State.walking;
-                    target = new Vector2((player.transform.position.x < transform.position.x)
-                        ? rightHit.collider.bounds.min.x + 0.5f : rightHit.collider.bounds.max.x - 0.5f, transform.position.y);
                     collisions.platform = rightHit.collider;
+                    seeker.StartPath(transform.position, player.position);
                 }
                 if (leftHit && rightHit)
                 {
@@ -162,8 +160,8 @@ public class MummyGraph : MonoBehaviour, IEnemy
                 {
                     if(currentWaypoint < path.vectorPath.Count)
                     {
-                        Vector2 dir = (path.vectorPath[currentWaypoint] - transform.position).normalized;
-                        velocity += dir * speed;
+                        float dir = ((path.vectorPath[currentWaypoint].x - transform.position.x) > 0) ? 1 : -1;
+                        velocity.x = dir * speed;
                     }
                 }
                 break;
@@ -192,13 +190,14 @@ public class MummyGraph : MonoBehaviour, IEnemy
         if(path == null) { return; }
         if(currentWaypoint >= path.vectorPath.Count)
         {
+            seeker.StartPath(transform.position, player.position);
             return;
         }
         else if(Vector2.Distance(transform.position, path.vectorPath[currentWaypoint]) < distFromEdge)
         {
             currentWaypoint++;
             //reached next node of air
-            if(path.path[currentWaypoint].Tag == 1)
+            if(path.path[currentWaypoint].Tag == 1 && state == State.walking)
             {
                 Jump();
             }
@@ -241,9 +240,11 @@ public class MummyGraph : MonoBehaviour, IEnemy
     /// </summary>
     void Jump()
     {
+        if(currentWaypoint + 1 >= path.path.Count) { return; }
+
         state = State.jumping;
 
-        for(int i = currentWaypoint; i < path.path.Count; i++)
+        for(int i = currentWaypoint + 1; i < path.path.Count; i++)
         {
             if(path.path[i].Tag == 0)
             {
