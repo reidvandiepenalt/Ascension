@@ -14,7 +14,6 @@ public class MummyGraph : MonoBehaviour, IEnemy
     }
 
     public Seeker seeker;
-    private Vector2 target;
     public Path path;
     private int currentWaypoint = 0;
 
@@ -25,16 +24,16 @@ public class MummyGraph : MonoBehaviour, IEnemy
     private ContactFilter2D filter;
     private Collider2D collider;
     public float attackRange = 10f;
-    public float distFromEdge = 2f;
+    public float distToNextWaypoint = 2f;
     public float speed = 10;
-    public int maxJumpAngleDeg;
     public float jumpDistToTime = 1f;
-    private float yOffset;
     public GameObject enemyGFX;
     public float aggroRange;
     private float gravity;
     public Vector2 velocity = Vector2.zero;
     public float terminalVelocity;
+
+    bool noNextPlatform = false;
 
     public Animator anim;
 
@@ -77,7 +76,6 @@ public class MummyGraph : MonoBehaviour, IEnemy
         filter.SetLayerMask(groundLayer);
         player = GameObject.FindGameObjectWithTag("Player").transform;
         collider = GetComponent<Collider2D>();
-        yOffset = collider.bounds.extents.y;
         gravity = -80;//same as player
         terminalVelocity = gravity * 20;
 
@@ -88,8 +86,6 @@ public class MummyGraph : MonoBehaviour, IEnemy
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 10f, groundLayer);
         if (hit)
         {
-            target = new Vector2((player.position.x < transform.position.x) ? hit.collider.bounds.min.x + 0.5f :
-                hit.collider.bounds.max.x - 0.5f, transform.position.y);
             collisions.platform = hit.collider;
         }
 
@@ -158,7 +154,7 @@ public class MummyGraph : MonoBehaviour, IEnemy
             case State.walking:
                 if(path != null)
                 {
-                    if(currentWaypoint < path.vectorPath.Count)
+                    if(currentWaypoint < path.vectorPath.Count && !noNextPlatform)
                     {
                         float dir = ((path.vectorPath[currentWaypoint].x - transform.position.x) > 0) ? 1 : -1;
                         velocity.x = dir * speed;
@@ -193,13 +189,26 @@ public class MummyGraph : MonoBehaviour, IEnemy
             seeker.StartPath(transform.position, player.position);
             return;
         }
-        else if(Vector2.Distance(transform.position, path.vectorPath[currentWaypoint]) < distFromEdge)
+        else if(Vector2.Distance(transform.position, path.vectorPath[currentWaypoint]) < distToNextWaypoint)
         {
             currentWaypoint++;
-            //reached next node of air
-            if(path.path[currentWaypoint].Tag == 1 && state == State.walking)
+            if (currentWaypoint >= path.vectorPath.Count)
             {
-                Jump();
+                seeker.StartPath(transform.position, player.position);
+                return;
+            }
+            //reached next node of air
+            if (path.path[currentWaypoint].Tag == 1 && state == State.walking)
+            {
+                if (!Jump())
+                {
+                    noNextPlatform = true;
+                    velocity.x = 0;
+                }
+                else
+                {
+                    noNextPlatform = false;
+                }
             }
         }
     }
@@ -223,6 +232,19 @@ public class MummyGraph : MonoBehaviour, IEnemy
 
         if (state != State.walking) { return; }
 
+        if (noNextPlatform)
+        {
+            if (!Jump())
+            {
+                noNextPlatform = true;
+                velocity.x = 0;
+            }
+            else
+            {
+                noNextPlatform = false;
+            }
+        }
+
         //within attack range
         /*/if(Mathf.Abs(transform.position.y - player.position.y) < yRange 
             && Mathf.Abs(transform.position.x - player.position.x) < attackRange)
@@ -232,15 +254,22 @@ public class MummyGraph : MonoBehaviour, IEnemy
             return;
         }/*/
 
-        seeker.StartPath(transform.position, player.position);
+        try
+        {
+            seeker.StartPath(path.vectorPath[currentWaypoint + 1], player.position);
+        }
+        catch
+        {
+            seeker.StartPath(transform.position, player.position);
+        }
     }
 
     /// <summary>
     /// Add velocity that will make the mummy land on the platform
     /// </summary>
-    void Jump()
+    bool Jump()
     {
-        if(currentWaypoint + 1 >= path.path.Count) { return; }
+        if(currentWaypoint + 1 >= path.path.Count) { return false; }
 
         state = State.jumping;
 
@@ -249,6 +278,7 @@ public class MummyGraph : MonoBehaviour, IEnemy
             if(path.path[i].Tag == 0)
             {
                 Vector2 landingPoint = path.vectorPath[i];
+
                 float jumpTime = Mathf.Max((Vector2.Distance(landingPoint, transform.position)) / jumpDistToTime, 0.15f);
 
                 float yVel = Mathf.Clamp((landingPoint.y - collider.bounds.min.y) / jumpTime - (gravity * jumpTime / 2), 10f, 150);
@@ -258,9 +288,10 @@ public class MummyGraph : MonoBehaviour, IEnemy
 
                 velocity = new Vector2(xVel, yVel);
                 anim.SetTrigger("Jump");
-                return;
+                return true;
             }
         }
+        return false;
     }
 
     IEnumerator Attack()
