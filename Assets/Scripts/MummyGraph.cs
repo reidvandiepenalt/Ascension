@@ -103,6 +103,20 @@ public class MummyGraph : MonoBehaviour, IEnemy
             path = p;
             currentWaypoint = 0;
         }
+        if (path.vectorPath[0].x < path.vectorPath[1].x)
+        {
+            if(transform.position.x > path.vectorPath[0].x)
+            {
+                currentWaypoint++;
+            }
+        }
+        else
+        {
+            if (transform.position.x < path.vectorPath[0].x)
+            {
+                currentWaypoint++;
+            }
+        }
     }
 
     public void OnDestroy()
@@ -254,14 +268,8 @@ public class MummyGraph : MonoBehaviour, IEnemy
             return;
         }/*/
 
-        try
-        {
-            seeker.StartPath(path.vectorPath[currentWaypoint + 1], player.position);
-        }
-        catch
-        {
-            seeker.StartPath(transform.position, player.position);
-        }
+
+        seeker.StartPath(transform.position, player.position);
     }
 
     /// <summary>
