@@ -19,6 +19,7 @@ public class MummyGraph : MonoBehaviour, IEnemy
 
     public State state = State.idle;
     public Transform player;
+    float yOffset;
 
     public LayerMask groundLayer;
     private ContactFilter2D filter;
@@ -78,9 +79,10 @@ public class MummyGraph : MonoBehaviour, IEnemy
         collider = GetComponent<Collider2D>();
         gravity = -80;//same as player
         terminalVelocity = -40;
+        yOffset = player.GetComponent<Collider2D>().bounds.extents.y;
 
         seeker.pathCallback += OnPathComplete;
-        seeker.StartPath(transform.position, player.position);
+        seeker.StartPath(transform.position, player.position + (Vector3.down * yOffset));
         CalculateRaySpacing();
 
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 10f, groundLayer);
@@ -146,14 +148,14 @@ public class MummyGraph : MonoBehaviour, IEnemy
                     anim.SetTrigger("Grounded");
                     state = State.walking;
                     collisions.platform = leftHit.collider;
-                    seeker.StartPath(transform.position, player.position);
+                    seeker.StartPath(transform.position, player.position + (Vector3.down * yOffset));
                 }
                 else if (rightHit)
                 {
                     anim.SetTrigger("Grounded");
                     state = State.walking;
                     collisions.platform = rightHit.collider;
-                    seeker.StartPath(transform.position, player.position);
+                    seeker.StartPath(transform.position, player.position + (Vector3.down * yOffset));
                 }
                 if (leftHit && rightHit)
                 {
@@ -200,7 +202,7 @@ public class MummyGraph : MonoBehaviour, IEnemy
         if(path == null) { return; }
         if(currentWaypoint >= path.vectorPath.Count)
         {
-            seeker.StartPath(transform.position, player.position);
+            seeker.StartPath(transform.position, player.position + (Vector3.down * yOffset));
             return;
         }
         else if(Vector2.Distance(transform.position, path.vectorPath[currentWaypoint]) < distToNextWaypoint)
@@ -208,7 +210,7 @@ public class MummyGraph : MonoBehaviour, IEnemy
             currentWaypoint++;
             if (currentWaypoint >= path.vectorPath.Count)
             {
-                seeker.StartPath(transform.position, player.position);
+                seeker.StartPath(transform.position, player.position + (Vector3.down * yOffset));
                 return;
             }
             //reached next node of air
@@ -267,7 +269,7 @@ public class MummyGraph : MonoBehaviour, IEnemy
         }
 
 
-        seeker.StartPath(transform.position, player.position);
+        seeker.StartPath(transform.position, player.position + (Vector3.down * yOffset));
     }
 
     /// <summary>
