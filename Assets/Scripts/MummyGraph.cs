@@ -77,7 +77,7 @@ public class MummyGraph : MonoBehaviour, IEnemy
         player = GameObject.FindGameObjectWithTag("Player").transform;
         collider = GetComponent<Collider2D>();
         gravity = -80;//same as player
-        terminalVelocity = gravity * 20;
+        terminalVelocity = -40;
 
         seeker.pathCallback += OnPathComplete;
         seeker.StartPath(transform.position, player.position);
@@ -260,13 +260,11 @@ public class MummyGraph : MonoBehaviour, IEnemy
         }
 
         //within attack range
-        /*/if(Mathf.Abs(transform.position.y - player.position.y) < yRange 
-            && Mathf.Abs(transform.position.x - player.position.x) < attackRange)
+        if((transform.position - player.position).magnitude < attackRange)
         {
-
-            Attack();
+            StartCoroutine(Attack());
             return;
-        }/*/
+        }
 
 
         seeker.StartPath(transform.position, player.position);
@@ -304,8 +302,18 @@ public class MummyGraph : MonoBehaviour, IEnemy
 
     IEnumerator Attack()
     {
-        //state = State.attacking;
-        return null;
+        state = State.attacking;
+        Vector2 attackDir = (player.position - transform.position).normalized;
+        anim.SetFloat("AttackX", attackDir.x);
+        anim.SetFloat("AttackY", attackDir.y);
+        anim.SetTrigger("Attack");
+        velocity.x = 0;
+        while (anim.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
+        {
+            yield return null;
+        }
+        state = State.idle;
+        yield break;
     }
 
 
