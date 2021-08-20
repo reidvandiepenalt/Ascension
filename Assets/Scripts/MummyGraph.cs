@@ -306,6 +306,14 @@ public class MummyGraph : MonoBehaviour, IEnemy
     {
         state = State.attacking;
         Vector2 attackDir = (player.position - transform.position).normalized;
+        if (attackDir.x >= 0.01f)
+        {
+            enemyGFX.transform.localScale = new Vector3(-1f, 1f, 1f);
+        }
+        else if (attackDir.x <= -0.01f)
+        {
+            enemyGFX.transform.localScale = new Vector3(1f, 1f, 1f);
+        }
         anim.SetFloat("AttackX", attackDir.x);
         anim.SetFloat("AttackY", attackDir.y);
         anim.SetTrigger("Attack");
