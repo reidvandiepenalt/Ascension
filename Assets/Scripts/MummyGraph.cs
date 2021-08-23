@@ -111,7 +111,7 @@ public class MummyGraph : MonoBehaviour, IEnemy
     /// <param name="p">path p</param>
     public void OnPathComplete(Path p)
     {
-        //erro handling
+        //error handling
         if (!p.error)
         {
             path = p;
@@ -132,6 +132,8 @@ public class MummyGraph : MonoBehaviour, IEnemy
                 currentWaypoint++;
             }
         }
+
+        noNextPlatform = false;
     }
 
     public void OnDestroy()
@@ -168,12 +170,12 @@ public class MummyGraph : MonoBehaviour, IEnemy
                     if (!collisions.platform.Equals(jumpTargetPlatform))
                     {
                         jumpFailed = true;
+                        Debug.Log("jf true");
                     }
                     else
                     {
                         jumpFailed = false;
                         jumpFailedMoveTo = Vector2.zero;
-                        jumpTargetPlatform = null;
                     }
                 }
                 else if (rightHit)
@@ -185,12 +187,12 @@ public class MummyGraph : MonoBehaviour, IEnemy
                     if (!collisions.platform.Equals(jumpTargetPlatform))
                     {
                         jumpFailed = true;
+                        Debug.Log("jf true");
                     }
                     else
                     {
                         jumpFailed = false;
                         jumpFailedMoveTo = Vector2.zero;
-                        jumpTargetPlatform = null;
                     }
                 }
                 if (leftHit && rightHit)
@@ -208,11 +210,11 @@ public class MummyGraph : MonoBehaviour, IEnemy
                 {
                     if(currentWaypoint < path.vectorPath.Count && !noNextPlatform)
                     {
-                        if(noNextPlatform)
+                        if(jumpFailed)
                         {
+                            Debug.Log("jump failed mvmt");
                             //move toward location to jump from
                             float dir = ((jumpFailedMoveTo.x - transform.position.x) > 0) ? 1 : -1;
-                            if(dir == 1) { jumpFailedMoveRight = true; } else { jumpFailedMoveRight = false; }
                             velocity.x = dir * speed;
                         }
                         else
@@ -351,11 +353,11 @@ public class MummyGraph : MonoBehaviour, IEnemy
 
                 velocity = new Vector2(xVel, yVel);
                 anim.SetTrigger("Jump");
-                noNextPlatform = false;
                 jumpFailedMoveRight = (transform.position.x < landingPoint.x) ? true : false;
-                if (jumpFailedMoveRight) { jumpFailedMoveTo = new Vector2(landingPoint.x + 5, transform.position.y); } 
-                else { jumpFailedMoveTo = new Vector2(landingPoint.x - 5, transform.position.y); }
                 jumpTargetPlatform = Physics2D.Raycast(landingPoint, Vector2.down, Mathf.Infinity, groundLayer).collider;
+                if (jumpFailedMoveRight) { jumpFailedMoveTo = new Vector2(jumpTargetPlatform.bounds.max.x + 5, transform.position.y); } 
+                else { jumpFailedMoveTo = new Vector2(jumpTargetPlatform.bounds.min.x - 5, transform.position.y); }
+                
                 return;
             }
         }
