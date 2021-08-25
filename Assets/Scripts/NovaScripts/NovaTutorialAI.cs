@@ -399,9 +399,6 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
         rng = new System.Random();
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
         playerCollider = playerTransform.gameObject.GetComponent<BoxCollider2D>();
-
-        //pick attack
-        //PickAttack();
     }
 
     protected void FixedUpdate()
