@@ -28,6 +28,10 @@ public class HorusAI : MonoBehaviour, IEnemy
     Phase phase = Phase.one;
 
 
+    public Vector2 topLeft;
+    public Vector2 bottomRight;
+    public LayerMask groundMask;
+
     Vector2 moveTarget = Vector2.zero;
     bool isMoving = false;
 
@@ -142,19 +146,27 @@ public class HorusAI : MonoBehaviour, IEnemy
 
     IEnumerator Dive()
     {
+        //pick location (above player, keep updating)
         isMoving = true;
+        moveTarget = (Vector2)playerTransform.position + (Vector2.up * 8);
 
         switch (phase)
         {
             case Phase.one:
-
-                break;
+                while (isMoving) { moveTarget = (Vector2)playerTransform.position + (Vector2.up * 8); yield return null; }
+                //flip over, wait a split second, and dive
+                //flip
+                //dive
+                isMoving = true;
+                moveTarget = Physics2D.Raycast(transform.position, Vector2.down, Mathf.Infinity, groundMask).point;
+                while (isMoving) { }
+                yield break;
             case Phase.two:
 
-                break;
+                yield break;
             case Phase.three:
 
-                break;
+                yield break;
         }
 
         CurrentAttack = Attack.idle;
