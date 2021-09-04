@@ -33,7 +33,8 @@ public class HorusAI : MonoBehaviour, IEnemy
     public LayerMask groundMask;
 
     public HorusGustScript gustInst;
-    public List<HorusFeatherScript> feathers;
+    public List<HorusFeatherScript> disabledFeathers;
+    public List<HorusFeatherScript> enabledFeathers;
 
     Vector2 moveTarget = Vector2.zero;
     bool isMoving = false;
@@ -133,7 +134,7 @@ public class HorusAI : MonoBehaviour, IEnemy
         /*List<Attack> possibleAttacks = new List<Attack>() { Attack.dive, Attack.gusts, Attack.rain, Attack.shotgun, Attack.wing, Attack.xAttack, Attack.swoop };
         possibleAttacks.Remove(prevAttack);
         CurrentAttack = possibleAttacks[rng.Next(0, possibleAttacks.Count - 1)];*/
-        CurrentAttack = Attack.swoop;
+        CurrentAttack = Attack.rain;
 
         //start new attack
         switch (CurrentAttack)
@@ -253,13 +254,25 @@ public class HorusAI : MonoBehaviour, IEnemy
                     dir = 1;
                 }
                 moveTarget.y = topLeft.y - 4;
+                speedMod = 1f;
+                isMoving = true;
+                while (isMoving) { yield return null; }
+
+
+                //move target = opposite top corner
+                moveTarget.x = (dir == 1) ? bottomRight.x - 4 : topLeft.x + 4;
                 speedMod = 2.5f;
                 isMoving = true;
-
                 //shoot feathers diagonal towards the ground
+
                 while (isMoving)
                 {
-
+                    HorusFeatherScript feather = disabledFeathers[0];
+                    feather.gameObject.SetActive(true);
+                    disabledFeathers.RemoveAt(0);
+                    enabledFeathers.Add(feather);
+                    feather.Reset(transform.position, new Vector2(0.33f * dir , -1).normalized);
+                    yield return new WaitForSeconds(rainShotDelay);
                 }
 
                 isMoving = true;
@@ -357,7 +370,7 @@ public class HorusAI : MonoBehaviour, IEnemy
                 speedMod = 1.5f;
                 while (isMoving) { yield return null; }
 
-                yield return new WaitForSeconds(2);
+                yield return new WaitForSeconds(0.1f);
 
                 break;
             case Phase.two:
