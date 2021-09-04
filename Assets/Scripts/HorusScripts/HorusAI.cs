@@ -13,7 +13,7 @@ public class HorusAI : MonoBehaviour, IEnemy
         gusts,
         //peck,?
         xAttack,
-        wing
+        swoop
     }
     Attack curAttack = Attack.idle;
     Attack prevAttack = Attack.idle;
@@ -33,9 +33,12 @@ public class HorusAI : MonoBehaviour, IEnemy
     public LayerMask groundMask;
 
     public HorusGustScript gustInst;
+    public List<HorusFeatherScript> feathers;
 
     Vector2 moveTarget = Vector2.zero;
     bool isMoving = false;
+
+    public float rainShotDelay;
 
     public float speed;
     float speedMod;
@@ -127,10 +130,10 @@ public class HorusAI : MonoBehaviour, IEnemy
     void PickAttack()
     {
         //random new attack; make smarter?
-        /*List<Attack> possibleAttacks = new List<Attack>() { Attack.dive, Attack.gusts, Attack.rain, Attack.shotgun, Attack.wing, Attack.xAttack };
+        /*List<Attack> possibleAttacks = new List<Attack>() { Attack.dive, Attack.gusts, Attack.rain, Attack.shotgun, Attack.wing, Attack.xAttack, Attack.swoop };
         possibleAttacks.Remove(prevAttack);
         CurrentAttack = possibleAttacks[rng.Next(0, possibleAttacks.Count - 1)];*/
-        CurrentAttack = Attack.gusts;
+        CurrentAttack = Attack.swoop;
 
         //start new attack
         switch (CurrentAttack)
@@ -149,11 +152,11 @@ public class HorusAI : MonoBehaviour, IEnemy
             case Attack.shotgun:
                 StartCoroutine(Shotgun());
                 break;
-            case Attack.wing:
-                StartCoroutine(Wing());
-                break;
             case Attack.xAttack:
                 StartCoroutine(XAttack());
+                break;
+            case Attack.swoop:
+                StartCoroutine(Swoop());
                 break;
         }
     }
@@ -218,7 +221,7 @@ public class HorusAI : MonoBehaviour, IEnemy
                     new Vector2(playerTransform.position.x + ((playerTransform.position.x > transform.position.x) ? -4 : 4),
                     playerTransform.position.y - playerGroundOffset));
 
-                yield return new WaitForSeconds(2f);
+                yield return new WaitForSeconds(0.3f);
                 break;
             case Phase.two:
 
@@ -234,11 +237,33 @@ public class HorusAI : MonoBehaviour, IEnemy
 
     IEnumerator Rain()
     {
-        isMoving = true;
-
         switch (phase)
         {
             case Phase.one:
+                //top right or top left corner
+                int dir = 0;
+                if(transform.position.x > (bottomRight.x - topLeft.x))
+                {
+                    moveTarget.x = bottomRight.x - 4;
+                    dir = -1;
+                }
+                else
+                {
+                    moveTarget.x = topLeft.x + 4;
+                    dir = 1;
+                }
+                moveTarget.y = topLeft.y - 4;
+                speedMod = 2.5f;
+                isMoving = true;
+
+                //shoot feathers diagonal towards the ground
+                while (isMoving)
+                {
+
+                }
+
+                isMoving = true;
+
 
                 break;
             case Phase.two:
@@ -274,27 +299,6 @@ public class HorusAI : MonoBehaviour, IEnemy
         yield break;
     }
 
-    IEnumerator Wing()
-    {
-        isMoving = true;
-
-        switch (phase)
-        {
-            case Phase.one:
-
-                break;
-            case Phase.two:
-
-                break;
-            case Phase.three:
-
-                break;
-        }
-
-        CurrentAttack = Attack.idle;
-        yield break;
-    }
-
     IEnumerator XAttack()
     {
         isMoving = true;
@@ -302,6 +306,58 @@ public class HorusAI : MonoBehaviour, IEnemy
         switch (phase)
         {
             case Phase.one:
+                //wing attack
+                break;
+            case Phase.two:
+
+                break;
+            case Phase.three:
+                //x attack from behind screen
+                break;
+        }
+
+        CurrentAttack = Attack.idle;
+        yield break;
+    }
+
+    IEnumerator Swoop()
+    {
+        switch (phase)
+        {
+            case Phase.one:
+                //move close above player and then swoop with claws
+                int dir = 0;
+                if (transform.position.x > playerTransform.position.x)
+                {
+                    dir = -1;
+                }
+                else
+                {
+                    dir = 1;
+                }
+                isMoving = true;
+                speedMod = 1;
+                ///update target
+                while (isMoving)
+                {
+                    moveTarget = new Vector2(playerTransform.position.x + (3 * -dir), playerTransform.position.y + 3);
+                    yield return null;
+                }
+                
+                //swoop (add extra attack hb in anim)
+                //first segment
+                moveTarget.x = playerTransform.position.x;
+                moveTarget.y = playerTransform.position.y;
+                speedMod = 1.25f;
+                isMoving = true;
+                while (isMoving) { yield return null; }
+                //second segment
+                moveTarget += new Vector2((3 * dir), 3);
+                isMoving = true;
+                speedMod = 1.5f;
+                while (isMoving) { yield return null; }
+
+                yield return new WaitForSeconds(2);
 
                 break;
             case Phase.two:
