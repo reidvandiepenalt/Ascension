@@ -32,12 +32,16 @@ public class HorusAI : MonoBehaviour, IEnemy
     public Vector2 bottomRight;
     public LayerMask groundMask;
 
+    public HorusGustScript gustInst;
+
     Vector2 moveTarget = Vector2.zero;
     bool isMoving = false;
 
     public float speed;
+    float speedMod;
 
     public Transform playerTransform;
+    float playerGroundOffset;
 
     System.Random rng;
 
@@ -76,6 +80,7 @@ public class HorusAI : MonoBehaviour, IEnemy
         rng = new System.Random();
 
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+        playerGroundOffset = playerTransform.gameObject.GetComponent<Collider2D>().bounds.extents.y;
     }
 
     void FixedUpdate()
@@ -88,11 +93,21 @@ public class HorusAI : MonoBehaviour, IEnemy
             PickAttack();
         }
 
-        //movement handling
+        if (isMoving)
+        {
+            MoveStraight();
+        }
+    }
+
+    /// <summary>
+    /// Moves toward the current moveTarget if isMoving at speed * speedmod
+    /// </summary>
+    void MoveStraight()
+    {
         if (isMoving)
         {
             //reached destination
-            if(Vector2.Distance(transform.position, moveTarget) > speed * Time.deltaTime)
+            if (Vector2.Distance(transform.position, moveTarget) < speed * speedMod * Time.deltaTime)
             {
                 isMoving = false;
                 transform.position = moveTarget;
@@ -100,12 +115,10 @@ public class HorusAI : MonoBehaviour, IEnemy
             //move toward destination
             else
             {
-                Vector2 movement = ((Vector2)transform.position - moveTarget).normalized * speed * Time.deltaTime;
-                transform.position += new Vector3(movement.x, movement.y, transform.position.z);
+                Vector2 movement = (moveTarget - (Vector2)transform.position).normalized * speed * speedMod * Time.deltaTime;
+                transform.position += new Vector3(movement.x, movement.y, 0);
             }
         }
-
-
     }
 
     /// <summary>
@@ -114,9 +127,10 @@ public class HorusAI : MonoBehaviour, IEnemy
     void PickAttack()
     {
         //random new attack; make smarter?
-        List<Attack> possibleAttacks = new List<Attack>() { Attack.dive, Attack.gusts, Attack.rain, Attack.shotgun, Attack.wing, Attack.xAttack };
+        /*List<Attack> possibleAttacks = new List<Attack>() { Attack.dive, Attack.gusts, Attack.rain, Attack.shotgun, Attack.wing, Attack.xAttack };
         possibleAttacks.Remove(prevAttack);
-        CurrentAttack = possibleAttacks[rng.Next(0, possibleAttacks.Count - 1)];
+        CurrentAttack = possibleAttacks[rng.Next(0, possibleAttacks.Count - 1)];*/
+        CurrentAttack = Attack.gusts;
 
         //start new attack
         switch (CurrentAttack)
@@ -146,29 +160,36 @@ public class HorusAI : MonoBehaviour, IEnemy
 
     IEnumerator Dive()
     {
-        //pick location (above player, keep updating)
-        isMoving = true;
-        moveTarget = (Vector2)playerTransform.position + (Vector2.up * 8);
-
         switch (phase)
         {
             case Phase.one:
-                while (isMoving) { moveTarget = (Vector2)playerTransform.position + (Vector2.up * 8); yield return null; }
+                //pick location (above player, keep updating)
+                isMoving = true;
+                speedMod = 1;
+                while (isMoving) { 
+                    moveTarget = (Vector2)playerTransform.position + (Vector2.up * 12);
+                    yield return null; 
+                }
                 //flip over, wait a split second, and dive
                 //flip
+
                 //dive
                 isMoving = true;
-                moveTarget = Physics2D.Raycast(transform.position, Vector2.down, Mathf.Infinity, groundMask).point;
-                while (isMoving) { }
-                yield break;
+                moveTarget = new Vector2(transform.position.x, bottomRight.y);
+                speedMod = 3;
+                while (isMoving) { yield return null; }
+
+                //unflip
+                
+                break;
             case Phase.two:
 
-                yield break;
+                break;
             case Phase.three:
 
-                yield break;
+                break;
         }
-
+        //move into next attack
         CurrentAttack = Attack.idle;
         yield break;
     }
@@ -180,7 +201,24 @@ public class HorusAI : MonoBehaviour, IEnemy
         switch (phase)
         {
             case Phase.one:
+                //pick location (diagonal above player, keep updating)
+                isMoving = true;
+                speedMod = 1;
+                int dir = (playerTransform.position.x > transform.position.x) ? -1 : 1;
+                while (isMoving)
+                {
+                    moveTarget = (Vector2)playerTransform.position + (Vector2.up * 6) + (Vector2.right * 12 
+                        * dir);
+                    yield return null;
+                }
 
+                //shoot gust towards ground in front of player where it will move forward
+                gustInst.gameObject.SetActive(true);
+                gustInst.Reset(new Vector2(transform.position.x, transform.position.y), 
+                    new Vector2(playerTransform.position.x + ((playerTransform.position.x > transform.position.x) ? -4 : 4),
+                    playerTransform.position.y - playerGroundOffset));
+
+                yield return new WaitForSeconds(2f);
                 break;
             case Phase.two:
 
