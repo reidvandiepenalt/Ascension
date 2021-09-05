@@ -26,7 +26,7 @@ public class FeatherShotTypes : MonoBehaviour
     public void DefaultShot()
     {
         if ((playerScript.state == PlayerTestScript.PlayerState.gliding || playerScript.state == PlayerTestScript.PlayerState.idle
-            || playerScript.state == PlayerTestScript.PlayerState.walking))
+            || playerScript.state == PlayerTestScript.PlayerState.walking) && shotUIScript.charge >= 1)
         {
             anim.SetTrigger("Shoot");
             playerScript.state = PlayerTestScript.PlayerState.shooting;
