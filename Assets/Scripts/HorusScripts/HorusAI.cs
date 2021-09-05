@@ -40,6 +40,8 @@ public class HorusAI : MonoBehaviour, IEnemy
     bool isMoving = false;
 
     public float rainShotDelay;
+    public int shotgunCount;
+    public int shotgunConeDeg;
 
     public float speed;
     float speedMod;
@@ -134,7 +136,7 @@ public class HorusAI : MonoBehaviour, IEnemy
         /*List<Attack> possibleAttacks = new List<Attack>() { Attack.dive, Attack.gusts, Attack.rain, Attack.shotgun, Attack.wing, Attack.xAttack, Attack.swoop };
         possibleAttacks.Remove(prevAttack);
         CurrentAttack = possibleAttacks[rng.Next(0, possibleAttacks.Count - 1)];*/
-        CurrentAttack = Attack.rain;
+        CurrentAttack = Attack.xAttack;
 
         //start new attack
         switch (CurrentAttack)
@@ -242,8 +244,8 @@ public class HorusAI : MonoBehaviour, IEnemy
         {
             case Phase.one:
                 //top right or top left corner
-                int dir = 0;
-                if(transform.position.x > (bottomRight.x - topLeft.x))
+                int dir;
+                if(transform.position.x > ((bottomRight.x - topLeft.x)/2 + topLeft.x))
                 {
                     moveTarget.x = bottomRight.x - 4;
                     dir = -1;
@@ -254,17 +256,16 @@ public class HorusAI : MonoBehaviour, IEnemy
                     dir = 1;
                 }
                 moveTarget.y = topLeft.y - 4;
-                speedMod = 1f;
+                speedMod = 2.5f;
                 isMoving = true;
                 while (isMoving) { yield return null; }
 
 
                 //move target = opposite top corner
                 moveTarget.x = (dir == 1) ? bottomRight.x - 4 : topLeft.x + 4;
-                speedMod = 2.5f;
+                speedMod = 2f;
                 isMoving = true;
                 //shoot feathers diagonal towards the ground
-
                 while (isMoving)
                 {
                     HorusFeatherScript feather = disabledFeathers[0];
@@ -274,9 +275,6 @@ public class HorusAI : MonoBehaviour, IEnemy
                     feather.Reset(transform.position, new Vector2(0.33f * dir , -1).normalized);
                     yield return new WaitForSeconds(rainShotDelay);
                 }
-
-                isMoving = true;
-
 
                 break;
             case Phase.two:
@@ -293,11 +291,38 @@ public class HorusAI : MonoBehaviour, IEnemy
 
     IEnumerator Shotgun()
     {
-        isMoving = true;
-
         switch (phase)
         {
             case Phase.one:
+                //go somewhere just above player
+                float xSpacing = rng.Next(-10, 9) + (float)rng.NextDouble();
+                isMoving = true;
+                speedMod = 1.5f;
+                while (isMoving)
+                {
+                    moveTarget.x = playerTransform.position.x + xSpacing;
+                    moveTarget.y = playerTransform.position.y + 10;
+                    yield return null;
+                }
+
+                //shotgun of feathers
+                float angleToPlayer = Mathf.Atan2(playerTransform.position.y - transform.position.y,
+                    playerTransform.position.x - transform.position.x) * Mathf.Rad2Deg;
+                yield return new WaitForSeconds(0.1f);//pause so player can dodge
+                for(int i = 0; i < shotgunCount; i++)
+                {
+                    float degVariance = rng.Next(-shotgunConeDeg, shotgunConeDeg - 1) + (float)rng.NextDouble();
+
+
+                    HorusFeatherScript feather = disabledFeathers[0];
+                    feather.gameObject.SetActive(true);
+                    disabledFeathers.RemoveAt(0);
+                    enabledFeathers.Add(feather);
+                    feather.Reset(transform.position, new Vector2(Mathf.Cos(Mathf.Deg2Rad * (degVariance + angleToPlayer)), 
+                        Mathf.Sin(Mathf.Deg2Rad * (degVariance + angleToPlayer))));
+                }
+
+                yield return new WaitForSeconds(0.5f);
 
                 break;
             case Phase.two:
@@ -314,12 +339,33 @@ public class HorusAI : MonoBehaviour, IEnemy
 
     IEnumerator XAttack()
     {
-        isMoving = true;
-
         switch (phase)
         {
             case Phase.one:
-                //wing attack
+                //wing attack; move close and attack after short pause
+                int dir = 0;
+                if (transform.position.x > playerTransform.position.x)
+                {
+                    dir = -1;
+                }
+                else
+                {
+                    dir = 1;
+                }
+                isMoving = true;
+                speedMod = 1;
+                ///update target
+                while (isMoving)
+                {
+                    moveTarget = new Vector2(playerTransform.position.x + (2 * -dir), playerTransform.position.y + 2);
+                    yield return null;
+                }
+
+                yield return new WaitForSeconds(0.1f);
+
+                //wing attack (blend tree anim)
+
+
                 break;
             case Phase.two:
 
