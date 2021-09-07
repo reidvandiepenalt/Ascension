@@ -191,10 +191,12 @@ public class HorusAI : MonoBehaviour, IEnemy
                 
                 break;
             case Phase.two:
+                //dive then attack from below
+
 
                 break;
             case Phase.three:
-
+                //aoe dive attacks
                 break;
         }
         //move into next attack
@@ -229,9 +231,11 @@ public class HorusAI : MonoBehaviour, IEnemy
                 yield return new WaitForSeconds(0.3f);
                 break;
             case Phase.two:
+                //gust then horizontal flying attack?
 
                 break;
             case Phase.three:
+                //create tornado in middle of room that pulls and shoots feathers?
 
                 break;
         }
@@ -280,9 +284,65 @@ public class HorusAI : MonoBehaviour, IEnemy
 
                 break;
             case Phase.two:
+                //go across twice
+                //top right or top left corner
+                if (transform.position.x > ((bottomRight.x - topLeft.x) / 2 + topLeft.x))
+                {
+                    moveTarget.x = bottomRight.x - 4;
+                    dir = -1;
+                }
+                else
+                {
+                    moveTarget.x = topLeft.x + 4;
+                    dir = 1;
+                }
+                moveTarget.y = topLeft.y - 4;
+                speedMod = 2.5f;
+                isMoving = true;
+                while (isMoving) { yield return null; }
+
+
+                //move target = opposite top corner
+                moveTarget.x = (dir == 1) ? bottomRight.x - 4 : topLeft.x + 4;
+                speedMod = 2f;
+                isMoving = true;
+                //shoot feathers diagonal towards the ground
+                while (isMoving)
+                {
+                    HorusFeatherScript feather = disabledFeathers[0];
+                    feather.gameObject.SetActive(true);
+                    disabledFeathers.RemoveAt(0);
+                    enabledFeathers.Add(feather);
+                    feather.Reset(transform.position, new Vector2(0.33f * dir, -1).normalized);
+                    yield return new WaitForSeconds(rainShotDelay);
+                }
+
+                //opposite corner
+                if(dir == 1)
+                {
+                    moveTarget.x = topLeft.x + 4;
+                    dir = -1;
+                }
+                else
+                {
+                    moveTarget.x = bottomRight.x - 4;
+                }
+                isMoving = true;
+                //shoot feathers diagonal towards the ground
+                while (isMoving)
+                {
+                    HorusFeatherScript feather = disabledFeathers[0];
+                    feather.gameObject.SetActive(true);
+                    disabledFeathers.RemoveAt(0);
+                    enabledFeathers.Add(feather);
+                    feather.Reset(transform.position, new Vector2(0.33f * dir, -1).normalized);
+                    yield return new WaitForSeconds(rainShotDelay);
+                }
 
                 break;
             case Phase.three:
+                //replace rain with shotguns? homing shots? shots coming from floor?
+
 
                 break;
         }
@@ -324,13 +384,16 @@ public class HorusAI : MonoBehaviour, IEnemy
                         Mathf.Sin(Mathf.Deg2Rad * (degVariance + angleToPlayer))));
                 }
 
-                yield return new WaitForSeconds(0.5f);
+                yield return new WaitForSeconds(0.2f);
 
                 break;
             case Phase.two:
+                //shoot 1 then 2 bursts? or something like that
+
 
                 break;
             case Phase.three:
+                //1 bounce shotguns? homing shots?
 
                 break;
         }
@@ -370,10 +433,12 @@ public class HorusAI : MonoBehaviour, IEnemy
 
                 break;
             case Phase.two:
+                //series of moving attacks
 
                 break;
             case Phase.three:
                 //x attack from behind screen
+
                 break;
         }
 
@@ -387,7 +452,7 @@ public class HorusAI : MonoBehaviour, IEnemy
         {
             case Phase.one:
                 //move close above player and then swoop with claws
-                int dir = 0;
+                int dir;
                 if (transform.position.x > playerTransform.position.x)
                 {
                     dir = -1;
@@ -422,9 +487,60 @@ public class HorusAI : MonoBehaviour, IEnemy
 
                 break;
             case Phase.two:
+                //add shotgun after swoop
+
+                if (transform.position.x > playerTransform.position.x)
+                {
+                    dir = -1;
+                }
+                else
+                {
+                    dir = 1;
+                }
+                isMoving = true;
+                speedMod = 1;
+                ///update target
+                while (isMoving)
+                {
+                    moveTarget = new Vector2(playerTransform.position.x + (3 * -dir), playerTransform.position.y + 3);
+                    yield return null;
+                }
+
+                //swoop (add extra attack hb in anim)
+                //first segment
+                moveTarget.x = playerTransform.position.x;
+                moveTarget.y = playerTransform.position.y;
+                speedMod = 1.25f;
+                isMoving = true;
+                while (isMoving) { yield return null; }
+                //second segment
+                moveTarget += new Vector2((3 * dir), 3);
+                isMoving = true;
+                speedMod = 1.5f;
+                while (isMoving) { yield return null; }
+
+                yield return new WaitForSeconds(0.1f);
+
+                //shotgun after
+                float angleToPlayer = Mathf.Atan2(playerTransform.position.y - transform.position.y,
+                    playerTransform.position.x - transform.position.x) * Mathf.Rad2Deg;
+                for (int i = 0; i < shotgunCount; i++)
+                {
+                    float degVariance = rng.Next(-shotgunConeDeg, shotgunConeDeg - 1) + (float)rng.NextDouble();
+
+
+                    HorusFeatherScript feather = disabledFeathers[0];
+                    feather.gameObject.SetActive(true);
+                    disabledFeathers.RemoveAt(0);
+                    enabledFeathers.Add(feather);
+                    feather.Reset(transform.position, new Vector2(Mathf.Cos(Mathf.Deg2Rad * (degVariance + angleToPlayer)),
+                        Mathf.Sin(Mathf.Deg2Rad * (degVariance + angleToPlayer))));
+                }
+
 
                 break;
             case Phase.three:
+               //room spiraling attack
 
                 break;
         }
