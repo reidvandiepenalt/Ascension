@@ -36,6 +36,8 @@ public class HorusAI : MonoBehaviour, IEnemy
     public List<HorusFeatherScript> disabledFeathers;
     public List<HorusFeatherScript> enabledFeathers;
 
+    public Animator anim;
+
     Vector2 moveTarget = Vector2.zero;
     bool isMoving = false;
 

@@ -550,7 +550,7 @@ public class PlayerTestScript : MonoBehaviour
 
         //instantiate attack object
         GameObject a = Instantiate(attack, transform.position, Quaternion.AngleAxis(angle, Vector3.forward), gameObject.transform);
-        a.transform.localScale = new Vector3(6, 6, 6);
+        a.transform.localScale = new Vector3(8, 8, 8);
         attackPoint.localPosition = new Vector3(attackDistance * Mathf.Cos((angle + 90 + (facingLeft?0:180)) * Mathf.Deg2Rad), attackDistance * Mathf.Sin((angle + 90) * Mathf.Deg2Rad), 0);
 
         //see if enemies are hit and do damage

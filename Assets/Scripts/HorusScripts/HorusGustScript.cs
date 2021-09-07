@@ -16,14 +16,13 @@ public class HorusGustScript : MonoBehaviour
     private void Start()
     {
         speed = initSpeed;
-        dir = (groundTarget.x > transform.position.x) ? 1 : -1;
     }
 
     private void FixedUpdate()
     {
         if (grounded)
         {
-            transform.position += Vector3.right * dir * speed * Time.deltaTime;
+            transform.position += Vector3.right * dir * speed * 0.5f * Time.deltaTime;
         }
         else
         {
