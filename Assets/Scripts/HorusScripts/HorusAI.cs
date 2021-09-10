@@ -27,6 +27,11 @@ public class HorusAI : MonoBehaviour, IEnemy
     }
     Phase phase = Phase.one;
 
+    [SerializeField]
+    GameObject tornado;
+
+    [SerializeField] float tornadoFeatherSpacing;
+    [SerializeField] float tornadoColumnSpacing;
 
     public Vector2 topLeft;
     public Vector2 bottomRight;
@@ -36,6 +41,7 @@ public class HorusAI : MonoBehaviour, IEnemy
 
     float CenterX { get => (bottomRight.x - topLeft.x) / 2 + topLeft.x; }
     float CenterY { get => (topLeft.y - bottomRight.y) / 2 + bottomRight.y; }
+    float RoomHeight { get => topLeft.y - bottomRight.y; }
 
     public HorusGustScript gustInst;
     public List<HorusFeatherScript> disabledFeathers;
@@ -97,7 +103,7 @@ public class HorusAI : MonoBehaviour, IEnemy
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
         playerGroundOffset = playerTransform.gameObject.GetComponent<Collider2D>().bounds.extents.y;
 
-        phase = Phase.one;
+        phase = Phase.three;
     }
 
     void FixedUpdate()
@@ -147,7 +153,7 @@ public class HorusAI : MonoBehaviour, IEnemy
         /*List<Attack> possibleAttacks = new List<Attack>() { Attack.dive, Attack.gusts, Attack.rain, Attack.shotgun, Attack.wing, Attack.xAttack, Attack.swoop };
         possibleAttacks.Remove(prevAttack);
         CurrentAttack = possibleAttacks[rng.Next(0, possibleAttacks.Count - 1)];*/
-        CurrentAttack = Attack.dive;
+        CurrentAttack = Attack.rain;
 
         //start new attack
         switch (CurrentAttack)
@@ -273,7 +279,46 @@ public class HorusAI : MonoBehaviour, IEnemy
                 break;
             case Phase.three:
                 //create tornado in middle of room that pulls and shoots feathers?
+                //move to middle
+                moveTarget.x = CenterX;
+                moveTarget.y = CenterY + (RoomHeight / 4);
+                speedMod = 1f;
+                isMoving = true;
+                while (isMoving) { yield return null; }
 
+                //spawn tornado
+                tornado.SetActive(true);
+                tornado.transform.position = new Vector2(CenterX, bottomRight.y);
+
+                //spawn feathers in columns of 3 to either side that increase in height
+                float timer = 0f;
+                int heightLevel = 0;
+                while (timer < 8f)
+                {
+                    for(int i = 1; i <= 3; i++)
+                    {
+                        HorusFeatherScript leftFeather = disabledFeathers[0];
+                        leftFeather.gameObject.SetActive(true);
+                        disabledFeathers.RemoveAt(0);
+                        enabledFeathers.Add(leftFeather);
+                        leftFeather.Reset(new Vector2(CenterX, bottomRight.y + (tornadoFeatherSpacing * i + tornadoColumnSpacing * heightLevel)),
+                            new Vector2(-1, 0).normalized, false);
+                        HorusFeatherScript rightFeather = disabledFeathers[0];
+                        rightFeather.gameObject.SetActive(true);
+                        disabledFeathers.RemoveAt(0);
+                        enabledFeathers.Add(rightFeather);
+                        rightFeather.Reset(new Vector2(CenterX, bottomRight.y + (tornadoFeatherSpacing * i + tornadoColumnSpacing * heightLevel)),
+                            new Vector2(1, 0).normalized, false);
+                    }
+                    heightLevel++;
+                    if(heightLevel >= RoomHeight / tornadoColumnSpacing) { heightLevel = 0; }
+                    timer += Time.deltaTime;
+                    yield return new WaitForSeconds(0.3f);
+                }
+
+                //despawn tornado
+                tornado.transform.position = new Vector2(-100, -100);
+                tornado.SetActive(false);
 
                 break;
         }
@@ -309,26 +354,51 @@ public class HorusAI : MonoBehaviour, IEnemy
             case Phase.one:
                 //pick corner
                 int dir = (transform.position.x > CenterX) ? 1 : -1;
-                yield return StartCoroutine(BasicRainAttack(new Vector2((dir == 1)?
-                    bottomRight.x - 4 : moveTarget.x = topLeft.x + 4, topLeft.y), dir));
+                moveTarget = new Vector2((dir == 1) ? bottomRight.x - 4 : moveTarget.x = topLeft.x + 4, topLeft.y);
+                isMoving = true;
+                speedMod = 2.5f;
+                while (isMoving) { yield return null; }
+
+                //start passes
+                yield return StartCoroutine(RainAttack(dir, false));
 
                 yield return new WaitForSeconds(0.1f);
                 break;
             case Phase.two:
                 //go across twice
                 dir = (transform.position.x > CenterX) ? 1 : -1;
-                yield return StartCoroutine(BasicRainAttack(new Vector2((dir == 1) ?
-                    bottomRight.x - 4 : moveTarget.x = topLeft.x + 4, topLeft.y), dir));
+                moveTarget = new Vector2((dir == 1) ? bottomRight.x - 4 : moveTarget.x = topLeft.x + 4, topLeft.y);
+                isMoving = true;
+                speedMod = 2.5f;
+                while (isMoving) { yield return null; }
+
+                //start passes
+                yield return StartCoroutine(RainAttack(dir, false));
+
                 //opposite corner
                 dir = -dir;
-                yield return StartCoroutine(BasicRainAttack(new Vector2((dir == 1) ?
-                    bottomRight.x - 4 : moveTarget.x = topLeft.x + 4, topLeft.y), dir));
+                //stecond pass
+                yield return StartCoroutine(RainAttack(dir, false));
 
                 yield return new WaitForSeconds(0.1f);
                 break;
             case Phase.three:
                 //replace rain with shotguns? homing shots? shots coming from floor?
+                //try bounce
+                //top corner
+                dir = (transform.position.x > CenterX) ? 1 : -1;
+                moveTarget = new Vector2((dir == 1) ? bottomRight.x - 4 : moveTarget.x = topLeft.x + 4, topLeft.y);
+                isMoving = true;
+                speedMod = 2.5f;
 
+                //go across twice
+                dir = (transform.position.x > CenterX) ? 1 : -1;
+                yield return StartCoroutine(RainAttack(dir, true));
+                //opposite corner
+                dir = -dir;
+                yield return StartCoroutine(RainAttack(dir, true));
+
+                yield return new WaitForSeconds(0.1f);
 
                 break;
         }
@@ -337,14 +407,8 @@ public class HorusAI : MonoBehaviour, IEnemy
         yield break;
     }
 
-    IEnumerator BasicRainAttack(Vector2 startPos, int dir)
+    IEnumerator RainAttack(int dir, bool bounce)
     {
-        moveTarget = startPos;
-        speedMod = 2.5f;
-        isMoving = true;
-        while (isMoving) { yield return null; }
-
-
         //move target = opposite top corner
         moveTarget.x = (dir == 1) ? bottomRight.x - 4 : topLeft.x + 4;
         speedMod = 2f;
@@ -356,7 +420,7 @@ public class HorusAI : MonoBehaviour, IEnemy
             feather.gameObject.SetActive(true);
             disabledFeathers.RemoveAt(0);
             enabledFeathers.Add(feather);
-            feather.Reset(transform.position, new Vector2(0.33f * dir, -1).normalized);
+            feather.Reset(transform.position, new Vector2(0.4f * dir, -1).normalized, bounce);
             yield return new WaitForSeconds(rainShotDelay);
         }
     }
@@ -378,7 +442,7 @@ public class HorusAI : MonoBehaviour, IEnemy
                 }
                 yield return new WaitForSeconds(0.1f);//pause so player can dodge
 
-                ShotgunAttack(0);
+                ShotgunAttack(0, false);
 
                 yield return new WaitForSeconds(0.2f);
 
@@ -397,18 +461,45 @@ public class HorusAI : MonoBehaviour, IEnemy
                 }
                 yield return new WaitForSeconds(0.1f);//pause so player can dodge
 
-                ShotgunAttack(0);
+                ShotgunAttack(0, false);
 
                 yield return new WaitForSeconds(0.1f);
 
-                ShotgunAttack(30);
-                ShotgunAttack(-30);
+                ShotgunAttack(30, false);
+                ShotgunAttack(-30, false);
 
                 yield return new WaitForSeconds(0.2f);
 
                 break;
             case Phase.three:
                 //1 bounce shotguns? homing shots?
+                //shoot 1 then 2 then 3 and make bounce
+                //go somewhere just above player
+                xSpacing = rng.Next(-10, 9) + (float)rng.NextDouble();
+                isMoving = true;
+                speedMod = 1.5f;
+                while (isMoving)
+                {
+                    moveTarget.x = playerTransform.position.x + xSpacing;
+                    moveTarget.y = playerTransform.position.y + 10;
+                    yield return null;
+                }
+                yield return new WaitForSeconds(0.1f);//pause so player can dodge
+
+                ShotgunAttack(0, true);
+
+                yield return new WaitForSeconds(0.1f);
+
+                ShotgunAttack(30, true);
+                ShotgunAttack(-30, true);
+
+                yield return new WaitForSeconds(0.1f);
+
+                ShotgunAttack(30, true);
+                ShotgunAttack(0, true);
+                ShotgunAttack(-30, true);
+
+                yield return new WaitForSeconds(0.2f);
 
                 break;
         }
@@ -420,7 +511,7 @@ public class HorusAI : MonoBehaviour, IEnemy
     /// <summary>
     /// Helper method for shotgun style attacks
     /// </summary>
-    void ShotgunAttack(float rotation)
+    void ShotgunAttack(float rotation, bool bounce)
     {
         //shotgun of feathers
         float angleToPlayer = (Mathf.Atan2(playerTransform.position.y - transform.position.y,
@@ -435,7 +526,7 @@ public class HorusAI : MonoBehaviour, IEnemy
             disabledFeathers.RemoveAt(0);
             enabledFeathers.Add(feather);
             feather.Reset(transform.position, new Vector2(Mathf.Cos(Mathf.Deg2Rad * (degVariance + angleToPlayer)),
-                Mathf.Sin(Mathf.Deg2Rad * (degVariance + angleToPlayer))));
+                Mathf.Sin(Mathf.Deg2Rad * (degVariance + angleToPlayer))), bounce);
         }
         return;
     }
@@ -502,7 +593,7 @@ public class HorusAI : MonoBehaviour, IEnemy
                 yield return new WaitForSeconds(0.1f);
 
                 //shotgun after
-                ShotgunAttack(0);
+                ShotgunAttack(0, false);
 
 
                 break;

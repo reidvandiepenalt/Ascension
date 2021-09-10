@@ -242,6 +242,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 412dbf4c70b43054988f793976f98c2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tornado: {fileID: 0}
+  tornadoFeatherSpacing: 1
+  tornadoColumnSpacing: 5
   topLeft: {x: 0.5, y: 25.5}
   bottomRight: {x: 71, y: 0.5}
   groundMask:
@@ -269,12 +272,33 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   enabledFeathers: []
   anim: {fileID: 679672980495940251}
   rainShotDelay: 0.1
   shotgunCount: 8
   shotgunConeDeg: 30
   speed: 30
+  circleShrinkSpeed: 0
   playerTransform: {fileID: 0}
 --- !u!50 &4721462901173063535
 Rigidbody2D:
