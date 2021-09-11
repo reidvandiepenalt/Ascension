@@ -27,11 +27,17 @@ public class HorusAI : MonoBehaviour, IEnemy
     }
     Phase phase = Phase.one;
 
-    [SerializeField]
-    GameObject tornado;
+    [SerializeField] Animator diveFX;
+    [SerializeField] GameObject tornado;
+
+    [SerializeField] LayerMask playerLayer;
+    [SerializeField] float diveTotalRadius;
+    [SerializeField] float diveOffset;
+    Collider2D playerCollider;
 
     [SerializeField] float tornadoFeatherSpacing;
     [SerializeField] float tornadoColumnSpacing;
+
 
     public Vector2 topLeft;
     public Vector2 bottomRight;
@@ -101,7 +107,8 @@ public class HorusAI : MonoBehaviour, IEnemy
         rng = new System.Random();
 
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
-        playerGroundOffset = playerTransform.gameObject.GetComponent<Collider2D>().bounds.extents.y;
+        playerCollider = playerTransform.gameObject.GetComponent<Collider2D>();
+        playerGroundOffset = playerCollider.bounds.extents.y;
 
         phase = Phase.three;
     }
@@ -153,7 +160,7 @@ public class HorusAI : MonoBehaviour, IEnemy
         /*List<Attack> possibleAttacks = new List<Attack>() { Attack.dive, Attack.gusts, Attack.rain, Attack.shotgun, Attack.wing, Attack.xAttack, Attack.swoop };
         possibleAttacks.Remove(prevAttack);
         CurrentAttack = possibleAttacks[rng.Next(0, possibleAttacks.Count - 1)];*/
-        CurrentAttack = Attack.rain;
+        CurrentAttack = Attack.dive;
 
         //start new attack
         switch (CurrentAttack)
@@ -194,11 +201,12 @@ public class HorusAI : MonoBehaviour, IEnemy
                 StartCoroutine(BasicDive());
 
                 //pick location (below player, keep updating)
+                moveTarget.y = playerTransform.position.y - 8;
                 isMoving = true;
                 speedMod = 3;
                 while (isMoving)
                 {
-                    moveTarget = (Vector2)playerTransform.position + (Vector2.down * 12);
+                    moveTarget.x = playerTransform.position.x;
                     yield return null;
                 }
                 //flip over, wait a split second, and go up
@@ -214,6 +222,24 @@ public class HorusAI : MonoBehaviour, IEnemy
                 break;
             case Phase.three:
                 //aoe dive attacks
+                //5 times in a row; tp to top 
+
+                //move above player
+                moveTarget.y = topLeft.y;
+                isMoving = true;
+                speedMod = 3;
+                while (isMoving)
+                {
+                    moveTarget.x = playerTransform.position.x;
+                    yield return null;
+                }
+
+                //start dives
+                for(int i = 0; i < 5; i++)
+                {
+                    yield return StartCoroutine(AOEDive());
+                    transform.position = new Vector2(playerTransform.position.x, topLeft.y);
+                }
 
 
                 break;
@@ -221,6 +247,35 @@ public class HorusAI : MonoBehaviour, IEnemy
         //move into next attack
         CurrentAttack = Attack.idle;
         yield break;
+    }
+
+    IEnumerator AOEDive()
+    {
+
+        //dive
+        isMoving = true;
+        moveTarget = new Vector2(transform.position.x, bottomRight.y);
+        speedMod = 3;
+        while (isMoving) { yield return null; }
+
+        //aoe attack
+        diveFX.transform.position = (Vector2)transform.position + (Vector2.up * diveOffset);
+        diveFX.gameObject.SetActive(true);
+        diveFX.SetTrigger("Attack");
+        float timer = 0;
+        //float totalTime = diveFX.GetCurrentAnimatorClipInfo(0).Length;
+        float totalTime = 0.317f;
+        while (timer <= totalTime)
+        {
+            if(Vector2.Distance(playerCollider.ClosestPoint(diveFX.transform.position + Vector3.up * diveOffset), diveFX.transform.position + Vector3.up * diveOffset) < 
+                (timer / totalTime) * diveTotalRadius)
+            {
+                playerTransform.GetComponent<PlayerTestScript>().TakeDamage(1, false);
+            }
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
     }
 
     /// <summary>
@@ -233,7 +288,8 @@ public class HorusAI : MonoBehaviour, IEnemy
         speedMod = 1;
         while (isMoving)
         {
-            moveTarget = (Vector2)playerTransform.position + (Vector2.up * 12);
+            moveTarget.x = playerTransform.position.x;
+            moveTarget.y = topLeft.y;
             yield return null;
         }
         //flip over, and dive
