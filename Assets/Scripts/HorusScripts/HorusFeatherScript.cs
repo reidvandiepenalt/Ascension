@@ -40,6 +40,7 @@ public class HorusFeatherScript : MonoBehaviour
         transform.position = new Vector3(-100, -100, transform.position.z);
         horusAI.disabledFeathers.Add(this);
         horusAI.enabledFeathers.RemoveAt(0);
+        CancelInvoke();
     }
 
     public void Reset(Vector2 startPos, Vector2 dir, bool doBounce)

@@ -29,6 +29,7 @@ public class HorusAI : MonoBehaviour, IEnemy
 
     [SerializeField] Animator diveFX;
     [SerializeField] GameObject tornado;
+    [SerializeField] GameObject crossAttack;
 
     [SerializeField] LayerMask playerLayer;
     [SerializeField] float diveTotalRadius;
@@ -160,7 +161,7 @@ public class HorusAI : MonoBehaviour, IEnemy
         /*List<Attack> possibleAttacks = new List<Attack>() { Attack.dive, Attack.gusts, Attack.rain, Attack.shotgun, Attack.wing, Attack.xAttack, Attack.swoop };
         possibleAttacks.Remove(prevAttack);
         CurrentAttack = possibleAttacks[rng.Next(0, possibleAttacks.Count - 1)];*/
-        CurrentAttack = Attack.dive;
+        CurrentAttack = Attack.shotgun;
 
         //start new attack
         switch (CurrentAttack)
@@ -544,18 +545,21 @@ public class HorusAI : MonoBehaviour, IEnemy
 
                 ShotgunAttack(0, true);
 
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(0.35f);
 
                 ShotgunAttack(30, true);
                 ShotgunAttack(-30, true);
 
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(0.35f);
 
                 ShotgunAttack(30, true);
                 ShotgunAttack(0, true);
                 ShotgunAttack(-30, true);
 
                 yield return new WaitForSeconds(0.2f);
+
+                //testing
+                yield return new WaitForSeconds(8f);
 
                 break;
         }
@@ -623,6 +627,28 @@ public class HorusAI : MonoBehaviour, IEnemy
                 break;
             case Phase.three:
                 //x attack from behind screen
+
+                //move up from center then scale horus down
+                isMoving = true;
+                speedMod = 1f;
+                moveTarget.y = topLeft.y + RoomHeight;
+                while(isMoving) { yield return null; }
+
+                //scale down
+                transform.localScale = new Vector3(0.1f, 0.1f, 0);
+
+                //fly down to center
+                transform.position = new Vector3(CenterX, transform.position.y, transform.position.z);
+                isMoving = true;
+                speedMod = 1f;
+                moveTarget.y = CenterY;
+                while (isMoving) { yield return null; }
+
+                //cross attack
+                crossAttack.SetActive(true);
+                crossAttack.transform.position = new Vector2(CenterX, CenterY);
+                crossAttack.transform.localScale = new Vector3(0.01f, 0.01f);
+
 
                 break;
         }
