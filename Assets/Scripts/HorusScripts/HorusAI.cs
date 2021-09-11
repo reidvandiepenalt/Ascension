@@ -262,9 +262,9 @@ public class HorusAI : MonoBehaviour, IEnemy
         diveFX.transform.position = (Vector2)transform.position + (Vector2.up * diveOffset);
         diveFX.gameObject.SetActive(true);
         diveFX.SetTrigger("Attack");
+        yield return new WaitForEndOfFrame();
         float timer = 0;
-        //float totalTime = diveFX.GetCurrentAnimatorClipInfo(0).Length;
-        float totalTime = 0.317f;
+        float totalTime = diveFX.GetCurrentAnimatorStateInfo(0).length;
         while (timer <= totalTime)
         {
             if(Vector2.Distance(playerCollider.ClosestPoint(diveFX.transform.position + Vector3.up * diveOffset), diveFX.transform.position + Vector3.up * diveOffset) < 
