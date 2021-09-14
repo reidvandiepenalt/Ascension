@@ -558,9 +558,6 @@ public class HorusAI : MonoBehaviour, IEnemy
 
                 yield return new WaitForSeconds(0.2f);
 
-                //testing
-                yield return new WaitForSeconds(8f);
-
                 break;
         }
 
@@ -623,6 +620,34 @@ public class HorusAI : MonoBehaviour, IEnemy
                 break;
             case Phase.two:
                 //series of moving attacks
+                dir = 0;
+                if (transform.position.x > playerTransform.position.x)
+                {
+                    dir = -1;
+                }
+                else
+                {
+                    dir = 1;
+                }
+                isMoving = true;
+                speedMod = 1;
+                ///update target
+                while (isMoving)
+                {
+                    moveTarget = new Vector2(playerTransform.position.x + (2 * -dir), playerTransform.position.y + 2);
+                    yield return null;
+                }
+
+                //start attacking while moving through anims
+                isMoving = true;
+                speedMod = 1.5f;
+                moveTarget.x += dir * 5;
+                while (isMoving)
+                {
+                    yield return null;
+                }
+
+                //end anims
 
                 break;
             case Phase.three:
@@ -635,7 +660,7 @@ public class HorusAI : MonoBehaviour, IEnemy
                 while(isMoving) { yield return null; }
 
                 //scale down
-                transform.localScale = new Vector3(0.1f, 0.1f, 0);
+                transform.localScale = new Vector3(0.1f, 0.1f, 1);
 
                 //fly down to center
                 transform.position = new Vector3(CenterX, transform.position.y, transform.position.z);
@@ -647,8 +672,22 @@ public class HorusAI : MonoBehaviour, IEnemy
                 //cross attack
                 crossAttack.SetActive(true);
                 crossAttack.transform.position = new Vector2(CenterX, CenterY);
-                crossAttack.transform.localScale = new Vector3(0.01f, 0.01f);
+                float timer = 0f;
+                while (timer <= 3)
+                {
+                    crossAttack.transform.localScale = new Vector3(timer / 3, timer / 3);
+                    timer += Time.deltaTime;
+                    yield return null;
+                }
 
+                //fly up and reset scale
+                isMoving = true;
+                speedMod = 1f;
+                moveTarget.y = topLeft.y + RoomHeight;
+                while (isMoving) { yield return null; }
+
+                //scale up
+                transform.localScale = new Vector3(1, 1, 1);
 
                 break;
         }
