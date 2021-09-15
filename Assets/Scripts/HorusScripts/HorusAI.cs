@@ -75,6 +75,8 @@ public class HorusAI : MonoBehaviour, IEnemy
 
     System.Random rng;
 
+    bool facingRight = true;
+
     public int Health { get; set; }
     public int MaxHealth { get; set; }
 
@@ -113,7 +115,7 @@ public class HorusAI : MonoBehaviour, IEnemy
         playerCollider = playerTransform.gameObject.GetComponent<Collider2D>();
         playerGroundOffset = playerCollider.bounds.extents.y;
 
-        phase = Phase.three;
+        phase = Phase.one;
     }
 
     void FixedUpdate()
@@ -139,15 +141,6 @@ public class HorusAI : MonoBehaviour, IEnemy
     {
         if (isMoving)
         {
-            if(transform.position.x > moveTarget.x)
-            {
-                gfx.transform.localScale = new Vector3(-1, 1, 1);
-            }
-            else
-            {
-                gfx.transform.localScale = new Vector3(1, 1, 1);
-            }
-
             //reached destination
             if (Vector2.Distance(transform.position, moveTarget) < speed * speedMod * Time.deltaTime)
             {
@@ -159,6 +152,17 @@ public class HorusAI : MonoBehaviour, IEnemy
             {
                 Vector2 movement = (moveTarget - (Vector2)transform.position).normalized * speed * speedMod * Time.deltaTime;
                 transform.position += new Vector3(movement.x, movement.y, 0);
+
+                if (movement.x > 0 && !facingRight)
+                {
+                    transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+                    facingRight = true;
+                }
+                else if (movement.x < 0 && facingRight)
+                {
+                    transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+                    facingRight = false;
+                }
             }
         }
     }
@@ -169,10 +173,12 @@ public class HorusAI : MonoBehaviour, IEnemy
     void PickAttack()
     {
         //random new attack; make smarter?
-        /*List<Attack> possibleAttacks = new List<Attack>() { Attack.dive, Attack.gusts, Attack.rain, Attack.shotgun, Attack.wing, Attack.xAttack, Attack.swoop };
+        /*/
+        List<Attack> possibleAttacks = new List<Attack>() { Attack.dive, Attack.gusts, Attack.rain, Attack.shotgun, Attack.xAttack, Attack.swoop };
         possibleAttacks.Remove(prevAttack);
-        CurrentAttack = possibleAttacks[rng.Next(0, possibleAttacks.Count - 1)];*/
-        CurrentAttack = Attack.shotgun;
+        CurrentAttack = possibleAttacks[rng.Next(0, possibleAttacks.Count - 1)];/*/
+
+        CurrentAttack = Attack.swoop;
 
         //start new attack
         switch (CurrentAttack)
@@ -415,6 +421,8 @@ public class HorusAI : MonoBehaviour, IEnemy
         }
 
         //gust anim
+        anim.SetTrigger("Gust");
+        yield return new WaitForSeconds(0.15f);
 
         //shoot gust towards ground in front of player where it will move forward
         gustInst.gameObject.SetActive(true);
@@ -519,6 +527,8 @@ public class HorusAI : MonoBehaviour, IEnemy
                     yield return null;
                 }
                 yield return new WaitForSeconds(0.1f);//pause so player can dodge
+                anim.SetTrigger("Gust");
+                yield return new WaitForSeconds(0.15f);
 
                 ShotgunAttack(0, false);
 
@@ -537,11 +547,16 @@ public class HorusAI : MonoBehaviour, IEnemy
                     moveTarget.y = playerTransform.position.y + 10;
                     yield return null;
                 }
-                yield return new WaitForSeconds(0.1f);//pause so player can dodge
+
+                anim.SetTrigger("Gust");
+                //pause so player can dodge
+                yield return new WaitForSeconds(0.15f);
 
                 ShotgunAttack(0, false);
 
                 yield return new WaitForSeconds(0.1f);
+                anim.SetTrigger("Gust");
+                yield return new WaitForSeconds(0.15f);
 
                 ShotgunAttack(30, false);
                 ShotgunAttack(-30, false);
@@ -562,16 +577,22 @@ public class HorusAI : MonoBehaviour, IEnemy
                     moveTarget.y = playerTransform.position.y + 10;
                     yield return null;
                 }
-                yield return new WaitForSeconds(0.1f);//pause so player can dodge
+
+                anim.SetTrigger("Gust");
+                yield return new WaitForSeconds(0.15f);//pause so player can dodge
 
                 ShotgunAttack(0, true);
 
-                yield return new WaitForSeconds(0.35f);
+                yield return new WaitForSeconds(0.1f);
+                anim.SetTrigger("Gust");
+                yield return new WaitForSeconds(0.15f);
 
                 ShotgunAttack(30, true);
                 ShotgunAttack(-30, true);
 
-                yield return new WaitForSeconds(0.35f);
+                yield return new WaitForSeconds(0.1f);
+                anim.SetTrigger("Gust");
+                yield return new WaitForSeconds(0.15f);
 
                 ShotgunAttack(30, true);
                 ShotgunAttack(0, true);
@@ -731,7 +752,8 @@ public class HorusAI : MonoBehaviour, IEnemy
 
                 yield return StartCoroutine(BasicSwoop());
 
-                yield return new WaitForSeconds(0.1f);
+                anim.SetTrigger("Gust");
+                yield return new WaitForSeconds(0.15f);
 
                 //shotgun after
                 ShotgunAttack(0, false);
@@ -804,7 +826,7 @@ public class HorusAI : MonoBehaviour, IEnemy
         //swoop (add extra attack hb in anim)
         //first segment
         moveTarget.x = playerTransform.position.x;
-        moveTarget.y = playerTransform.position.y;
+        moveTarget.y = playerTransform.position.y - (playerGroundOffset / 2);
         speedMod = 1.25f;
         isMoving = true;
         while (isMoving) { yield return null; }
