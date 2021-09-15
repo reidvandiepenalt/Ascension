@@ -27,6 +27,8 @@ public class HorusAI : MonoBehaviour, IEnemy
     }
     Phase phase = Phase.one;
 
+    [SerializeField] GameObject gfx;
+
     [SerializeField] Animator diveFX;
     [SerializeField] GameObject tornado;
     [SerializeField] GameObject crossAttack;
@@ -137,6 +139,15 @@ public class HorusAI : MonoBehaviour, IEnemy
     {
         if (isMoving)
         {
+            if(transform.position.x > moveTarget.x)
+            {
+                gfx.transform.localScale = new Vector3(-1, 1, 1);
+            }
+            else
+            {
+                gfx.transform.localScale = new Vector3(1, 1, 1);
+            }
+
             //reached destination
             if (Vector2.Distance(transform.position, moveTarget) < speed * speedMod * Time.deltaTime)
             {
@@ -199,6 +210,7 @@ public class HorusAI : MonoBehaviour, IEnemy
                 yield return new WaitForSeconds(0.1f);
                 break;
             case Phase.two:
+
                 StartCoroutine(BasicDive());
 
                 //pick location (below player, keep updating)
@@ -210,15 +222,15 @@ public class HorusAI : MonoBehaviour, IEnemy
                     moveTarget.x = playerTransform.position.x;
                     yield return null;
                 }
-                //flip over, wait a split second, and go up
-                //flip
 
-                //dive
+                anim.SetBool("UpDive", true);
+
                 isMoving = true;
                 moveTarget = new Vector2(transform.position.x, topLeft.y);
                 speedMod = 3;
                 while (isMoving) { yield return null; }
-                //unflip
+
+                anim.SetBool("UpDive", false);
 
                 break;
             case Phase.three:
@@ -236,12 +248,13 @@ public class HorusAI : MonoBehaviour, IEnemy
                 }
 
                 //start dives
+                anim.SetBool("Dive", true);
                 for(int i = 0; i < 5; i++)
                 {
                     yield return StartCoroutine(AOEDive());
                     transform.position = new Vector2(playerTransform.position.x, topLeft.y);
                 }
-
+                anim.SetBool("Dive", false);
 
                 break;
         }
@@ -295,6 +308,7 @@ public class HorusAI : MonoBehaviour, IEnemy
         }
         //flip over, and dive
         //flip
+        anim.SetBool("Dive", true);
 
         //dive
         isMoving = true;
@@ -303,6 +317,7 @@ public class HorusAI : MonoBehaviour, IEnemy
         while (isMoving) { yield return null; }
 
         //unflip
+        anim.SetBool("Dive", false);
     }
 
     IEnumerator Gust()
@@ -328,10 +343,12 @@ public class HorusAI : MonoBehaviour, IEnemy
                 while (isMoving) { yield return null; }
 
                 //dash through player
+                anim.SetBool("Dash", true);
                 moveTarget.x = playerTransform.position.x + ((ToRightOfPlayer) ? -6 : 6);
                 isMoving = true;
                 speedMod = 2.5f;
                 while (isMoving) { yield return null; }
+                anim.SetBool("Dash", false);
 
                 break;
             case Phase.three:
@@ -396,6 +413,8 @@ public class HorusAI : MonoBehaviour, IEnemy
                 * dir);
             yield return null;
         }
+
+        //gust anim
 
         //shoot gust towards ground in front of player where it will move forward
         gustInst.gameObject.SetActive(true);
@@ -470,6 +489,7 @@ public class HorusAI : MonoBehaviour, IEnemy
         moveTarget.x = (dir == 1) ? bottomRight.x - 4 : topLeft.x + 4;
         speedMod = 2f;
         isMoving = true;
+        anim.SetBool("Dash", true);
         //shoot feathers diagonal towards the ground
         while (isMoving)
         {
@@ -480,6 +500,7 @@ public class HorusAI : MonoBehaviour, IEnemy
             feather.Reset(transform.position, new Vector2(0.4f * dir, -1).normalized, bounce);
             yield return new WaitForSeconds(rainShotDelay);
         }
+        anim.SetBool("Dash", false);
     }
 
     IEnumerator Shotgun()
@@ -620,7 +641,6 @@ public class HorusAI : MonoBehaviour, IEnemy
                 break;
             case Phase.two:
                 //series of moving attacks
-                dir = 0;
                 if (transform.position.x > playerTransform.position.x)
                 {
                     dir = -1;
@@ -732,6 +752,9 @@ public class HorusAI : MonoBehaviour, IEnemy
 
                 //spiral
                 //update will move toward center, while this moves tangent to circle
+
+                //for anims: rotate based on direction of movement?
+
                 moveTarget.x = CenterX;
                 moveTarget.y = CenterY;
                 speedMod = 0.15f;
@@ -777,6 +800,7 @@ public class HorusAI : MonoBehaviour, IEnemy
             yield return null;
         }
 
+        anim.SetBool("Swoop", true);
         //swoop (add extra attack hb in anim)
         //first segment
         moveTarget.x = playerTransform.position.x;
@@ -789,5 +813,6 @@ public class HorusAI : MonoBehaviour, IEnemy
         isMoving = true;
         speedMod = 1.5f;
         while (isMoving) { yield return null; }
+        anim.SetBool("Swoop", false);
     }
 }
