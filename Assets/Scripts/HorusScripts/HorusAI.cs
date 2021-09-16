@@ -178,7 +178,7 @@ public class HorusAI : MonoBehaviour, IEnemy
         possibleAttacks.Remove(prevAttack);
         CurrentAttack = possibleAttacks[rng.Next(0, possibleAttacks.Count - 1)];/*/
 
-        CurrentAttack = Attack.swoop;
+        CurrentAttack = Attack.xAttack;
 
         //start new attack
         switch (CurrentAttack)
@@ -349,12 +349,27 @@ public class HorusAI : MonoBehaviour, IEnemy
                 while (isMoving) { yield return null; }
 
                 //dash through player
-                anim.SetBool("Dash", true);
+                bool Left;
+                if (ToRightOfPlayer) { anim.SetBool("DashLeft", true); Left = true; } else
+                {
+                    anim.SetBool("DashRight", true);
+                    Left = false;
+                }
+                
+                
                 moveTarget.x = playerTransform.position.x + ((ToRightOfPlayer) ? -6 : 6);
                 isMoving = true;
                 speedMod = 2.5f;
                 while (isMoving) { yield return null; }
-                anim.SetBool("Dash", false);
+                if (Left)
+                {
+                    anim.SetBool("DashLeft", false);
+                }
+                else
+                {
+                    anim.SetBool("DashRight", false);
+                }
+                
 
                 break;
             case Phase.three:
@@ -494,10 +509,13 @@ public class HorusAI : MonoBehaviour, IEnemy
     IEnumerator RainAttack(int dir, bool bounce)
     {
         //move target = opposite top corner
-        moveTarget.x = (dir == 1) ? bottomRight.x - 4 : topLeft.x + 4;
+        moveTarget.x = (dir == -1) ? bottomRight.x - 4 : topLeft.x + 4;
         speedMod = 2f;
         isMoving = true;
-        anim.SetBool("Dash", true);
+        if(dir == -1) { anim.SetBool("DashRight", true); } else
+        {
+            anim.SetBool("DashLeft", true);
+        }
         //shoot feathers diagonal towards the ground
         while (isMoving)
         {
@@ -508,7 +526,11 @@ public class HorusAI : MonoBehaviour, IEnemy
             feather.Reset(transform.position, new Vector2(0.4f * dir, -1).normalized, bounce);
             yield return new WaitForSeconds(rainShotDelay);
         }
-        anim.SetBool("Dash", false);
+        if (dir == -1) { anim.SetBool("DashRight", false); }
+        else
+        {
+            anim.SetBool("DashLeft", false);
+        }
     }
 
     IEnumerator Shotgun()
@@ -657,7 +679,15 @@ public class HorusAI : MonoBehaviour, IEnemy
                 yield return new WaitForSeconds(0.1f);
 
                 //wing attack (blend tree anim)
-
+                Vector2 targetDir = ((Vector2)(playerTransform.position - transform.position)).normalized;
+                //anim.SetFloat("WingX", targetDir.x);
+                anim.SetFloat("WingX", 1);
+                //anim.SetFloat("WingY", targetDir.y);
+                anim.SetFloat("WingY", 0);
+                anim.SetTrigger("WingAttack");
+                yield return new WaitForEndOfFrame();
+                yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
+                
 
                 break;
             case Phase.two:
@@ -685,6 +715,14 @@ public class HorusAI : MonoBehaviour, IEnemy
                 moveTarget.x += dir * 5;
                 while (isMoving)
                 {
+                    //wing attack (blend tree anim)
+                    targetDir = ((Vector2)(playerTransform.position - transform.position)).normalized;
+                    anim.SetFloat("WingX", targetDir.x);
+                    anim.SetFloat("WingY", targetDir.y);
+                    anim.SetTrigger("WingAttack");
+                    yield return new WaitForEndOfFrame();
+                    yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
+
                     yield return null;
                 }
 
@@ -776,10 +814,10 @@ public class HorusAI : MonoBehaviour, IEnemy
                 //update will move toward center, while this moves tangent to circle
 
                 //for anims: rotate based on direction of movement?
-
+                anim.SetBool("Spiral", true);
                 moveTarget.x = CenterX;
                 moveTarget.y = CenterY;
-                speedMod = 0.15f;
+                speedMod = 0.2f;
                 isMoving = true;
                 while (isMoving)
                 {
@@ -789,10 +827,14 @@ public class HorusAI : MonoBehaviour, IEnemy
                         break;
                     }
                     Vector2 normalizedDif = ((Vector2)transform.position - moveTarget).normalized;
-                    transform.Translate( new Vector2(normalizedDif.y * 2 * ((CenterX/CenterY)), -normalizedDif.x) * 
-                        Mathf.Max(Vector2.Distance(transform.position, moveTarget), 4) * 3 * Time.deltaTime);
+                    Vector2 translation = new Vector2(normalizedDif.y * 2 * ((CenterX / CenterY)), -normalizedDif.x) *
+                        Mathf.Max(Vector2.Distance(transform.position, moveTarget), 4) * 3 * Time.deltaTime;
+                    transform.Translate(translation, Space.World);
+                    transform.rotation = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y,
+                        Mathf.Atan2(translation.y, translation.x) * Mathf.Rad2Deg - 90);
                     yield return null;
                 }
+                anim.SetBool("Spiral", false);
                 
                 break;
         }
