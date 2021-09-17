@@ -41,6 +41,7 @@ public class HorusAI : MonoBehaviour, IEnemy
     [SerializeField] float tornadoFeatherSpacing;
     [SerializeField] float tornadoColumnSpacing;
 
+    [SerializeField] HorusWingAttackScript wingAttack;
 
     public Vector2 topLeft;
     public Vector2 bottomRight;
@@ -76,6 +77,7 @@ public class HorusAI : MonoBehaviour, IEnemy
     System.Random rng;
 
     bool facingRight = true;
+    bool spiraling = false;
 
     public int Health { get; set; }
     public int MaxHealth { get; set; }
@@ -115,7 +117,7 @@ public class HorusAI : MonoBehaviour, IEnemy
         playerCollider = playerTransform.gameObject.GetComponent<Collider2D>();
         playerGroundOffset = playerCollider.bounds.extents.y;
 
-        phase = Phase.one;
+        phase = Phase.three;
     }
 
     void FixedUpdate()
@@ -153,14 +155,19 @@ public class HorusAI : MonoBehaviour, IEnemy
                 Vector2 movement = (moveTarget - (Vector2)transform.position).normalized * speed * speedMod * Time.deltaTime;
                 transform.position += new Vector3(movement.x, movement.y, 0);
 
+                if (spiraling)
+                {
+                    return;
+                }
+
                 if (movement.x > 0 && !facingRight)
                 {
-                    transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+                    transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
                     facingRight = true;
                 }
                 else if (movement.x < 0 && facingRight)
                 {
-                    transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+                    transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
                     facingRight = false;
                 }
             }
@@ -178,7 +185,7 @@ public class HorusAI : MonoBehaviour, IEnemy
         possibleAttacks.Remove(prevAttack);
         CurrentAttack = possibleAttacks[rng.Next(0, possibleAttacks.Count - 1)];/*/
 
-        CurrentAttack = Attack.xAttack;
+        CurrentAttack = Attack.swoop;
 
         //start new attack
         switch (CurrentAttack)
@@ -672,7 +679,7 @@ public class HorusAI : MonoBehaviour, IEnemy
                 ///update target
                 while (isMoving)
                 {
-                    moveTarget = new Vector2(playerTransform.position.x + (2 * -dir), playerTransform.position.y + 2);
+                    moveTarget = new Vector2(playerTransform.position.x + (8 * -dir), playerTransform.position.y + 8);
                     yield return null;
                 }
 
@@ -680,13 +687,15 @@ public class HorusAI : MonoBehaviour, IEnemy
 
                 //wing attack (blend tree anim)
                 Vector2 targetDir = ((Vector2)(playerTransform.position - transform.position)).normalized;
-                //anim.SetFloat("WingX", targetDir.x);
-                anim.SetFloat("WingX", 1);
-                //anim.SetFloat("WingY", targetDir.y);
-                anim.SetFloat("WingY", 0);
+                anim.SetFloat("WingX", targetDir.x);
+                anim.SetFloat("WingY", targetDir.y);
                 anim.SetTrigger("WingAttack");
-                yield return new WaitForEndOfFrame();
-                yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
+                yield return new WaitForSeconds(0.116f);
+                //spawn attack
+                Vector2 attackDir = ((Vector2)(playerTransform.position - transform.position)).normalized;
+                wingAttack.Reset(transform.position, attackDir);
+
+                yield return new WaitForSeconds(0.2f);
                 
 
                 break;
@@ -705,7 +714,7 @@ public class HorusAI : MonoBehaviour, IEnemy
                 ///update target
                 while (isMoving)
                 {
-                    moveTarget = new Vector2(playerTransform.position.x + (2 * -dir), playerTransform.position.y + 2);
+                    moveTarget = new Vector2(playerTransform.position.x + (8 * -dir), playerTransform.position.y + 8);
                     yield return null;
                 }
 
@@ -720,8 +729,11 @@ public class HorusAI : MonoBehaviour, IEnemy
                     anim.SetFloat("WingX", targetDir.x);
                     anim.SetFloat("WingY", targetDir.y);
                     anim.SetTrigger("WingAttack");
-                    yield return new WaitForEndOfFrame();
-                    yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
+                    yield return new WaitForSeconds(0.116f);
+                    //spawn attack
+                    attackDir = ((Vector2)(playerTransform.position - transform.position)).normalized;
+                    wingAttack.Reset(transform.position, attackDir);
+                    yield return new WaitForSeconds(0.2f);
 
                     yield return null;
                 }
@@ -815,6 +827,11 @@ public class HorusAI : MonoBehaviour, IEnemy
 
                 //for anims: rotate based on direction of movement?
                 anim.SetBool("Spiral", true);
+                anim.SetBool("Rotate", true);
+                spiraling = true;
+                transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+                anim.SetFloat("RotateX", 0);
+                anim.SetFloat("RotateY", 1);
                 moveTarget.x = CenterX;
                 moveTarget.y = CenterY;
                 speedMod = 0.2f;
@@ -830,11 +847,15 @@ public class HorusAI : MonoBehaviour, IEnemy
                     Vector2 translation = new Vector2(normalizedDif.y * 2 * ((CenterX / CenterY)), -normalizedDif.x) *
                         Mathf.Max(Vector2.Distance(transform.position, moveTarget), 4) * 3 * Time.deltaTime;
                     transform.Translate(translation, Space.World);
-                    transform.rotation = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y,
-                        Mathf.Atan2(translation.y, translation.x) * Mathf.Rad2Deg - 90);
+                    //transform.rotation = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y,
+                    //    Mathf.Atan2(translation.y, translation.x) * Mathf.Rad2Deg - 90);
+                    anim.SetFloat("RotateX", translation.x);
+                    anim.SetFloat("RotateY", translation.y);
                     yield return null;
                 }
                 anim.SetBool("Spiral", false);
+                anim.SetBool("Rotate", false);
+                spiraling = false;
                 
                 break;
         }

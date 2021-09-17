@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: 8982233124034900300}
   - component: {fileID: 1050606717263534875}
   - component: {fileID: 8334796101404715341}
+  - component: {fileID: 1044375675}
   m_Layer: 14
   m_Name: HorusCrossAttack (1)
   m_TagString: Attack
@@ -123,7 +124,7 @@ PolygonCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8604623632039400882}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 1
@@ -259,6 +260,20 @@ PolygonCollider2D:
       - {x: -0.275, y: -1.26}
       - {x: 0.84499997, y: -1.26}
       - {x: 1.035, y: -1.25}
+--- !u!114 &1044375675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8604623632039400882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0822f417e4a58274e818b1a4f3bb6493, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  contactDamage: 1
+  setToGround: 0
 --- !u!1 &9121301846053427103
 GameObject:
   m_ObjectHideFlags: 0
@@ -270,6 +285,7 @@ GameObject:
   - component: {fileID: 9121301846053427100}
   - component: {fileID: 9121301846053427101}
   - component: {fileID: 9121301846053427102}
+  - component: {fileID: 1775888965}
   m_Layer: 14
   m_Name: HorusCrossAttack
   m_TagString: Attack
@@ -350,7 +366,7 @@ PolygonCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9121301846053427103}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 1
@@ -486,3 +502,17 @@ PolygonCollider2D:
       - {x: -0.275, y: -1.26}
       - {x: 0.84499997, y: -1.26}
       - {x: 1.035, y: -1.25}
+--- !u!114 &1775888965
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9121301846053427103}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0822f417e4a58274e818b1a4f3bb6493, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  contactDamage: 1
+  setToGround: 0
