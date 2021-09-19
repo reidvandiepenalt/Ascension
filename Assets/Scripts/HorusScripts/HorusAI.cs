@@ -28,10 +28,11 @@ public class HorusAI : MonoBehaviour, IEnemy
     Phase phase = Phase.one;
 
     [SerializeField] GameObject gfx;
+    [SerializeField] GameObject contactHB;
 
     [SerializeField] Animator diveFX;
     [SerializeField] GameObject tornado;
-    [SerializeField] GameObject crossAttack;
+    [SerializeField] Animator crossAttack;
 
     [SerializeField] LayerMask playerLayer;
     [SerializeField] float diveTotalRadius;
@@ -49,8 +50,8 @@ public class HorusAI : MonoBehaviour, IEnemy
 
     bool ToRightOfPlayer { get => transform.position.x > playerTransform.position.x; }
 
-    float CenterX { get => (bottomRight.x - topLeft.x) / 2 + topLeft.x; }
-    float CenterY { get => (topLeft.y - bottomRight.y) / 2 + bottomRight.y; }
+    float CenterX { get => ((bottomRight.x - topLeft.x) / 2) + topLeft.x; }
+    float CenterY { get => ((topLeft.y - bottomRight.y) / 2) + bottomRight.y; }
     float RoomHeight { get => topLeft.y - bottomRight.y; }
 
     public HorusGustScript gustInst;
@@ -68,8 +69,6 @@ public class HorusAI : MonoBehaviour, IEnemy
 
     public float speed;
     float speedMod;
-
-    public float circleShrinkSpeed;
 
     public Transform playerTransform;
     float playerGroundOffset;
@@ -185,7 +184,7 @@ public class HorusAI : MonoBehaviour, IEnemy
         possibleAttacks.Remove(prevAttack);
         CurrentAttack = possibleAttacks[rng.Next(0, possibleAttacks.Count - 1)];/*/
 
-        CurrentAttack = Attack.swoop;
+        CurrentAttack = Attack.xAttack;
 
         //start new attack
         switch (CurrentAttack)
@@ -224,26 +223,45 @@ public class HorusAI : MonoBehaviour, IEnemy
                 break;
             case Phase.two:
 
-                StartCoroutine(BasicDive());
+                yield return StartCoroutine(BasicDive());
 
                 //pick location (below player, keep updating)
-                moveTarget.y = playerTransform.position.y - 8;
+                moveTarget.y = playerTransform.position.y - 14;
                 isMoving = true;
-                speedMod = 3;
+                speedMod = 1.5f;
                 while (isMoving)
                 {
                     moveTarget.x = playerTransform.position.x;
                     yield return null;
                 }
 
-                anim.SetBool("UpDive", true);
+                int dir = (Mathf.Sign(transform.localScale.x) < 0) ? -1 : 1;
+                if (dir == 1)
+                {
+                    anim.SetBool("UpDiveRight", true);
+                }
+                else
+                {
+                    anim.SetBool("UpDiveLeft", true);
+                }
+
+                yield return new WaitForSeconds(0.1f);
 
                 isMoving = true;
                 moveTarget = new Vector2(transform.position.x, topLeft.y);
                 speedMod = 3;
                 while (isMoving) { yield return null; }
 
-                anim.SetBool("UpDive", false);
+                if (dir == 1)
+                {
+                    anim.SetBool("UpDiveRight", false);
+                }
+                else
+                {
+                    anim.SetBool("UpDiveLeft", false);
+                }
+
+                yield return new WaitForSeconds(0.1f);
 
                 break;
             case Phase.three:
@@ -261,13 +279,28 @@ public class HorusAI : MonoBehaviour, IEnemy
                 }
 
                 //start dives
-                anim.SetBool("Dive", true);
-                for(int i = 0; i < 5; i++)
+                dir = (Mathf.Sign(transform.localScale.x) < 0) ? -1 : 1;
+                if (dir == 1)
+                {
+                    anim.SetBool("DiveRight", true);
+                }
+                else
+                {
+                    anim.SetBool("DiveLeft", true);
+                }
+                for (int i = 0; i < 5; i++)
                 {
                     yield return StartCoroutine(AOEDive());
                     transform.position = new Vector2(playerTransform.position.x, topLeft.y);
                 }
-                anim.SetBool("Dive", false);
+                if (dir == 1)
+                {
+                    anim.SetBool("DiveRight", false);
+                }
+                else
+                {
+                    anim.SetBool("DiveLeft", false);
+                }
 
                 break;
         }
@@ -285,7 +318,11 @@ public class HorusAI : MonoBehaviour, IEnemy
         speedMod = 3;
         while (isMoving) { yield return null; }
 
-        //aoe attack
+        //aoe attack; continue moving down
+        isMoving = true;
+        moveTarget = new Vector2(transform.position.x, bottomRight.y-20);
+        speedMod = 3;
+
         diveFX.transform.position = (Vector2)transform.position + (Vector2.up * diveOffset);
         diveFX.gameObject.SetActive(true);
         diveFX.SetTrigger("Attack");
@@ -321,7 +358,19 @@ public class HorusAI : MonoBehaviour, IEnemy
         }
         //flip over, and dive
         //flip
-        anim.SetBool("Dive", true);
+        int dir;
+        if (Mathf.Sign(transform.localScale.x) >= 0) 
+        {
+            anim.SetBool("DiveRight", true);
+            dir = 1;
+        }
+        else 
+        {
+            anim.SetBool("DiveLeft", true);
+            dir = -1;
+        }
+
+        yield return new WaitForSeconds(0.1f);
 
         //dive
         isMoving = true;
@@ -330,7 +379,14 @@ public class HorusAI : MonoBehaviour, IEnemy
         while (isMoving) { yield return null; }
 
         //unflip
-        anim.SetBool("Dive", false);
+        if(dir == 1)
+        {
+            anim.SetBool("DiveRight", false);
+        }
+        else
+        {
+            anim.SetBool("DiveLeft", false);
+        }
     }
 
     IEnumerator Gust()
@@ -349,10 +405,10 @@ public class HorusAI : MonoBehaviour, IEnemy
                 yield return StartCoroutine(BasicGust());
 
                 //move to side
-                moveTarget.x = playerTransform.position.x + ((ToRightOfPlayer) ? 6 : -6);
+                moveTarget.x = transform.position.x;
                 moveTarget.y = playerTransform.position.y;
                 isMoving = true;
-                speedMod = 1.5f;
+                speedMod = 1f;
                 while (isMoving) { yield return null; }
 
                 //dash through player
@@ -434,13 +490,15 @@ public class HorusAI : MonoBehaviour, IEnemy
         //pick location (diagonal above player, keep updating)
         isMoving = true;
         speedMod = 1;
-        int dir = (playerTransform.position.x > transform.position.x) ? -1 : 1;
+        int dir = (ToRightOfPlayer) ? -1 : 1;
         while (isMoving)
         {
             moveTarget = (Vector2)playerTransform.position + (Vector2.up * 6) + (Vector2.right * 12
                 * dir);
             yield return null;
         }
+        transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x) * -dir, transform.localScale.y, transform.localScale.z);
+        facingRight = (dir == 1) ? false : true;
 
         //gust anim
         anim.SetTrigger("Gust");
@@ -451,6 +509,8 @@ public class HorusAI : MonoBehaviour, IEnemy
         gustInst.Reset(new Vector2(transform.position.x, transform.position.y),
             new Vector2(playerTransform.position.x + ((playerTransform.position.x > transform.position.x) ? -4 : 4),
             playerTransform.position.y - playerGroundOffset));
+
+        yield return new WaitForSeconds(0.25f);
     }
 
     IEnumerator Rain()
@@ -496,6 +556,7 @@ public class HorusAI : MonoBehaviour, IEnemy
                 moveTarget = new Vector2((dir == 1) ? bottomRight.x - 4 : moveTarget.x = topLeft.x + 4, topLeft.y);
                 isMoving = true;
                 speedMod = 2.5f;
+                while(isMoving) { yield return null; }
 
                 //go across twice
                 dir = (transform.position.x > CenterX) ? 1 : -1;
@@ -612,14 +673,14 @@ public class HorusAI : MonoBehaviour, IEnemy
 
                 ShotgunAttack(0, true);
 
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(0.25f);
                 anim.SetTrigger("Gust");
                 yield return new WaitForSeconds(0.15f);
 
                 ShotgunAttack(30, true);
                 ShotgunAttack(-30, true);
 
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(0.25f);
                 anim.SetTrigger("Gust");
                 yield return new WaitForSeconds(0.15f);
 
@@ -627,7 +688,7 @@ public class HorusAI : MonoBehaviour, IEnemy
                 ShotgunAttack(0, true);
                 ShotgunAttack(-30, true);
 
-                yield return new WaitForSeconds(0.2f);
+                yield return new WaitForSeconds(0.5f);
 
                 break;
         }
@@ -653,7 +714,7 @@ public class HorusAI : MonoBehaviour, IEnemy
             feather.gameObject.SetActive(true);
             disabledFeathers.RemoveAt(0);
             enabledFeathers.Add(feather);
-            feather.Reset(transform.position, new Vector2(Mathf.Cos(Mathf.Deg2Rad * (degVariance + angleToPlayer)),
+            feather.Reset(transform.position + (Vector3.up * 3), new Vector2(Mathf.Cos(Mathf.Deg2Rad * (degVariance + angleToPlayer)),
                 Mathf.Sin(Mathf.Deg2Rad * (degVariance + angleToPlayer))), bounce);
         }
         return;
@@ -679,7 +740,7 @@ public class HorusAI : MonoBehaviour, IEnemy
                 ///update target
                 while (isMoving)
                 {
-                    moveTarget = new Vector2(playerTransform.position.x + (8 * -dir), playerTransform.position.y + 8);
+                    moveTarget = new Vector2(playerTransform.position.x + (6.5f * -dir), playerTransform.position.y + 6.5f);
                     yield return null;
                 }
 
@@ -696,7 +757,6 @@ public class HorusAI : MonoBehaviour, IEnemy
                 wingAttack.Reset(transform.position, attackDir);
 
                 yield return new WaitForSeconds(0.2f);
-                
 
                 break;
             case Phase.two:
@@ -714,15 +774,12 @@ public class HorusAI : MonoBehaviour, IEnemy
                 ///update target
                 while (isMoving)
                 {
-                    moveTarget = new Vector2(playerTransform.position.x + (8 * -dir), playerTransform.position.y + 8);
+                    moveTarget = new Vector2(playerTransform.position.x + (6.5f * -dir), playerTransform.position.y + 6.5f);
                     yield return null;
                 }
 
-                //start attacking while moving through anims
-                isMoving = true;
-                speedMod = 1.5f;
-                moveTarget.x += dir * 5;
-                while (isMoving)
+                //3 attacks in a row
+                for (int i = 0; i < 3; i++)
                 {
                     //wing attack (blend tree anim)
                     targetDir = ((Vector2)(playerTransform.position - transform.position)).normalized;
@@ -735,10 +792,14 @@ public class HorusAI : MonoBehaviour, IEnemy
                     wingAttack.Reset(transform.position, attackDir);
                     yield return new WaitForSeconds(0.2f);
 
-                    yield return null;
+                    moveTarget.x = playerTransform.position.x;
+                    moveTarget.y = playerTransform.position.y + 6.5f;
+                    isMoving = true;
+                    speedMod = 2f;
+                    while(isMoving) { yield return null; }
                 }
 
-                //end anims
+                yield return new WaitForSeconds(2f);
 
                 break;
             case Phase.three:
@@ -748,28 +809,27 @@ public class HorusAI : MonoBehaviour, IEnemy
                 isMoving = true;
                 speedMod = 1f;
                 moveTarget.y = topLeft.y + RoomHeight;
+                moveTarget.x = transform.position.x;
                 while(isMoving) { yield return null; }
 
                 //scale down
-                transform.localScale = new Vector3(0.1f, 0.1f, 1);
+                transform.localScale = new Vector3(0.7f, 0.7f, 1);
+                //disable hb
+                contactHB.SetActive(false);
 
                 //fly down to center
                 transform.position = new Vector3(CenterX, transform.position.y, transform.position.z);
                 isMoving = true;
                 speedMod = 1f;
                 moveTarget.y = CenterY;
+                moveTarget.x = CenterX;
                 while (isMoving) { yield return null; }
 
-                //cross attack
-                crossAttack.SetActive(true);
+                //cross attack (through animator)
+                crossAttack.gameObject.SetActive(true);
                 crossAttack.transform.position = new Vector2(CenterX, CenterY);
-                float timer = 0f;
-                while (timer <= 3)
-                {
-                    crossAttack.transform.localScale = new Vector3(timer / 3, timer / 3);
-                    timer += Time.deltaTime;
-                    yield return null;
-                }
+                crossAttack.SetTrigger("Attack");
+                yield return new WaitForSeconds(1.1f);
 
                 //fly up and reset scale
                 isMoving = true;
@@ -779,6 +839,7 @@ public class HorusAI : MonoBehaviour, IEnemy
 
                 //scale up
                 transform.localScale = new Vector3(1, 1, 1);
+                contactHB.SetActive(true);
 
                 break;
         }
@@ -792,7 +853,7 @@ public class HorusAI : MonoBehaviour, IEnemy
         switch (phase)
         {
             case Phase.one:
-                yield return StartCoroutine(BasicSwoop());
+                yield return StartCoroutine(BasicSwoop(false));
 
                 yield return new WaitForSeconds(0.1f);
 
@@ -800,7 +861,7 @@ public class HorusAI : MonoBehaviour, IEnemy
             case Phase.two:
                 //add shotgun after swoop
 
-                yield return StartCoroutine(BasicSwoop());
+                yield return StartCoroutine(BasicSwoop(true));
 
                 anim.SetTrigger("Gust");
                 yield return new WaitForSeconds(0.15f);
@@ -847,8 +908,6 @@ public class HorusAI : MonoBehaviour, IEnemy
                     Vector2 translation = new Vector2(normalizedDif.y * 2 * ((CenterX / CenterY)), -normalizedDif.x) *
                         Mathf.Max(Vector2.Distance(transform.position, moveTarget), 4) * 3 * Time.deltaTime;
                     transform.Translate(translation, Space.World);
-                    //transform.rotation = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y,
-                    //    Mathf.Atan2(translation.y, translation.x) * Mathf.Rad2Deg - 90);
                     anim.SetFloat("RotateX", translation.x);
                     anim.SetFloat("RotateY", translation.y);
                     yield return null;
@@ -864,7 +923,7 @@ public class HorusAI : MonoBehaviour, IEnemy
         yield break;
     }
 
-    IEnumerator BasicSwoop()
+    IEnumerator BasicSwoop(bool extendedEnd)
     {
         //move close above player and then swoop with claws
         int dir;
@@ -886,15 +945,14 @@ public class HorusAI : MonoBehaviour, IEnemy
         }
 
         anim.SetBool("Swoop", true);
-        //swoop (add extra attack hb in anim)
         //first segment
-        moveTarget.x = playerTransform.position.x;
-        moveTarget.y = playerTransform.position.y - (playerGroundOffset / 2);
+        moveTarget.x = playerTransform.position.x + dir;
+        moveTarget.y = playerTransform.position.y - (3 * playerGroundOffset / 4);
         speedMod = 1.25f;
         isMoving = true;
         while (isMoving) { yield return null; }
         //second segment
-        moveTarget += new Vector2((3 * dir), 3);
+        moveTarget += new Vector2((3 * dir * ((extendedEnd) ? 2 : 1)), 3);
         isMoving = true;
         speedMod = 1.5f;
         while (isMoving) { yield return null; }
