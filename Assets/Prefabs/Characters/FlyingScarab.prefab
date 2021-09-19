@@ -13,6 +13,9 @@ GameObject:
   - component: {fileID: 3671915331801974328}
   - component: {fileID: 3671915331801974335}
   - component: {fileID: 8153120360326374423}
+  - component: {fileID: 9151839318872568390}
+  - component: {fileID: 6476327593620544557}
+  - component: {fileID: 4864321566746865346}
   m_Layer: 11
   m_Name: FlyingScarab
   m_TagString: Enemy
@@ -97,8 +100,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ff637c43df7de748a1f5bee2c0c0c87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 100
-  maxHealth: 0
   target: {fileID: 0}
   speed: 800
   nextWaypointDistance: 3
@@ -137,6 +138,48 @@ PolygonCollider2D:
       - {x: -3.3594604, y: -1.0368251}
       - {x: 0.018262506, y: -2.0999334}
       - {x: 4.4820967, y: -2.462658}
+--- !u!114 &9151839318872568390
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3671915331801974334}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7a43f074d14fc846be4fa760f0aecab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 25
+--- !u!70 &6476327593620544557
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3671915331801974334}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.064171806, y: -0.05348468}
+  m_Size: {x: 9.043187, y: 4.700729}
+  m_Direction: 1
+--- !u!114 &4864321566746865346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3671915331801974334}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e23ba329a29cd409c7e83fb1e95ff8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthManager: {fileID: 9151839318872568390}
 --- !u!1 &3671915331943647943
 GameObject:
   m_ObjectHideFlags: 0
@@ -150,7 +193,7 @@ GameObject:
   - component: {fileID: 6839716890455678517}
   m_Layer: 15
   m_Name: ContactHB
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -182,6 +225,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   contactDamage: 1
+  setToGround: 0
 --- !u!60 &6839716890455678517
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -221,6 +265,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3671915331801974330}
     m_Modifications:
+    - target: {fileID: 4711128978598217132, guid: 6ae7eac119e56104aa42c0b28c9d217d,
+        type: 3}
+      propertyPath: m_Bounds.m_Center.x
+      value: 0.0018250942
+      objectReference: {fileID: 0}
+    - target: {fileID: 4711128978598217132, guid: 6ae7eac119e56104aa42c0b28c9d217d,
+        type: 3}
+      propertyPath: m_Bounds.m_Center.y
+      value: 0.0021449327
+      objectReference: {fileID: 0}
+    - target: {fileID: 4711128978598217132, guid: 6ae7eac119e56104aa42c0b28c9d217d,
+        type: 3}
+      propertyPath: m_Bounds.m_Extent.y
+      value: 1.3873149
+      objectReference: {fileID: 0}
     - target: {fileID: 6277099206939814577, guid: 6ae7eac119e56104aa42c0b28c9d217d,
         type: 3}
       propertyPath: m_Name

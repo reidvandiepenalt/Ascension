@@ -11,13 +11,17 @@ public class GustScript : MonoBehaviour
     public float time = 0.75f;
     private float timer = 0.0f;
     Rigidbody2D rb;
+    List<int> instanceIDs;
 
     void OnTriggerEnter2D(Collider2D target)
     {
-        //deal damage on hit
+        //stun on hit
         if (target.gameObject.tag == "Enemy")
         {
-            target.gameObject.GetComponent<IEnemy>().Stun(stunTime);
+            int instanceID = target.GetInstanceID();
+            if (instanceIDs.Contains(instanceID)) { return; }
+            instanceIDs.Add(instanceID);
+            target.gameObject.GetComponent<EnemyCompositeHB>().Stun(stunTime);
         }
     }
 

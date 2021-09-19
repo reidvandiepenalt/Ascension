@@ -136,6 +136,8 @@ GameObject:
   - component: {fileID: 7348134869626863149}
   - component: {fileID: 7348134869626863151}
   - component: {fileID: 7348134869626863148}
+  - component: {fileID: 6592114569444639221}
+  - component: {fileID: 6393781288341185603}
   m_Layer: 11
   m_Name: Hitbox
   m_TagString: Enemy
@@ -195,5 +197,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4817d7a7c2042d9478a16c770c492ce4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 25
   parent: {fileID: 3195911497728535862}
+--- !u!114 &6592114569444639221
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7348134869626863146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e23ba329a29cd409c7e83fb1e95ff8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthManager: {fileID: 6393781288341185603}
+--- !u!114 &6393781288341185603
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7348134869626863146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7a43f074d14fc846be4fa760f0aecab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 25

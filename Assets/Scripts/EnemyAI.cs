@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
 
-public abstract class EnemyAI : MonoBehaviour,  IEnemy
+public abstract class EnemyAI : MonoBehaviour
 {
-    public int health;
-    public int maxHealth;
     public Transform target;
 
     public float speed = 200f;
@@ -22,21 +20,11 @@ public abstract class EnemyAI : MonoBehaviour,  IEnemy
     protected Rigidbody2D rb;
     public GameObject enemyGFX;
 
-    public int Health { get; set; }
-    public int MaxHealth { get => maxHealth; set => maxHealth = value; }
-
-    private void OnDrawGizmos()
-    {
-        //draw agro area
-        Gizmos.DrawWireSphere(transform.position, aggroDistance);
-    }
-
     protected virtual void Start()
     {
         //set up
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
-        health = maxHealth;
     }
 
     protected abstract void CheckDist();
@@ -108,9 +96,9 @@ public abstract class EnemyAI : MonoBehaviour,  IEnemy
     /// Enemy takes damage
     /// </summary>
     /// <param name="damageAmount">Damage to take</param>
-    public virtual void TakeDamage(int damageAmount)
+    public virtual void OnHit(object param)
     {
-        health = health - damageAmount;
+        int health = (int)param;
 
         if (health < 0)
         {
@@ -123,7 +111,8 @@ public abstract class EnemyAI : MonoBehaviour,  IEnemy
     /// Stuns the enemy
     /// </summary>
     /// <param name="timer">Time to stay stunned</param>
-    public virtual void Stun(float stunTime)
+    public virtual void OnStun(object param)
     {
+        float stunTime = (float)param;
     }
 }

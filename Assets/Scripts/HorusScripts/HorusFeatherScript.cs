@@ -18,20 +18,29 @@ public class HorusFeatherScript : MonoBehaviour
         transform.position += (Vector3)(direction * speed * Time.deltaTime);
     }
 
+    private void Update()
+    {
+        if (bounce)
+        {
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, 1, groundLayer);
+            if (hit)
+            {
+                if (hit.collider.CompareTag("Inanimate"))
+                {
+                    direction = Vector2.Reflect(direction, hit.normal);
+                    bounce = false;
+                    transform.rotation = Quaternion.identity;
+                    transform.Rotate(0, 0, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90);
+                }
+            }
+        }
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if ((collision.CompareTag("Inanimate") || collision.CompareTag("NonDestroyingGround")) && !bounce)
         {
             gameObject.SetActive(false);
-        }
-        else if (collision.CompareTag("Inanimate"))
-        {
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, 1, groundLayer);
-            direction = Vector2.Reflect(direction, hit.normal);
-            //direction = new Vector2(direction.x * -1, direction.y);
-            bounce = false;
-            transform.rotation = Quaternion.identity;
-            transform.Rotate(0, 0, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90);
         }
     }
 

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HorusAI : MonoBehaviour, IEnemy
+public class HorusAI : MonoBehaviour
 {
     enum Attack
     {
@@ -16,8 +16,14 @@ public class HorusAI : MonoBehaviour, IEnemy
         swoop
     }
     Attack curAttack = Attack.idle;
-    Attack prevAttack = Attack.idle;
-    Attack CurrentAttack { get => curAttack;  set { prevAttack = curAttack; curAttack = value; } }
+    List<Attack> attackOrder = new List<Attack>() { Attack.dive, Attack.gusts, Attack.rain, Attack.shotgun, Attack.xAttack, Attack.swoop };
+    Attack CurrentAttack { get => curAttack;  set 
+        { 
+            attackOrder.Add(curAttack); 
+            curAttack = value;
+            attackOrder.Remove(value);
+        } 
+    }
 
     enum Phase
     {
@@ -73,29 +79,30 @@ public class HorusAI : MonoBehaviour, IEnemy
     public Transform playerTransform;
     float playerGroundOffset;
 
+    [SerializeField] EnemyHealth healthManager;
+
     System.Random rng;
 
     bool facingRight = true;
     bool spiraling = false;
 
-    public int Health { get; set; }
-    public int MaxHealth { get; set; }
-
-    public void Stun(float time)
+    public void OnStun(object param)
     {
-        throw new System.NotImplementedException();
+        float time = (float)param;
+        //stun for a given time
+
     }
 
-    public void TakeDamage(int damage)
+    public void OnHit(object parameter)
     {
-        Health -= damage;
-        if(Health < 0)
+        int health = (int)parameter;
+        if(health < 0)
         {
             Die();
-        }else if(Health < (MaxHealth / 5f))
+        }else if(health < (healthManager.MaxHealth / 5f))
         {
             phase = Phase.three;
-        }else if (Health < (3 * MaxHealth / 5f))
+        }else if (health < (3 * healthManager.MaxHealth / 5f))
         {
             phase = Phase.two;
         }
@@ -109,14 +116,13 @@ public class HorusAI : MonoBehaviour, IEnemy
     // Start is called before the first frame update
     void Start()
     {
-        Health = MaxHealth;
         rng = new System.Random();
 
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
         playerCollider = playerTransform.gameObject.GetComponent<Collider2D>();
         playerGroundOffset = playerCollider.bounds.extents.y;
 
-        phase = Phase.three;
+        phase = Phase.one;
     }
 
     void FixedUpdate()
@@ -178,13 +184,27 @@ public class HorusAI : MonoBehaviour, IEnemy
     /// </summary>
     void PickAttack()
     {
-        //random new attack; make smarter?
-        /*/
-        List<Attack> possibleAttacks = new List<Attack>() { Attack.dive, Attack.gusts, Attack.rain, Attack.shotgun, Attack.xAttack, Attack.swoop };
-        possibleAttacks.Remove(prevAttack);
-        CurrentAttack = possibleAttacks[rng.Next(0, possibleAttacks.Count - 1)];/*/
-
-        CurrentAttack = Attack.xAttack;
+        //random new attack; weighted towards using attacks it hasnt used in a while
+        int randomWeight = Random.Range(0, 1);
+        if(randomWeight < 0.35f)
+        {
+            CurrentAttack = attackOrder[0];
+        }else if (randomWeight < 0.65f)
+        {
+            CurrentAttack = attackOrder[1];
+        }
+        else if (randomWeight < 0.85f)
+        {
+            CurrentAttack = attackOrder[2];
+        }
+        else if (randomWeight < 0.95f)
+        {
+            CurrentAttack = attackOrder[3];
+        }
+        else
+        {
+            CurrentAttack = attackOrder[4];
+        }
 
         //start new attack
         switch (CurrentAttack)
@@ -451,7 +471,7 @@ public class HorusAI : MonoBehaviour, IEnemy
                 //spawn feathers in columns of 3 to either side that increase in height
                 float timer = 0f;
                 int heightLevel = 0;
-                while (timer < 8f)
+                while (timer < 6f)
                 {
                     for(int i = 1; i <= 3; i++)
                     {

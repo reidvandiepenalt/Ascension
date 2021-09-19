@@ -11,6 +11,7 @@ public class BoomerangScript : MonoBehaviour
     public float stepper = 0.1f;
     public bool left = false;
     public float scale = 1.0f;
+    [SerializeField] AttackInteract interact;
 
     // Start is called before the first frame update
     public void Start()
@@ -35,9 +36,11 @@ public class BoomerangScript : MonoBehaviour
         if (left && timer >= 0.75f)
         {
             rb.velocity = new Vector2(rb.velocity.x + stepper, 0);
+            interact.instanceIDs.Clear();
         } else if (timer >= 0.75f)
         {
             rb.velocity = new Vector2(rb.velocity.x - stepper, 0);
+            interact.instanceIDs.Clear();
         }
 
         //despawn
@@ -55,6 +58,7 @@ public class BoomerangScript : MonoBehaviour
             if(timer < 0.80)
             {
                 rb.velocity = new Vector2 (-rb.velocity.x, 0);
+                interact.instanceIDs.Clear();
             }
             else
             {

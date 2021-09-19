@@ -48,10 +48,6 @@ public class PlayerTestScript : MonoBehaviour
     public IntValue currentHealth, maxHealth;
     public Signal playerHealthSignal;
     public float invincLength = 0.75f;
-    private float invincIntervalTimer = 0.0f;
-    private float invincTotalTimer = 0.0f;
-    public float invincIntervalLength = 0.15f;
-    private bool opaque = false;
 
     private bool hitInvincible = false;
     private bool skillInvincible = false;
@@ -169,8 +165,6 @@ public class PlayerTestScript : MonoBehaviour
         }
     }
 
-    private Component[] spriteComponents;
-
     public static int blessingTotal = 7;
     public PlayerState state;
 
@@ -196,7 +190,6 @@ public class PlayerTestScript : MonoBehaviour
         state = PlayerState.idle;
         controller = GetComponent<Controller2D>();
         anim = GetComponent<Animator>();
-        spriteComponents = GetComponentsInChildren(typeof(SpriteRenderer));
 
         gravity = -(2 * maxJumpHeight) / Mathf.Pow(timeToJumpApex, 2);
         maxJumpVelocity = Mathf.Abs(gravity * timeToJumpApex);
@@ -442,12 +435,6 @@ public class PlayerTestScript : MonoBehaviour
         {
             Dash();
         }
-        
-        //invincible anim effect
-        if (hitInvincible)
-        {
-            SpriteBlinkingEffect();
-        }
 
         //terminal velocity
         if(velocity.y < terminalVelocity) { velocity.y = terminalVelocity; }
@@ -555,11 +542,17 @@ public class PlayerTestScript : MonoBehaviour
 
         //see if enemies are hit and do damage
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
+        //find closest collider and damage
+        if (hitEnemies.Length == 0) { return; }
+        Collider2D closestEnemy = hitEnemies[0];
+        float dist = Vector2.Distance(hitEnemies[0].transform.position, transform.position);
         foreach(Collider2D enemy in hitEnemies)
         {
-            ComboInc();
-            enemy.GetComponent<IEnemy>().TakeDamage(AttackDamage);
+            float tempDist = Vector2.Distance(enemy.transform.position, transform.position);
+            if(tempDist < dist) { closestEnemy = enemy; dist = tempDist; }
         }
+        ComboInc();
+        closestEnemy.GetComponent<EnemyCompositeHB>().TakeDamage(AttackDamage);
     }
 
     private void OnDrawGizmosSelected()
@@ -608,7 +601,7 @@ public class PlayerTestScript : MonoBehaviour
             if (state == PlayerState.guarding)
             {
                 guardTypeScripts.Unguard(true);
-                hitInvincible = true;
+                StartInvinc();
                 return;
             }
             //not guarding
@@ -628,7 +621,7 @@ public class PlayerTestScript : MonoBehaviour
                     SetToLastGround();
                     return;
                 }
-                hitInvincible = true;
+                StartInvinc();
             }
         }
     }
@@ -651,45 +644,22 @@ public class PlayerTestScript : MonoBehaviour
     }
 
     /// <summary>
-    /// Unworking function for making player sprite blink when invincible
+    /// Starts the invincible animation and sets invincible to true
     /// </summary>
-    private void SpriteBlinkingEffect() //not working
+    private void StartInvinc()
     {
-        invincTotalTimer += Time.deltaTime;
-        //no longer invinc to reset to opaque
-        if (invincTotalTimer >= invincLength)
-        {
-            hitInvincible = false;
-            opaque = false;
-            invincTotalTimer = 0.0f;
-            foreach (SpriteRenderer sprite in spriteComponents)
-            {
-                sprite.color = new Color(1f, 1f, 1f, 1f);
-            }
-            return;
-        }
+        hitInvincible = true;
+        Invoke("EndInvinc", invincLength);
+        anim.SetBool("Invinc", true);
+    }
 
-        //alternate between opaque and translucent
-        invincIntervalTimer += Time.deltaTime;
-        if (invincIntervalTimer >= invincIntervalLength)
-        {
-            invincIntervalTimer = 0.0f;
-            if (opaque)
-            {
-                foreach (SpriteRenderer sprite in spriteComponents)
-                {
-                    sprite.color = new Color(1f, 1f, 1f, 1f);
-                }
-            }
-            else
-            {
-                foreach (SpriteRenderer sprite in spriteComponents)
-                {
-                    sprite.color = new Color(1f, 1f, 1f, 0.1f);
-                }
-                opaque = true;
-            }
-        }
+    /// <summary>
+    /// Ends the invinc animation and sets invincible to false
+    /// </summary>
+    private void EndInvinc()
+    {
+        hitInvincible = false;
+        anim.SetBool("Invinc", false);
     }
 
     /// <summary>
@@ -713,7 +683,7 @@ public class PlayerTestScript : MonoBehaviour
                 {
                     if (hit.collider.tag == "Enemy")
                     {
-                        hit.collider.gameObject.GetComponent<EnemyAI>().Stun(backstepStunTime);
+                        hit.collider.gameObject.GetComponent<EnemyHealth>().Stun(backstepStunTime);
                     }
                 }
             }
@@ -724,7 +694,7 @@ public class PlayerTestScript : MonoBehaviour
                 {
                     if (hit.transform.gameObject.tag == "Enemy")
                     {
-                        hit.collider.gameObject.GetComponent<EnemyAI>().Stun(backstepStunTime);
+                        hit.collider.gameObject.GetComponent<EnemyHealth>().Stun(backstepStunTime);
                     }
                 }
             }
@@ -819,7 +789,8 @@ public class PlayerTestScript : MonoBehaviour
                 {
                     dashDidHit = true;
                     ComboInc();
-                    enemy.GetComponent<EnemyAI>().TakeDamage(AttackDamage);
+                    enemy.GetComponent<EnemyHealth>().TakeDamage(AttackDamage);
+                    return;
                 }
             }
 

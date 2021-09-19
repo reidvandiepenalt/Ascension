@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class NovaTutorialAI : MonoBehaviour, IEnemy
+public class NovaTutorialAI : MonoBehaviour
 {
     public Vector2[] roomBounds = new Vector2[2];
     public Transform playerTransform, leftArmSolver, rightArmSolver, rightLaserSpawn, leftLaserSpawn;
@@ -30,12 +30,6 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
     float dist { get { return (transform.position - target.position).magnitude; } }
     float RoomWidth { get { return roomBounds[1].x - roomBounds[0].x; } }
     float RoomHeight { get { return roomBounds[0].y - roomBounds[1].y; } }
-
-    protected int health;
-    protected int maxHealth;
-
-    public int Health { get => health; set => health = value; }
-    public int MaxHealth { get => maxHealth; set => maxHealth = value; }
 
     System.Random rng;
 
@@ -131,6 +125,7 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
 
         //spawn attack and animate
         afterImage.SetActive(false);
+        SetInvincible(false);
         anim.SetBool("RaiseArms", true);
         yield return new WaitForSeconds(arrivalAttackDelay);
         bool leftToRight = (playerTransform.position.x > transform.position.x);
@@ -155,6 +150,7 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
         anim.SetBool("RaiseArms", false);
         yield return new WaitForSeconds(attackFinishDelay);
         afterImage.SetActive(true);
+        SetInvincible(true);
 
         State = AIState.idle;
     }
@@ -196,6 +192,7 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
 
         //animate
         afterImage.SetActive(false);
+        SetInvincible(false);
         bool left = playerTransform.position.x <= transform.position.x;
         anim.SetBool("Laser", true);
         anim.SetFloat("LaserX", (playerCollider.bounds.center - transform.position).normalized.x);
@@ -219,6 +216,7 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
 
         yield return new WaitForSeconds(attackFinishDelay);
         afterImage.SetActive(true);
+        SetInvincible(true);
 
         State = AIState.idle;
     }
@@ -261,6 +259,7 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
         //spawn attack and animate
         //spawn projectiles in a cone evenly spaced
         afterImage.SetActive(false);
+        SetInvincible(false);
         yield return new WaitForSeconds(arrivalAttackDelay);
         for(int i = -omniProjCount / 2; i <= omniProjCount / 2; i++)
         {
@@ -277,6 +276,8 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
         }
         yield return new WaitForSeconds(attackFinishDelay);
         afterImage.SetActive(true);
+        SetInvincible(true);
+
 
         State = AIState.idle;
     }
@@ -305,7 +306,8 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
         yield return new WaitWhile(() => !reachedEndOfPath);
 
         //spawn attack and animate
-        afterImage.SetActive(true);
+        afterImage.SetActive(false);
+        SetInvincible(false);
         yield return new WaitForSeconds(arrivalAttackDelay);
         for(int i = 0; i < directedProjCount; i++)
         {
@@ -325,6 +327,7 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
         }
         yield return new WaitForSeconds(attackFinishDelay);
         afterImage.SetActive(true);
+        SetInvincible(true);
 
         State = AIState.idle;
     }
@@ -432,7 +435,6 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
     /// <param name="on"></param>
     void SetInvincible(bool on)
     {
-        //add some sort of afterimage effect
         if (on)
         {
             contactCollider.enabled = false;
@@ -447,9 +449,9 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
     /// Takes damage amount
     /// </summary>
     /// <param name="damageAmount"></param>
-    public void TakeDamage(int damageAmount)
+    public void OnHit(object param)
     {
-        Health -= damageAmount;
+        int health = (int)param;
 
         if(health < 0)
         {
@@ -469,8 +471,9 @@ public class NovaTutorialAI : MonoBehaviour, IEnemy
     /// Stuns enemy
     /// </summary>
     /// <param name="time"></param>
-    public void Stun(float time)
+    public void OnStun(object param)
     {
+        float stunTime = (float)param;
         throw new NotImplementedException();
     }
 }

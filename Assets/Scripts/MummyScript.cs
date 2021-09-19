@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
 
-public class MummyScript : MonoBehaviour, IEnemy
+public class MummyScript : MonoBehaviour
 {
     public enum State
     {

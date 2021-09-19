@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
 
-public class MummyGraph : MonoBehaviour, IEnemy
+public class MummyGraph : MonoBehaviour
 {
     public enum State
     {
@@ -56,18 +56,17 @@ public class MummyGraph : MonoBehaviour, IEnemy
     const float skinWidth = 0.05f;
     const float distBetweenRays = 0.2f;
 
-    public int Health { get; set; }
-    public int MaxHealth { get; set; }
 
-    public void Stun(float time)
+    public void OnStun(object param)
     {
+        float time = (float)param;
         throw new System.NotImplementedException();
     }
 
-    public void TakeDamage(int damage)
+    public void OnHit(object param)
     {
-        Health -= damage;
-        if (Health < 0)
+        int health = (int)param;
+        if (health < 0)
         {
             Destroy(gameObject);
         }
@@ -77,8 +76,6 @@ public class MummyGraph : MonoBehaviour, IEnemy
     {
         //init variable setup
         seeker = GetComponent<Seeker>();
-
-        Health = MaxHealth;
         filter = new ContactFilter2D();
         filter.SetLayerMask(groundLayer);
         player = GameObject.FindGameObjectWithTag("Player").transform;
