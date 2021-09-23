@@ -11,7 +11,7 @@ public class GustScript : MonoBehaviour
     public float time = 0.75f;
     private float timer = 0.0f;
     Rigidbody2D rb;
-    List<int> instanceIDs;
+    List<int> instanceIDs = new List<int>();
 
     void OnTriggerEnter2D(Collider2D target)
     {

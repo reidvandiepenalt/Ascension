@@ -10,7 +10,8 @@ public class MummyGraph : MonoBehaviour
         jumping,
         attacking,
         walking,
-        idle
+        idle,
+        jumpStart
     }
 
     public Seeker seeker;
@@ -115,20 +116,28 @@ public class MummyGraph : MonoBehaviour
             currentWaypoint = 0;
         }
         //prevent stuttering on path calc finish
-        if (path.vectorPath[0].x < path.vectorPath[1].x)
+        for(int i = 0; i < path.vectorPath.Count - 1; i++)
         {
-            if(transform.position.x > path.vectorPath[0].x)
+            if (path.vectorPath[i].x < path.vectorPath[i + 1].x)
             {
-                currentWaypoint++;
+                if (transform.position.x > path.vectorPath[i].x)
+                {
+                    currentWaypoint++;
+                }
+            }
+            else
+            {
+                if (transform.position.x < path.vectorPath[i].x)
+                {
+                    currentWaypoint++;
+                }
+                else
+                {
+                    break;
+                }
             }
         }
-        else
-        {
-            if (transform.position.x < path.vectorPath[0].x)
-            {
-                currentWaypoint++;
-            }
-        }
+        
 
         noNextPlatform = false;
     }
@@ -150,13 +159,36 @@ public class MummyGraph : MonoBehaviour
         //do nothing if paused
         if (Pause.isPaused) { return; }
 
+        RaycastHit2D leftHit;
+        RaycastHit2D rightHit;
+        if (state != State.jumpStart)
+        {
+            //check if landed and do necessary setup if it is
+            leftHit = Physics2D.Raycast(new Vector2(collider.bounds.min.x + 0.05f, collider.bounds.min.y),
+                    Vector2.down, 0.1f, groundLayer);
+            rightHit = Physics2D.Raycast(new Vector2(collider.bounds.max.x - 0.05f, collider.bounds.min.y),
+                Vector2.down, 0.1f, groundLayer);
+            if (leftHit)
+            {
+                collisions.below = true;
+                collisions.platform = leftHit.collider;
+            }else if (rightHit)
+            {
+                collisions.below = true;
+                collisions.platform = rightHit.collider;
+            }
+            else
+            {
+                collisions.below = false;
+            }
+        }
+
         switch (state)
         {
             case State.jumping:
-                //check if landed and do necessary setup if it is
-                RaycastHit2D leftHit = Physics2D.Raycast(new Vector2(collider.bounds.min.x, collider.bounds.min.y),
-                Vector2.down, 0.1f, groundLayer);
-                RaycastHit2D rightHit = Physics2D.Raycast(new Vector2(collider.bounds.max.x, collider.bounds.min.y),
+                leftHit = Physics2D.Raycast(new Vector2(collider.bounds.min.x + 0.05f, collider.bounds.min.y),
+                    Vector2.down, 0.1f, groundLayer);
+                rightHit = Physics2D.Raycast(new Vector2(collider.bounds.max.x - 0.05f, collider.bounds.min.y),
                     Vector2.down, 0.1f, groundLayer);
                 if (leftHit)
                 {
@@ -167,7 +199,6 @@ public class MummyGraph : MonoBehaviour
                     if (!collisions.platform.Equals(jumpTargetPlatform))
                     {
                         jumpFailed = true;
-                        Debug.Log("jf true");
                     }
                     else
                     {
@@ -184,7 +215,6 @@ public class MummyGraph : MonoBehaviour
                     if (!collisions.platform.Equals(jumpTargetPlatform))
                     {
                         jumpFailed = true;
-                        Debug.Log("jf true");
                     }
                     else
                     {
@@ -209,7 +239,6 @@ public class MummyGraph : MonoBehaviour
                     {
                         if(jumpFailed)
                         {
-                            Debug.Log("jump failed mvmt");
                             //move toward location to jump from
                             float dir = ((jumpFailedMoveTo.x - transform.position.x) > 0) ? 1 : -1;
                             velocity.x = dir * speed;
@@ -326,47 +355,76 @@ public class MummyGraph : MonoBehaviour
         seeker.StartPath(transform.position, player.position + (Vector3.down * yOffset));
     }
 
+    void JumpStartOver()
+    {
+        state = State.jumping;
+    }
+
     /// <summary>
     /// Add velocity that will make the mummy land on the platform
     /// </summary>
     void Jump()
     {
+        //dont jump if in air
+        if (!collisions.below) { return; }
+
         if(currentWaypoint + 1 >= path.path.Count) { noNextPlatform = true; velocity.x = 0; return; }
 
-        state = State.jumping;
+        jumpFailed = false;
 
-        for(int i = currentWaypoint + 1; i < path.path.Count; i++)
+        for (int i = currentWaypoint + 1; i < path.path.Count; i++)
         {
             if(path.path[i].Tag == 0)
             {
                 Vector2 landingPoint = path.vectorPath[i];
 
-                float jumpTime = (landingPoint.x - transform.position.x) / jumpDistToTime;
+                float jumpTime = 0.5f;
 
-                float yVel = Mathf.Clamp((landingPoint.y - collider.bounds.min.y) / jumpTime - (gravity * jumpTime / 2), 10f, 150);
+                //float yVel = Mathf.Clamp((landingPoint.y - collider.bounds.min.y) / jumpTime - (gravity * jumpTime / 2), 10f, 150);
+                float yVel = (landingPoint.y - collider.bounds.min.y) / jumpTime - (gravity * jumpTime / 2);
                 float xVel = (landingPoint.x - transform.position.x) / jumpTime;
-                if (xVel < 0) { xVel = Mathf.Clamp(xVel, -100, -5); }
-                else { xVel = Mathf.Clamp(xVel, 5, 100); }
+                /*if (xVel < 0) { xVel = Mathf.Clamp(xVel, -100, -5); }
+                else { xVel = Mathf.Clamp(xVel, 5, 100); }*/
+
+                jumpTime = Mathf.Abs((landingPoint.x - transform.position.x) / xVel);
 
                 //raycast for ceilings
-                if (!RaycastTrajectory(transform.position, landingPoint, velocity, 2, jumpTime))
+                if (!RaycastTrajectory(transform.position, new Vector2(xVel, yVel), 2, jumpTime))
                 {
                     velocity = new Vector2(xVel, yVel);
                     anim.SetTrigger("Jump");
-                    jumpFailedMoveRight = (transform.position.x < landingPoint.x) ? true : false;
-                    jumpTargetPlatform = Physics2D.Raycast(landingPoint, Vector2.down, Mathf.Infinity, groundLayer).collider;
-                    if (jumpFailedMoveRight) { jumpFailedMoveTo = new Vector2(jumpTargetPlatform.bounds.max.x + 5, transform.position.y); }
-                    else { jumpFailedMoveTo = new Vector2(jumpTargetPlatform.bounds.min.x - 5, transform.position.y); }
-
+                    UpdateJumpFailMoveTo(landingPoint);
+                    state = State.jumpStart;
+                    Invoke("JumpStartOver", 2 * Time.fixedDeltaTime);
                     return;
                 }
-                else
+                else //if ceiling; try shallower angle
                 {
-                    for (int j = 0; j < 12; j++)
+                    int segments = 4;
+                    float xLength = landingPoint.x - transform.position.x;
+                    float yLength = landingPoint.y - collider.bounds.min.y;
+                    float maxVx = xLength / Time.fixedDeltaTime;//move to end in 1 frame
+                    float xVelStep = (maxVx - xVel) / segments;
+                    
+                    for (int j = 0; j < segments; j++)
                     {
-                        //raise and lower trajectory and retest
+                        //lower trajectory and retest
+                        float testVx = xVel + xVelStep * j;
+                        float t = xLength / testVx;
+                        float testVy = yLength / t + (t * gravity / 2);
+
+                        if (!RaycastTrajectory(transform.position, new Vector2(testVx, testVy), 2, t))
+                        {
+                            velocity = new Vector2(testVx, testVy);
+                            anim.SetTrigger("Jump");
+                            UpdateJumpFailMoveTo(landingPoint);
+                            state = State.jumpStart;
+                            Invoke("JumpStartOver", 2 * Time.fixedDeltaTime);
+                            return;
+                        }
                     }
                 }
+                return;
             }
         }
         noNextPlatform = true;
@@ -377,24 +435,60 @@ public class MummyGraph : MonoBehaviour
     /// Splits the trajectory into segments and checks for obstacles
     /// </summary>
     /// <returns>Returns true if there is an obstacle in the way of the path</returns>
-    bool RaycastTrajectory(Vector2 startPos, Vector2 endPos, Vector2 velocity, int segments, float jumpTime)
+    bool RaycastTrajectory(Vector2 startPos, Vector2 velocity, int segments, float jumpTime)
     {
-        Vector2 location = startPos;
-        float xStep = (endPos.x - startPos.x) / segments;
+        Vector2 location = new Vector2(startPos.x, startPos.y);
         float timeStep = jumpTime / segments;
 
         for(int i = 1; i <= segments; i++)
         {
-            Vector2 rayEnd = new Vector2(startPos.x + velocity.x * timeStep * i,
-                startPos.y + velocity.y * timeStep * i - (gravity/2 * Mathf.Pow(timeStep * i, 2)));
-            RaycastHit2D hit = Physics2D.Raycast(location, (rayEnd - location), Vector2.Distance(rayEnd, location), groundLayer);
+            Vector2 rayEnd = new Vector2(startPos.x + (velocity.x * timeStep * i),
+                startPos.y + (velocity.y * timeStep * i) + (gravity / 2 * Mathf.Pow(timeStep * i, 2)));
+            RaycastHit2D hit = Physics2D.Raycast(location, rayEnd - location, Vector2.Distance(rayEnd, location), groundLayer);
+            Debug.DrawRay(location, rayEnd - location, Color.green, 1.5f);
             if (hit) { return true; }
-            else
-            {
-                location = rayEnd;
-            }
+            location = rayEnd;
         }
         return false;
+    }
+
+    /// <summary>
+    /// Updates the moveto vector if the jump fails
+    /// </summary>
+    void UpdateJumpFailMoveTo(Vector2 landingPoint)
+    {
+        jumpFailed = true;
+
+        jumpTargetPlatform = Physics2D.Raycast(landingPoint, Vector2.down, 5, groundLayer).collider;
+        if(jumpTargetPlatform == null)
+        {
+            jumpTargetPlatform = Physics2D.Raycast(landingPoint - Vector2.right * 0.1f, Vector2.down, 5, groundLayer).collider;
+            if(jumpTargetPlatform == null)
+            {
+                jumpTargetPlatform = Physics2D.Raycast(landingPoint + Vector2.right * 0.1f, Vector2.down, 5, groundLayer).collider;
+            }
+        }
+
+        if (landingPoint.x > jumpTargetPlatform.bounds.center.x)
+        {
+            if(collisions.platform.bounds.max.x  > jumpTargetPlatform.bounds.max.x)
+            {
+                jumpFailedMoveRight = true;
+                jumpFailedMoveTo = new Vector2(Mathf.Min(jumpTargetPlatform.bounds.max.x + 5, collisions.platform.bounds.max.x),
+                    transform.position.y);
+                return;
+            }
+        }
+        jumpFailedMoveRight = false;
+        if (collisions.platform.bounds.min.x < jumpTargetPlatform.bounds.min.x)
+        {
+            jumpFailedMoveTo = new Vector2(Mathf.Max(jumpTargetPlatform.bounds.min.x - 5, collisions.platform.bounds.min.x),
+                transform.position.y);
+            return;
+        }
+        //if it reaches here, target platform encompasses current platform
+        Debug.Log("Failed to update jumpFailedMoveTo");
+        //try raycasting in cones to sides for other viable platforms? or avoid this kind of design?
     }
 
 
