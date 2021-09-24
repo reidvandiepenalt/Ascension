@@ -20,7 +20,7 @@ public class MummyGraph : MonoBehaviour
 
     public State state = State.idle;
     public Transform player;
-    float yOffset;
+    float playerYOffset;
 
     public LayerMask groundLayer;
     private ContactFilter2D filter;
@@ -41,6 +41,7 @@ public class MummyGraph : MonoBehaviour
     Vector2 jumpFailedMoveTo = Vector2.zero;
     bool jumpFailedMoveRight = false;
     Collider2D jumpTargetPlatform = null;
+    Vector2 landingTarget = Vector2.zero;
 
     public Animator anim;
 
@@ -64,7 +65,7 @@ public class MummyGraph : MonoBehaviour
         throw new System.NotImplementedException();
     }
 
-    public void OnHit(object param)
+    [SerializeField] void OnHit(object param)
     {
         int health = (int)param;
         if (health < 0)
@@ -83,11 +84,11 @@ public class MummyGraph : MonoBehaviour
         collider = GetComponent<Collider2D>();
         gravity = -80;//same as player
         terminalVelocity = -40;
-        yOffset = player.GetComponent<Collider2D>().bounds.extents.y;
+        playerYOffset = player.GetComponent<Collider2D>().bounds.extents.y;
 
         //set delegate for path callback and start path
         seeker.pathCallback += OnPathComplete;
-        seeker.StartPath(transform.position, player.position + (Vector3.down * yOffset));
+        seeker.StartPath(transform.position, player.position + (Vector3.down * playerYOffset));
 
         //calc for collisions
         CalculateRaySpacing();
@@ -186,6 +187,11 @@ public class MummyGraph : MonoBehaviour
         switch (state)
         {
             case State.jumping:
+                if(Vector2.Distance(new Vector2(transform.position.x, collider.bounds.min.y), landingTarget) < 1f)
+                {
+                    velocity = new Vector2(velocity.x, Mathf.Min(velocity.y, 0));
+                }
+
                 leftHit = Physics2D.Raycast(new Vector2(collider.bounds.min.x + 0.05f, collider.bounds.min.y),
                     Vector2.down, 0.1f, groundLayer);
                 rightHit = Physics2D.Raycast(new Vector2(collider.bounds.max.x - 0.05f, collider.bounds.min.y),
@@ -195,7 +201,7 @@ public class MummyGraph : MonoBehaviour
                     anim.SetTrigger("Grounded");
                     state = State.walking;
                     collisions.platform = leftHit.collider;
-                    seeker.StartPath(transform.position, player.position + (Vector3.down * yOffset));
+                    seeker.StartPath(transform.position, player.position + (Vector3.down * playerYOffset));
                     if (!collisions.platform.Equals(jumpTargetPlatform))
                     {
                         jumpFailed = true;
@@ -211,7 +217,7 @@ public class MummyGraph : MonoBehaviour
                     anim.SetTrigger("Grounded");
                     state = State.walking;
                     collisions.platform = rightHit.collider;
-                    seeker.StartPath(transform.position, player.position + (Vector3.down * yOffset));
+                    seeker.StartPath(transform.position, player.position + (Vector3.down * playerYOffset));
                     if (!collisions.platform.Equals(jumpTargetPlatform))
                     {
                         jumpFailed = true;
@@ -249,6 +255,12 @@ public class MummyGraph : MonoBehaviour
                             float dir = ((path.vectorPath[currentWaypoint].x - transform.position.x) > 0) ? 1 : -1;
                             velocity.x = dir * speed;
                         }
+                    }
+
+                    //dont walk if next node is air
+                    if(path.path[currentWaypoint].Tag == 1)
+                    {
+                        velocity.x = 0;
                     }
                 }
                 break;
@@ -302,7 +314,7 @@ public class MummyGraph : MonoBehaviour
         if(currentWaypoint >= path.vectorPath.Count)
         {
             //end of path; start new one
-            seeker.StartPath(transform.position, player.position + (Vector3.down * yOffset));
+            seeker.StartPath(transform.position, player.position + (Vector3.down * playerYOffset));
             return;
         }
         else if(Vector2.Distance(transform.position, path.vectorPath[currentWaypoint]) < distToNextWaypoint)
@@ -311,7 +323,7 @@ public class MummyGraph : MonoBehaviour
             currentWaypoint++;
             if (currentWaypoint >= path.vectorPath.Count)
             {
-                seeker.StartPath(transform.position, player.position + (Vector3.down * yOffset));
+                seeker.StartPath(transform.position, player.position + (Vector3.down * playerYOffset));
                 return;
             }
             //reached next node of air, need to jump
@@ -352,7 +364,7 @@ public class MummyGraph : MonoBehaviour
         }
 
         //recalc path
-        seeker.StartPath(transform.position, player.position + (Vector3.down * yOffset));
+        seeker.StartPath(transform.position, player.position + (Vector3.down * playerYOffset));
     }
 
     void JumpStartOver()
@@ -379,14 +391,12 @@ public class MummyGraph : MonoBehaviour
                 Vector2 landingPoint = path.vectorPath[i];
 
                 float jumpTime = 0.5f;
-
-                //float yVel = Mathf.Clamp((landingPoint.y - collider.bounds.min.y) / jumpTime - (gravity * jumpTime / 2), 10f, 150);
                 float yVel = (landingPoint.y - collider.bounds.min.y) / jumpTime - (gravity * jumpTime / 2);
                 float xVel = (landingPoint.x - transform.position.x) / jumpTime;
-                /*if (xVel < 0) { xVel = Mathf.Clamp(xVel, -100, -5); }
-                else { xVel = Mathf.Clamp(xVel, 5, 100); }*/
 
                 jumpTime = Mathf.Abs((landingPoint.x - transform.position.x) / xVel);
+
+                landingTarget = landingPoint;
 
                 //raycast for ceilings
                 if (!RaycastTrajectory(transform.position, new Vector2(xVel, yVel), 2, jumpTime))
@@ -406,10 +416,10 @@ public class MummyGraph : MonoBehaviour
                     float maxVx = xLength / Time.fixedDeltaTime;//move to end in 1 frame
                     float xVelStep = (maxVx - xVel) / segments;
                     
-                    for (int j = 0; j < segments; j++)
+                    for (int j = 1; j <= segments; j++)
                     {
                         //lower trajectory and retest
-                        float testVx = xVel + xVelStep * j;
+                        float testVx = xVel + (xVelStep * j);
                         float t = xLength / testVx;
                         float testVy = yLength / t + (t * gravity / 2);
 
@@ -423,6 +433,9 @@ public class MummyGraph : MonoBehaviour
                             return;
                         }
                     }
+
+                    UpdateJumpFailMoveTo(landingPoint);
+                    jumpFailed = true;
                 }
                 return;
             }
@@ -457,8 +470,6 @@ public class MummyGraph : MonoBehaviour
     /// </summary>
     void UpdateJumpFailMoveTo(Vector2 landingPoint)
     {
-        jumpFailed = true;
-
         jumpTargetPlatform = Physics2D.Raycast(landingPoint, Vector2.down, 5, groundLayer).collider;
         if(jumpTargetPlatform == null)
         {
