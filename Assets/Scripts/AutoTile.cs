@@ -13,9 +13,9 @@ public class AutoTile : MonoBehaviour
     {
         //get the renderer and scale the texture to size of transform
         Rend = GetComponent<Renderer>();
-        matCopy = new Material(Rend.material);
+        matCopy = new Material(Rend.sharedMaterial);
         Rend.sharedMaterial = matCopy;
-        mesh = GetComponent<MeshFilter>().mesh;
+        mesh = GetComponent<MeshFilter>().sharedMesh;
         tileX = transform.localScale.x;
         tileY = transform.localScale.y;
         Rend.sharedMaterial.mainTextureScale = new Vector2(tileX, tileY);
