@@ -6,6 +6,10 @@ public class CloudScript : MonoBehaviour
 {
     [SerializeField] float moveSpeed;
     [SerializeField] Camera camera;
+    [SerializeField] bool camBased = false;
+
+    float leftBound;
+    float rightBound;
 
     float camWidth;
     float spriteWidth;
@@ -13,7 +17,13 @@ public class CloudScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        camWidth = camera.orthographicSize;
+        if (camBased)
+        {
+            camWidth = camera.orthographicSize;
+            leftBound = -camWidth;
+            rightBound = camWidth;
+        }
+        
         spriteWidth = gameObject.GetComponent<SpriteRenderer>().bounds.extents.x;
     }
 
@@ -21,12 +31,22 @@ public class CloudScript : MonoBehaviour
     void FixedUpdate()
     {
         transform.Translate(moveSpeed * Time.fixedDeltaTime, 0, 0);
-        if(transform.position.x - spriteWidth > camWidth)
+        if(transform.position.x - spriteWidth > rightBound)
         {
-            transform.position = new Vector3(-camWidth - spriteWidth, transform.position.y, 0);
-        }else if (transform.position.x + spriteWidth < -camWidth)
+            if (!camBased) { Destroy(gameObject); return; }
+            transform.position = new Vector3(leftBound - spriteWidth, transform.position.y, transform.position.z);
+        }else if (transform.position.x + spriteWidth < leftBound)
         {
-            transform.position = new Vector3(camWidth + spriteWidth, transform.position.y, 0);
+            if (!camBased) { Destroy(gameObject); return; }
+            transform.position = new Vector3(rightBound + spriteWidth, transform.position.y, transform.position.z);
         }
+    }
+
+
+    public void SetConditions(float left, float right, float speed)
+    {
+        leftBound = left;
+        rightBound = right;
+        moveSpeed = speed;
     }
 }
