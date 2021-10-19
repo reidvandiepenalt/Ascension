@@ -72,6 +72,8 @@ public class InventoryMenu : MonoBehaviour
 
     private void Start()
     {
+        EventSystem.current.firstSelectedGameObject = inventoryFirstSlot;
+
         //Load current canvas?
 
         //get all three canvases scripts

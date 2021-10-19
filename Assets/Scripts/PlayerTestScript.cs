@@ -118,6 +118,7 @@ public class PlayerTestScript : MonoBehaviour
     public GameObject InGameMenuCanvasPrefab;
     public GameObject SettingsCanvasPrefab;
     public GameObject SkillGridPrefab;
+    public GameObject eventSystemPrefab;
     public GameObject HBGribPrefab;
 
     GameObject pauseCanvas;
@@ -200,6 +201,7 @@ public class PlayerTestScript : MonoBehaviour
 
 
         //ui set up
+        Instantiate(eventSystemPrefab, Vector3.zero, Quaternion.identity);
         pauseCanvas = Instantiate(PauseCanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
         inGameMenuCanvas = Instantiate(InGameMenuCanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
         settingsCanvas = Instantiate(SettingsCanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
