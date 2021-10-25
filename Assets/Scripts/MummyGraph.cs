@@ -589,7 +589,7 @@ public class MummyGraph : MonoBehaviour
 
 
     /// <summary>
-    /// Moves the player based on given move distance
+    /// Moves the enemy based on given move distance
     /// </summary>
     public void Move(Vector2 moveDistance)
     {
