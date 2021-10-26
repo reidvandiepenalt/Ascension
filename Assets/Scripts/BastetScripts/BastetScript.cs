@@ -7,6 +7,9 @@ public class BastetScript : MonoBehaviour
     [SerializeField] Dictionary<JumpPoint, Vector2> jumpPoints;
     [SerializeField] GameObject jumpParent;
     [SerializeField] EnemyCollisionMovementHandler movement;
+    [SerializeField] EnemyHealth healthManager;
+
+    [SerializeField] GameObject swipePrefab, clawPrefab;
 
     [SerializeField] float speed;
     bool facingRight = true;
@@ -61,6 +64,32 @@ public class BastetScript : MonoBehaviour
         }
     }
 
+
+    public void OnStun(object param)
+    {
+        float time = (float)param;
+        //stun for a given time
+
+    }
+
+    public void OnHit(object parameter)
+    {
+        int health = (int)parameter;
+        if (health < 0)
+        {
+            Die();
+        }
+        else if (health < (healthManager.MaxHealth / 2f))
+        {
+            phase = Phase.two;
+        }
+    }
+
+    void Die()
+    {
+
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -78,10 +107,42 @@ public class BastetScript : MonoBehaviour
         }
 
 
+        switch (state)
+        {
+            case State.walk:
+                speedMod = 0.5f;
+                if (CheckXDistToMoveTarget()) { /*/pick new attack/*/}
+                break;
+            case State.sprint:
+                speedMod = 1f;
+                if (CheckXDistToMoveTarget()) { /*/pick new attack/*/}
+                break;
+            case State.charge:
+                break;
+            case State.clawSwipe:
+                break;
+            case State.tailWhip:
+                break;
+            case State.clawPlatform:
+                break;
+            case State.backflip:
+                break;
+        }
+
 
         movement.Move(speed * Time.fixedDeltaTime * speedMod * velocity.normalized);
     }
 
+    bool CheckXDistToMoveTarget()
+    {
+        if (moveTarget.x - transform.position.x < speed * Time.fixedDeltaTime * speedMod * velocity.normalized.x)
+        {
+            transform.position = new Vector3(moveTarget.x, transform.position.y, transform.position.z);
+            velocity.x = 0;
+            return true;
+        }
+        return false;
+    }
 
     void HorizVelCalc()
     {
@@ -89,6 +150,7 @@ public class BastetScript : MonoBehaviour
         if(velocity.x < 0 && facingRight)
         {
             facingRight = false;
+
         }else if(velocity.x > 0 && !facingRight)
         {
             facingRight = true;
