@@ -20,6 +20,10 @@ public class BastetScript : MonoBehaviour
 
     float gravity = -80;//same as player
 
+    [SerializeField] Transform playerTransform;
+    Collider2D playerCollider;
+    float playerGroundOffset;
+
     State state = State.walk;
     Phase phase = Phase.one;
 
@@ -43,6 +47,17 @@ public class BastetScript : MonoBehaviour
         tailWhip,
         clawPlatform,
         backflip
+    }
+
+    List<State> attackOrder = new List<State>() { State.clawSwipe, State.backflip, State.charge, State.tailWhip, State.clawPlatform };
+    State CurrentAttack
+    {
+        get => state; set
+        {
+            attackOrder.Add(state);
+            state = value;
+            attackOrder.Remove(value);
+        }
     }
 
     enum Phase
@@ -93,7 +108,11 @@ public class BastetScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+        playerCollider = playerTransform.gameObject.GetComponent<Collider2D>();
+        playerGroundOffset = playerCollider.bounds.extents.y;
+
+        phase = Phase.one;
     }
 
 
@@ -111,27 +130,18 @@ public class BastetScript : MonoBehaviour
         {
             case State.walk:
                 speedMod = 0.5f;
-                if (CheckXDistToMoveTarget()) { /*/pick new attack/*/}
+                if (CheckXDistToMoveTarget()) { PickAttack(); }
                 break;
             case State.sprint:
                 speedMod = 1f;
-                if (CheckXDistToMoveTarget()) { /*/pick new attack/*/}
-                break;
-            case State.charge:
-                break;
-            case State.clawSwipe:
-                break;
-            case State.tailWhip:
-                break;
-            case State.clawPlatform:
-                break;
-            case State.backflip:
+                if (CheckXDistToMoveTarget()) { PickAttack(); }
                 break;
         }
 
-
         movement.Move(speed * Time.fixedDeltaTime * speedMod * velocity.normalized);
     }
+
+
 
     bool CheckXDistToMoveTarget()
     {
@@ -155,6 +165,61 @@ public class BastetScript : MonoBehaviour
         {
             facingRight = true;
             //flip gfx
+        }
+    }
+
+    void PickAttack()
+    {
+        State[] pickableAtks = new State[attackOrder.Count - 1];
+
+        //only do claw platform if player not on top
+        if(playerTransform.position.y + playerGroundOffset < jumpPoints[JumpPoint.leftTop].y)
+        {
+            int clawIndex = attackOrder.IndexOf(State.clawPlatform);
+            for(int i = 0; i < attackOrder.Count; i++)
+            {
+                if(i > clawIndex)
+                {
+                    pickableAtks[i - 1] = attackOrder[i];
+                }else if (i < clawIndex)
+                {
+                    pickableAtks[i] = attackOrder[i];
+                }
+            }
+        }
+
+        //random new attack; weighted towards using attacks it hasnt used in a while
+        int randomWeight = Random.Range(0, 1);
+        if (randomWeight < 0.45f)
+        {
+            CurrentAttack = pickableAtks[0];
+        }
+        else if (randomWeight < 0.75f)
+        {
+            CurrentAttack = pickableAtks[1];
+        }
+        else if (randomWeight < 0.95f)
+        {
+            CurrentAttack = pickableAtks[2];
+        }
+        else
+        {
+            CurrentAttack = pickableAtks[3];
+        }
+
+        //start new attack
+        switch (state)
+        {
+            case State.charge:
+                break;
+            case State.clawSwipe:
+                break;
+            case State.tailWhip:
+                break;
+            case State.clawPlatform:
+                break;
+            case State.backflip:
+                break;
         }
     }
 }
