@@ -24,7 +24,7 @@ public class BastetScript : MonoBehaviour
     Collider2D playerCollider;
     float playerGroundOffset;
 
-    State state = State.walk;
+    Queue<Action> actionQ = new Queue<Action>();
     Phase phase = Phase.one;
 
     enum JumpPoint
@@ -38,7 +38,7 @@ public class BastetScript : MonoBehaviour
         leftTop,
         leftFloor
     }
-    enum State
+    enum Action
     {
         walk,
         sprint,
@@ -49,16 +49,7 @@ public class BastetScript : MonoBehaviour
         backflip
     }
 
-    List<State> attackOrder = new List<State>() { State.clawSwipe, State.backflip, State.charge, State.tailWhip, State.clawPlatform };
-    State CurrentAttack
-    {
-        get => state; set
-        {
-            attackOrder.Add(state);
-            state = value;
-            attackOrder.Remove(value);
-        }
-    }
+    List<Action> attackOrder = new List<Action>() { Action.clawSwipe, Action.backflip, Action.charge, Action.tailWhip, Action.clawPlatform };
 
     enum Phase
     {
@@ -125,16 +116,21 @@ public class BastetScript : MonoBehaviour
             velocity.y += gravity * Time.fixedDeltaTime;
         }
 
-
-        switch (state)
+        if(actionQ.Count == 0)
         {
-            case State.walk:
+            PickAttack();
+        }
+
+
+        switch (actionQ.Peek())
+        {
+            case Action.walk:
                 speedMod = 0.5f;
-                if (CheckXDistToMoveTarget()) { PickAttack(); }
+                if (CheckXDistToMoveTarget()) { actionQ.Dequeue(); }
                 break;
-            case State.sprint:
+            case Action.sprint:
                 speedMod = 1f;
-                if (CheckXDistToMoveTarget()) { PickAttack(); }
+                if (CheckXDistToMoveTarget()) { actionQ.Dequeue(); }
                 break;
         }
 
@@ -170,55 +166,47 @@ public class BastetScript : MonoBehaviour
 
     void PickAttack()
     {
-        State[] pickableAtks = new State[attackOrder.Count - 1];
+        bool clawable = false;
 
         //only do claw platform if player not on top
         if(playerTransform.position.y + playerGroundOffset < jumpPoints[JumpPoint.leftTop].y)
         {
-            int clawIndex = attackOrder.IndexOf(State.clawPlatform);
-            for(int i = 0; i < attackOrder.Count; i++)
-            {
-                if(i > clawIndex)
-                {
-                    pickableAtks[i - 1] = attackOrder[i];
-                }else if (i < clawIndex)
-                {
-                    pickableAtks[i] = attackOrder[i];
-                }
-            }
+            clawable = true;
         }
 
-        //random new attack; weighted towards using attacks it hasnt used in a while
-        int randomWeight = Random.Range(0, 1);
-        if (randomWeight < 0.45f)
+        //pick random set of attack pattern
+        int randomIndex = Random.Range(0, 6 + (clawable?2:0));
+        switch (randomIndex)
         {
-            CurrentAttack = pickableAtks[0];
-        }
-        else if (randomWeight < 0.75f)
-        {
-            CurrentAttack = pickableAtks[1];
-        }
-        else if (randomWeight < 0.95f)
-        {
-            CurrentAttack = pickableAtks[2];
-        }
-        else
-        {
-            CurrentAttack = pickableAtks[3];
-        }
-
-        //start new attack
-        switch (state)
-        {
-            case State.charge:
+            case 0:
+                actionQ.Enqueue(Action.backflip);
+                actionQ.Enqueue(Action.tailWhip);
                 break;
-            case State.clawSwipe:
+            case 1:
+                actionQ.Enqueue(Action.sprint);
+                actionQ.Enqueue(Action.clawSwipe);
                 break;
-            case State.tailWhip:
+            case 2:
+                actionQ.Enqueue(Action.walk);
+                actionQ.Enqueue(Action.clawSwipe);
                 break;
-            case State.clawPlatform:
+            case 3:
+                actionQ.Enqueue(Action.backflip);
+                actionQ.Enqueue(Action.charge);
                 break;
-            case State.backflip:
+            case 4:
+                actionQ.Enqueue(Action.walk);
+                actionQ.Enqueue(Action.tailWhip);
+                break;
+            case 5:
+                actionQ.Enqueue(Action.charge);
+                break;
+            case 6:
+                actionQ.Enqueue(Action.clawPlatform);
+                break;
+            case 7:
+                actionQ.Enqueue(Action.backflip);
+                actionQ.Enqueue(Action.clawPlatform);
                 break;
         }
     }
