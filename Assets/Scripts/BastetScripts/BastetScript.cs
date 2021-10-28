@@ -16,7 +16,9 @@ public class BastetScript : MonoBehaviour
     float speedMod = 1f;
     Vector2 velocity;
     Vector2 moveTarget;
-    Vector2 jumpTarget;
+
+    Queue<Vector2> path = new Queue<Vector2>();
+    bool reachedEndOfPath = true;
 
     float gravity = -80;//same as player
 
@@ -65,7 +67,34 @@ public class BastetScript : MonoBehaviour
             jumpPoints = new Dictionary<JumpPoint, Vector2>(ts.Length);
             for(int i = 0; i < ts.Length; i++)
             {
-                jumpPoints.Add((JumpPoint)i, ts[i].position);
+                string name = ts[i].name;
+                switch (name)
+                {
+                    case "LeftWall":
+                        jumpPoints.Add(JumpPoint.leftWall, ts[i].position);
+                        break;
+                    case "RightWall":
+                        jumpPoints.Add(JumpPoint.rightWall, ts[i].position);
+                        break;
+                    case "JumpPointBR":
+                        jumpPoints.Add(JumpPoint.rightFloor, ts[i].position);
+                        break;
+                    case "JumpPointMR":
+                        jumpPoints.Add(JumpPoint.rightMid, ts[i].position);
+                        break;
+                    case "JumpPointTR":
+                        jumpPoints.Add(JumpPoint.rightTop, ts[i].position);
+                        break;
+                    case "JumpPointBL":
+                        jumpPoints.Add(JumpPoint.leftFloor, ts[i].position);
+                        break;
+                    case "JumpPointML":
+                        jumpPoints.Add(JumpPoint.leftMid, ts[i].position);
+                        break;
+                    case "JumpPointTL":
+                        jumpPoints.Add(JumpPoint.leftTop, ts[i].position);
+                        break;
+                }
             }
         }
     }
@@ -104,6 +133,10 @@ public class BastetScript : MonoBehaviour
         playerGroundOffset = playerCollider.bounds.extents.y;
 
         phase = Phase.one;
+
+        //testing
+        transform.position = jumpPoints[JumpPoint.rightFloor];
+        GeneratePath(jumpPoints[JumpPoint.rightMid]);
     }
 
 
@@ -121,6 +154,21 @@ public class BastetScript : MonoBehaviour
             PickAttack();
         }
 
+        if (!reachedEndOfPath)
+        {
+            if (path.Count == 0)
+            {
+                reachedEndOfPath = true;
+            }
+            else
+            {
+                transform.position = path.Dequeue();
+                if (!reachedEndOfPath)
+                {
+                    return;
+                }
+            }
+        }
 
         switch (actionQ.Peek())
         {
@@ -134,14 +182,14 @@ public class BastetScript : MonoBehaviour
                 break;
         }
 
-        movement.Move(speed * Time.fixedDeltaTime * speedMod * velocity.normalized);
+        movement.Move(speed * Time.fixedDeltaTime * speedMod * velocity);
     }
 
 
 
     bool CheckXDistToMoveTarget()
     {
-        if (moveTarget.x - transform.position.x < speed * Time.fixedDeltaTime * speedMod * velocity.normalized.x)
+        if (moveTarget.x - transform.position.x < speed * Time.fixedDeltaTime * speedMod * velocity.x)
         {
             transform.position = new Vector3(moveTarget.x, transform.position.y, transform.position.z);
             velocity.x = 0;
@@ -208,6 +256,22 @@ public class BastetScript : MonoBehaviour
                 actionQ.Enqueue(Action.backflip);
                 actionQ.Enqueue(Action.clawPlatform);
                 break;
+        }
+    }
+
+    void GeneratePath(Vector2 endPoint)
+    {
+        reachedEndOfPath = false;
+        Vector2 vertex = transform.position;
+        float timeToMove = 0.3f;
+        int numSteps = (int)(60f * timeToMove);
+        float stepDist = (endPoint.x - vertex.x) / numSteps;
+
+        float initVy = (endPoint.y - transform.position.y - gravity / 2 * Mathf.Pow(timeToMove, 2)) / timeToMove;
+        for (int i = 0; i < numSteps; i++)
+        {
+            path.Enqueue(new Vector2(vertex.x + i * stepDist,
+                gravity / 2 * Mathf.Pow(i * Time.fixedDeltaTime, 2) + (i * Time.fixedDeltaTime * initVy) + vertex.y));
         }
     }
 }
