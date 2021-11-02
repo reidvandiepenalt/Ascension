@@ -8,6 +8,7 @@ public class BastetScript : MonoBehaviour
     [SerializeField] GameObject jumpParent;
     [SerializeField] EnemyCollisionMovementHandler movement;
     [SerializeField] EnemyHealth healthManager;
+    [SerializeField] LayerMask groundLayer;
 
     [SerializeField] GameObject swipePrefab, clawPrefab;
 
@@ -26,8 +27,10 @@ public class BastetScript : MonoBehaviour
     Collider2D playerCollider;
     float playerGroundOffset;
 
+    bool isMoving = false;
     Queue<Action> actionQ = new Queue<Action>();
     Phase phase = Phase.one;
+    bool actionSetupIncomplete = true;
 
     enum JumpPoint
     {
@@ -50,8 +53,6 @@ public class BastetScript : MonoBehaviour
         clawPlatform,
         backflip
     }
-
-    List<Action> attackOrder = new List<Action>() { Action.clawSwipe, Action.backflip, Action.charge, Action.tailWhip, Action.clawPlatform };
 
     enum Phase
     {
@@ -128,15 +129,12 @@ public class BastetScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        groundLayer = LayerMask.GetMask("Ground");
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
         playerCollider = playerTransform.gameObject.GetComponent<Collider2D>();
         playerGroundOffset = playerCollider.bounds.extents.y;
 
         phase = Phase.one;
-
-        //testing
-        transform.position = jumpPoints[JumpPoint.rightFloor];
-        GeneratePath(jumpPoints[JumpPoint.rightMid]);
     }
 
 
@@ -180,27 +178,88 @@ public class BastetScript : MonoBehaviour
                 speedMod = 1f;
                 if (CheckXDistToMoveTarget()) { actionQ.Dequeue(); }
                 break;
+            case Action.charge:
+                Charge();
+                break;
+            case Action.clawSwipe:
+                break;
+            case Action.tailWhip:
+                break;
+            case Action.clawPlatform:
+                break;
+            case Action.backflip:
+                break;
         }
 
-        movement.Move(speed * Time.fixedDeltaTime * speedMod * velocity);
+        movement.Move(Time.fixedDeltaTime * velocity);
     }
 
+    /// <summary>
+    /// Charge attack
+    /// </summary>
+    void Charge()
+    {
+        switch (phase)
+        {
+            case Phase.one:
+                if (actionSetupIncomplete)
+                {
+                    actionSetupIncomplete = false;
 
+                    //start anim (blur behind?)
 
+                    //set target and speed
+                    RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, groundLayer);
+                    if (hit)
+                    {
+                        if (playerTransform.position.x < transform.position.x)
+                        {
+                            moveTarget = new Vector2(hit.collider.bounds.min.x + 4, transform.position.y);
+                        }
+                        else
+                        {
+                            moveTarget = new Vector2(hit.collider.bounds.max.x - 4, transform.position.y);
+                        }
+
+                    }
+                    speedMod = 4f;
+                }
+                else if (!isMoving)
+                {
+                    //stop anim
+
+                    actionQ.Dequeue();
+                    actionSetupIncomplete = true;
+                }
+                break;
+            case Phase.two:
+
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Checks x distance for being close enough to snap to target
+    /// </summary>
+    /// <returns>True if snapped to target x</returns>
     bool CheckXDistToMoveTarget()
     {
         if (moveTarget.x - transform.position.x < speed * Time.fixedDeltaTime * speedMod * velocity.x)
         {
             transform.position = new Vector3(moveTarget.x, transform.position.y, transform.position.z);
             velocity.x = 0;
+            isMoving = false;
             return true;
         }
         return false;
     }
 
+    /// <summary>
+    /// Calculates the horizontal velocity and adjusts graphics
+    /// </summary>
     void HorizVelCalc()
     {
-        velocity.x = moveTarget.x - transform.position.x;
+        velocity.x = (moveTarget.x > transform.position.x)?speed * speedMod : -speed * speedMod;
         if(velocity.x < 0 && facingRight)
         {
             facingRight = false;
@@ -212,6 +271,9 @@ public class BastetScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Picks the next action set of Bastet
+    /// </summary>
     void PickAttack()
     {
         bool clawable = false;
@@ -259,6 +321,10 @@ public class BastetScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Generates a jumping path to move through
+    /// </summary>
+    /// <param name="endPoint">End point of the jump</param>
     void GeneratePath(Vector2 endPoint)
     {
         reachedEndOfPath = false;
