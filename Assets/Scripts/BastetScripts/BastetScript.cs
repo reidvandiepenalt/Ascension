@@ -194,6 +194,103 @@ public class BastetScript : MonoBehaviour
         movement.Move(Time.fixedDeltaTime * velocity);
     }
 
+
+    /// <summary>
+    /// Claw platform attack
+    /// </summary>
+    void ClawPlatform()
+    {
+        switch (phase)
+        {
+            case Phase.one:
+                //move to nearest jump point and jump up, then go above player and attack
+                break;
+            case Phase.two:
+
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Backflip move
+    /// </summary>
+    void Backflip()
+    {
+        switch (phase)
+        {
+            case Phase.one:
+                if (actionSetupIncomplete)
+                {
+                    actionSetupIncomplete = false;
+
+                    //start anim
+
+                    //generate path
+                    GeneratePath(new Vector2(transform.position.x + (facingRight ? -8 : 8), transform.position.y));
+                }else if (reachedEndOfPath)
+                {
+                    //stop anim?
+
+                    actionSetupIncomplete = true;
+
+                    actionQ.Dequeue();
+                }
+                break;
+            case Phase.two:
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Tail swipe attack
+    /// </summary>
+    void TailSwipe()
+    {
+        switch (phase)
+        {
+            case Phase.one:
+                if (actionSetupIncomplete)
+                {
+                    actionSetupIncomplete = false;
+
+                    //start anim
+                }
+                else //if(anim is done)
+                {
+                    actionSetupIncomplete = true;
+                    actionQ.Dequeue();
+                }
+                break;
+            case Phase.two:
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Claw swipe attack
+    /// </summary>
+    void ClawSwipe()
+    {
+        switch (phase)
+        {
+            case Phase.one:
+                if (actionSetupIncomplete)
+                {
+                    actionSetupIncomplete = false;
+
+                    //start anim
+                }
+                else //if(Anim is done)
+                {
+                    actionSetupIncomplete = true;
+                    actionQ.Dequeue();
+                }
+                break;
+            case Phase.two:
+                break;
+        }
+    }
+
     /// <summary>
     /// Charge attack
     /// </summary>
