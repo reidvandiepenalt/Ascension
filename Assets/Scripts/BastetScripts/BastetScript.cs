@@ -17,6 +17,11 @@ public class BastetScript : MonoBehaviour
     float speedMod = 1f;
     Vector2 velocity;
     Vector2 moveTarget;
+    Vector2 storedJumpPoint;
+    Vector2 storedJumpPointSecondHalf;
+    int currentLevel = 2;
+
+    float centerX { get => jumpPoints[JumpPoint.rightMid].x - jumpPoints[JumpPoint.leftMid].x; }
 
     Queue<Vector2> path = new Queue<Vector2>();
     bool reachedEndOfPath = true;
@@ -31,6 +36,7 @@ public class BastetScript : MonoBehaviour
     Queue<Action> actionQ = new Queue<Action>();
     Phase phase = Phase.one;
     bool actionSetupIncomplete = true;
+    bool clawPlatformFinishedJump = false;
 
     enum JumpPoint
     {
@@ -157,6 +163,7 @@ public class BastetScript : MonoBehaviour
             if (path.Count == 0)
             {
                 reachedEndOfPath = true;
+                clawPlatformFinishedJump = true;
             }
             else
             {
@@ -204,6 +211,105 @@ public class BastetScript : MonoBehaviour
         {
             case Phase.one:
                 //move to nearest jump point and jump up, then go above player and attack
+                if (actionSetupIncomplete)
+                {
+                    actionSetupIncomplete = false;
+                    clawPlatformFinishedJump = false;
+
+                    if(playerTransform.position.y + playerGroundOffset < jumpPoints[JumpPoint.leftMid].y)
+                    {
+                        //go to mid
+                        if(currentLevel == 0)
+                        {
+                            //from floor
+                            if(transform.position.x > centerX)
+                            {
+                                moveTarget = jumpPoints[JumpPoint.rightFloor];
+                                storedJumpPoint = jumpPoints[JumpPoint.rightMid];
+                            }
+                            else
+                            {
+                                moveTarget = jumpPoints[JumpPoint.leftFloor];
+                                storedJumpPoint = jumpPoints[JumpPoint.leftMid];
+                            }
+                        }else if (currentLevel == 2)
+                        {
+                            //from top
+                            if (transform.position.x > centerX)
+                            {
+                                moveTarget = jumpPoints[JumpPoint.rightTop];
+                                storedJumpPoint = jumpPoints[JumpPoint.rightWall];
+                                storedJumpPointSecondHalf = jumpPoints[JumpPoint.rightMid];
+                            }
+                            else
+                            {
+                                moveTarget = jumpPoints[JumpPoint.leftTop];
+                                storedJumpPoint = jumpPoints[JumpPoint.leftWall];
+                                storedJumpPointSecondHalf = jumpPoints[JumpPoint.leftMid];
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //go to top
+                        if(currentLevel == 0)
+                        {
+                            //from floor
+                            if (transform.position.x > centerX)
+                            {
+                                moveTarget = jumpPoints[JumpPoint.rightFloor];
+                                storedJumpPoint = jumpPoints[JumpPoint.rightTop];
+                            }
+                            else
+                            {
+                                moveTarget = jumpPoints[JumpPoint.leftFloor];
+                                storedJumpPoint = jumpPoints[JumpPoint.leftTop];
+                            }
+                        }
+                        else if (currentLevel == 1)
+                        {
+                            //from middle
+                            if (transform.position.x > centerX)
+                            {
+                                moveTarget = jumpPoints[JumpPoint.rightMid];
+                                storedJumpPoint = jumpPoints[JumpPoint.rightWall];
+                                storedJumpPointSecondHalf = jumpPoints[JumpPoint.rightTop];
+                            }
+                            else
+                            {
+                                moveTarget = jumpPoints[JumpPoint.leftMid];
+                                storedJumpPoint = jumpPoints[JumpPoint.leftWall];
+                                storedJumpPointSecondHalf = jumpPoints[JumpPoint.leftTop];
+                            }
+                        }
+                    }
+                    isMoving = true;
+                }else 
+                {
+                    if (!isMoving && reachedEndOfPath && !clawPlatformFinishedJump)
+                    {
+                        //start jump
+                        GeneratePath(storedJumpPoint);
+                        GeneratePath(storedJumpPoint, storedJumpPointSecondHalf);
+                    }
+                    else if (!isMoving)
+                    {
+                        moveTarget = new Vector2(playerTransform.position.x, transform.position.y);
+                    }
+                    else
+                    {
+                        //claw down
+
+                        //start anim
+
+                        //if(anim is done)
+
+                        //end anim
+
+                        actionQ.Dequeue();
+                    }
+                        
+                }
                 break;
             case Phase.two:
 
@@ -366,6 +472,7 @@ public class BastetScript : MonoBehaviour
             facingRight = true;
             //flip gfx
         }
+        isMoving = velocity.x == 0;
     }
 
     /// <summary>
@@ -424,17 +531,26 @@ public class BastetScript : MonoBehaviour
     /// <param name="endPoint">End point of the jump</param>
     void GeneratePath(Vector2 endPoint)
     {
+        GeneratePath(transform.position, endPoint);
+    }
+
+    /// <summary>
+    /// Generates a path from start ot end point
+    /// </summary>
+    /// <param name="startPoint"></param>
+    /// <param name="endPoint"></param>
+    void GeneratePath(Vector2 startPoint, Vector2 endPoint)
+    {
         reachedEndOfPath = false;
-        Vector2 vertex = transform.position;
         float timeToMove = 0.3f;
         int numSteps = (int)(60f * timeToMove);
-        float stepDist = (endPoint.x - vertex.x) / numSteps;
+        float stepDist = (endPoint.x - startPoint.x) / numSteps;
 
         float initVy = (endPoint.y - transform.position.y - gravity / 2 * Mathf.Pow(timeToMove, 2)) / timeToMove;
         for (int i = 0; i < numSteps; i++)
         {
-            path.Enqueue(new Vector2(vertex.x + i * stepDist,
-                gravity / 2 * Mathf.Pow(i * Time.fixedDeltaTime, 2) + (i * Time.fixedDeltaTime * initVy) + vertex.y));
+            path.Enqueue(new Vector2(startPoint.x + i * stepDist,
+                gravity / 2 * Mathf.Pow(i * Time.fixedDeltaTime, 2) + (i * Time.fixedDeltaTime * initVy) + startPoint.y));
         }
     }
 }
