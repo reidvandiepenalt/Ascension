@@ -40,4 +40,13 @@ public class EnemyHealth : MonoBehaviour
         hitThisFrame = false;
     }
 
+    public IEnumerable DOT(int ticks, float time, int damage)
+    {
+        //add burning visual
+        for(int i = 0; i < ticks; i++)
+        {
+            Health -= damage;
+            yield return new WaitForSeconds(time);
+        }
+    }
 }

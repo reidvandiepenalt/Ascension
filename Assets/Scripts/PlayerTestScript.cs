@@ -10,6 +10,7 @@ using UnityEngine.UI;
 public class PlayerTestScript : MonoBehaviour
 {
     private bool debugInvinc = false;
+    public bool debugSkills = false;
 
     public bool inDialogue;
 
@@ -146,14 +147,15 @@ public class PlayerTestScript : MonoBehaviour
     public SprayTypes sprayTypeScripts;
     public GuardTypes guardTypeScripts;
 
-    private ProgressBarScript shotUIScript;
-    private ProgressBarScript slamUIScript;
-    private ProgressBarScript sprayUIScript;
-    private ProgressBarScript dashUIScript;
-    private ProgressBarScript backstepUIScript;
-    private GuardUIScript guardUIScript;
+    public ProgressBarScript shotUIScript;
+    public ProgressBarScript slamUIScript;
+    public ProgressBarScript sprayUIScript;
+    public ProgressBarScript dashUIScript;
+    public ProgressBarScript backstepUIScript;
+    public GuardUIScript guardUIScript;
     private List<ProgressBarScript> UISkillScripts = new List<ProgressBarScript>(5);
 
+    [SerializeField] Sprite defaultShotUIIcon;
 
     public VectorValue transitionPosition;
     public BoolValue loadFromTransition;
@@ -369,8 +371,9 @@ public class PlayerTestScript : MonoBehaviour
             return;
         }
 
-        //toggle debug invinc
+        //toggle debugs
         if (Input.GetKeyDown(KeyCode.F1)) { debugInvinc = !debugInvinc; }
+        if(Input.GetKeyDown(KeyCode.F2)) { debugSkills = !debugSkills; }
 
         //If moving left, set direction to left
         if (directionalInput.x < 0 && !facingLeft && (state != PlayerState.backstepping && state != PlayerState.dashing && state != PlayerState.slamming))
@@ -813,8 +816,10 @@ public class PlayerTestScript : MonoBehaviour
     /// Function for switching the feather shot skill from blessings
     /// </summary>
     /// <param name="type">Type to switch to</param>
-    public void ChangeFeather(FeatherTypes type)
+    public void ChangeFeather(FeatherTypes type, Sprite icon)
     {
+        shotUIScript.UpdateImage(icon);
+
         switch (type)
         {
             case FeatherTypes.Default:
@@ -830,6 +835,11 @@ public class PlayerTestScript : MonoBehaviour
                 fs = featherShotsScripts.BallLightning;
                 break;
         }
+    }
+
+    public void ChangeFeather(FeatherTypes type)
+    {
+        ChangeFeather(type, defaultShotUIIcon);
     }
 
     public void ChangeGuard(GuardSwapTypes type)

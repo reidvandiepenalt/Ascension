@@ -6,10 +6,11 @@ using UnityEngine;
 public class FeatherShotChange : BlessEffect
 {
     public FeatherTypes featherType;
+    [SerializeField] Sprite UIicon;
 
     public override void Equip(PlayerTestScript player)
     {
-        player.ChangeFeather(featherType);
+        player.ChangeFeather(featherType, UIicon);
     }
 
     public override void Unequip(PlayerTestScript player)

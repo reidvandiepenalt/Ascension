@@ -36,7 +36,7 @@ public class FeatherScript : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         //despawn on ground/wall
-        if (collision.tag == "Inanimate")
+        if (collision.CompareTag("Inanimate"))
         {
             Destroy(gameObject);
         }

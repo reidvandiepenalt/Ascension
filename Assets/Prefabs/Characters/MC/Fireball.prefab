@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 4330451085810413026}
   - component: {fileID: 4330451085810413025}
   - component: {fileID: 4330451085810413024}
+  - component: {fileID: 1986743412961200761}
+  - component: {fileID: 5947707561955821711}
   m_Layer: 10
   m_Name: Fireball
   m_TagString: Attack
@@ -4859,3 +4861,35 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
+--- !u!114 &1986743412961200761
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4330451085810413023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7451dd1850bffe04aad7044dbac2130a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  despawnTime: 5
+  speed: 15
+  angle: 0
+  scale: 1.5
+--- !u!70 &5947707561955821711
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4330451085810413023}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 7.67, y: 5.13}
+  m_Direction: 1

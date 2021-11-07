@@ -10,12 +10,8 @@ public class ProgressBarScript : MonoBehaviour
     float currentExpireTime;
     public Image mask;
     Image uiImage;
-    public Sprite upgradeImage;
     public int comboToCharge;
     int currentCombo;
-    Sprite defaultImage;
-    [SerializeField] bool upgraded = false;
-    public bool upgradeUnlocked = false;
     int lastCharge;
     public int charge
     {
@@ -34,8 +30,7 @@ public class ProgressBarScript : MonoBehaviour
     void Start()
     {
         currentExpireTime = maximumExpireTime;
-        uiImage = this.GetComponent<Image>();
-        defaultImage = uiImage.sprite;
+        uiImage = GetComponent<Image>();
     }
 
     // Update is called once per frame
@@ -44,12 +39,7 @@ public class ProgressBarScript : MonoBehaviour
         if (charge == 0)
         {
             mask.fillAmount = 1 - (float)currentCombo / (float)comboToCharge;
-        } else if (charge == 2 && lastCharge == 1 && upgradeUnlocked)
-        {
-            Upgrade();
-            currentExpireTime = 0f;
-            UpdateFill();
-        } else if (charge == 1 && lastCharge == 0)
+        }else if (charge == 1 && lastCharge == 0)
         {
             currentExpireTime = 0f;
             UpdateFill();
@@ -75,10 +65,6 @@ public class ProgressBarScript : MonoBehaviour
     public void ResetCombo()
     {
         currentCombo = 0;
-        if (upgraded)
-        {
-            Downgrade();
-        }
     }
 
     /// <summary>
@@ -87,10 +73,6 @@ public class ProgressBarScript : MonoBehaviour
     public void Expired()
     {
         currentCombo -= charge * comboToCharge;
-        if (upgraded)
-        {
-            Downgrade();
-        }
     }
 
     /// <summary>
@@ -109,21 +91,8 @@ public class ProgressBarScript : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Upgrades the given skill
-    /// </summary>
-    void Upgrade() {
-        upgraded = true;
-        uiImage.sprite = upgradeImage;
-    }
-
-    /// <summary>
-    /// Downgrades the given skill
-    /// </summary>
-    void Downgrade()
+    public void UpdateImage(Sprite newImage)
     {
-        upgraded = false;
-        uiImage.sprite = defaultImage;
-        currentExpireTime = 0;
+        uiImage.sprite = newImage;
     }
 }

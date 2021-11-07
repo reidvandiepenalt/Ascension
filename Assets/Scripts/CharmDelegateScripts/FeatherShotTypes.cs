@@ -18,15 +18,16 @@ public class FeatherShotTypes : MonoBehaviour
     private float shotTimer = 0.0f;
     [SerializeField] float shotTimeLength = 0.25f;
 
-    public GameObject shotFeather;
-    public GameObject boomerang;
-    public Animator anim;
+    [SerializeField] GameObject shotFeather;
+    [SerializeField] GameObject boomerang;
+    [SerializeField] GameObject fireball;
+    [SerializeField] Animator anim;
 
 
     public void DefaultShot()
     {
         if ((playerScript.state == PlayerTestScript.PlayerState.gliding || playerScript.state == PlayerTestScript.PlayerState.idle
-            || playerScript.state == PlayerTestScript.PlayerState.walking) && shotUIScript.charge >= 1)
+            || playerScript.state == PlayerTestScript.PlayerState.walking) && (shotUIScript.charge >= 1 || playerScript.debugSkills))
         {
             anim.SetTrigger("Shoot");
             playerScript.state = PlayerTestScript.PlayerState.shooting;
@@ -53,7 +54,7 @@ public class FeatherShotTypes : MonoBehaviour
     public void BoomerangShot()
     {
         if ((playerScript.state == PlayerTestScript.PlayerState.gliding || playerScript.state == PlayerTestScript.PlayerState.idle 
-            || playerScript.state == PlayerTestScript.PlayerState.walking))
+            || playerScript.state == PlayerTestScript.PlayerState.walking) && (shotUIScript.charge >= 1 || playerScript.debugSkills))
         {
             anim.SetTrigger("Shoot");
             playerScript.state = PlayerTestScript.PlayerState.shooting;
@@ -79,7 +80,29 @@ public class FeatherShotTypes : MonoBehaviour
 
     public void Fireball()
     {
-
+        if ((playerScript.state == PlayerTestScript.PlayerState.gliding || playerScript.state == PlayerTestScript.PlayerState.idle
+            || playerScript.state == PlayerTestScript.PlayerState.walking) && (shotUIScript.charge >= 1 || playerScript.debugSkills))
+        {
+            anim.SetTrigger("Shoot");
+            playerScript.state = PlayerTestScript.PlayerState.shooting;
+            shotUIScript.ResetCombo();
+            GameObject fireBall = Instantiate(fireball, gameObject.transform.position, Quaternion.identity);
+            FeatherScript fb = fireBall.GetComponent<FeatherScript>();
+            fb.GetComponent<AttackInteract>().player = gameObject;
+            if (playerScript.facingLeft)
+            {
+                fb.angle = 180;
+            }
+        }
+        else if (playerScript.state == PlayerTestScript.PlayerState.shooting)
+        {
+            shotTimer += Time.deltaTime;
+            if (shotTimer > shotTimeLength)
+            {
+                playerScript.state = PlayerTestScript.PlayerState.idle;
+                shotTimer = 0.0f;
+            }
+        }
     }
 
     public void BallLightning()
