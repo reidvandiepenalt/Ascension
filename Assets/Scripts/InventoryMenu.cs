@@ -89,7 +89,7 @@ public class InventoryMenu : MonoBehaviour
     void Update()
     {
         //pause/unpause
-        if (Input.GetKeyDown(KeyCode.Tab) && !Pause.isPaused)
+        if (Input.GetKeyDown(KeyCode.Tab))
         {
             if (Pause.isPaused)
             {

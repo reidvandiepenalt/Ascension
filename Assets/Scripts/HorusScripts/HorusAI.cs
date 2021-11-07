@@ -490,7 +490,7 @@ public class HorusAI : MonoBehaviour
                     }
                     heightLevel++;
                     if(heightLevel >= RoomHeight / tornadoColumnSpacing) { heightLevel = 0; }
-                    timer += Time.deltaTime;
+                    timer += 0.3f;
                     yield return new WaitForSeconds(0.3f);
                 }
 

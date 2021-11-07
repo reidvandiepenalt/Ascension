@@ -46,6 +46,7 @@ public class EnemyHealth : MonoBehaviour
         for(int i = 0; i < ticks; i++)
         {
             Health -= damage;
+            Debug.Log("dot damage");
             yield return new WaitForSeconds(time);
         }
     }

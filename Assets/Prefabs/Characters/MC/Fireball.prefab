@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 4330451085810413024}
   - component: {fileID: 1986743412961200761}
   - component: {fileID: 5947707561955821711}
+  - component: {fileID: 7920011613994307912}
+  - component: {fileID: 8221108070646366194}
   m_Layer: 10
   m_Name: Fireball
   m_TagString: Attack
@@ -4874,9 +4876,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   despawnTime: 5
-  speed: 15
+  speed: 18
   angle: 0
-  scale: 1.5
+  scale: 0.25
 --- !u!70 &5947707561955821711
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -4893,3 +4895,39 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 7.67, y: 5.13}
   m_Direction: 1
+--- !u!114 &7920011613994307912
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4330451085810413023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63721123cdf9cd64f83218d721f2fa31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackDamage: 30
+  player: {fileID: 1716906605428090218, guid: 54402d116b9f02843812c72545f4ed1a, type: 3}
+  instanceIDs: 
+--- !u!50 &8221108070646366194
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4330451085810413023}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 2
