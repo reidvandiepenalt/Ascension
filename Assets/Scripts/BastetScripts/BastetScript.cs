@@ -35,8 +35,7 @@ public class BastetScript : MonoBehaviour
     bool isMoving = false;
     Queue<Action> actionQ = new Queue<Action>();
     Phase phase = Phase.one;
-    bool actionSetupIncomplete = true;
-    bool clawPlatformFinishedJump = false;
+    bool attacking = false;
 
     enum JumpPoint
     {
@@ -163,7 +162,6 @@ public class BastetScript : MonoBehaviour
             if (path.Count == 0)
             {
                 reachedEndOfPath = true;
-                clawPlatformFinishedJump = true;
             }
             else
             {
@@ -175,270 +173,290 @@ public class BastetScript : MonoBehaviour
             }
         }
 
-        switch (actionQ.Peek())
+        if (!attacking)
         {
-            case Action.walk:
-                speedMod = 0.5f;
-                if (CheckXDistToMoveTarget()) { actionQ.Dequeue(); }
-                break;
-            case Action.sprint:
-                speedMod = 1f;
-                if (CheckXDistToMoveTarget()) { actionQ.Dequeue(); }
-                break;
-            case Action.charge:
-                Charge();
-                break;
-            case Action.clawSwipe:
-                break;
-            case Action.tailWhip:
-                break;
-            case Action.clawPlatform:
-                break;
-            case Action.backflip:
-                break;
+            switch (actionQ.Peek())
+            {
+                case Action.walk:
+                    StartCoroutine("Walk");
+                    break;
+                case Action.sprint:
+                    StartCoroutine("Sprint");
+                    break;
+                case Action.charge:
+                    StartCoroutine("Charge");
+                    break;
+                case Action.clawSwipe:
+                    StartCoroutine("ClawSwipe");
+                    break;
+                case Action.tailWhip:
+                    StartCoroutine("TailSwipe");
+                    break;
+                case Action.clawPlatform:
+                    StartCoroutine("ClawPlatform");
+                    break;
+                case Action.backflip:
+                    StartCoroutine("Backflip");
+                    break;
+            }
         }
 
+        if (CheckXDistToMoveTarget()) { return; }
         movement.Move(Time.fixedDeltaTime * velocity);
     }
 
+    IEnumerator Walk()
+    {
+        speedMod = 0.5f;
+        yield return new WaitWhile(() => isMoving);
+        actionQ.Dequeue();
+    }
+
+    IEnumerator Sprint()
+    {
+        speedMod = 1f;
+        yield return new WaitWhile(() => isMoving);
+        actionQ.Dequeue();
+    }
 
     /// <summary>
     /// Claw platform attack
     /// </summary>
-    void ClawPlatform()
+    IEnumerator ClawPlatform()
     {
-        switch (phase)
+        attacking = true;
+        if (playerTransform.position.y + playerGroundOffset < jumpPoints[JumpPoint.leftMid].y)
         {
-            case Phase.one:
-                //move to nearest jump point and jump up, then go above player and attack
-                if (actionSetupIncomplete)
+            //go to mid
+            if(currentLevel == 0)
+            {
+                //from floor
+                if(transform.position.x > centerX)
                 {
-                    actionSetupIncomplete = false;
-                    clawPlatformFinishedJump = false;
-
-                    if(playerTransform.position.y + playerGroundOffset < jumpPoints[JumpPoint.leftMid].y)
-                    {
-                        //go to mid
-                        if(currentLevel == 0)
-                        {
-                            //from floor
-                            if(transform.position.x > centerX)
-                            {
-                                moveTarget = jumpPoints[JumpPoint.rightFloor];
-                                storedJumpPoint = jumpPoints[JumpPoint.rightMid];
-                            }
-                            else
-                            {
-                                moveTarget = jumpPoints[JumpPoint.leftFloor];
-                                storedJumpPoint = jumpPoints[JumpPoint.leftMid];
-                            }
-                        }else if (currentLevel == 2)
-                        {
-                            //from top
-                            if (transform.position.x > centerX)
-                            {
-                                moveTarget = jumpPoints[JumpPoint.rightTop];
-                                storedJumpPoint = jumpPoints[JumpPoint.rightWall];
-                                storedJumpPointSecondHalf = jumpPoints[JumpPoint.rightMid];
-                            }
-                            else
-                            {
-                                moveTarget = jumpPoints[JumpPoint.leftTop];
-                                storedJumpPoint = jumpPoints[JumpPoint.leftWall];
-                                storedJumpPointSecondHalf = jumpPoints[JumpPoint.leftMid];
-                            }
-                        }
-                    }
-                    else
-                    {
-                        //go to top
-                        if(currentLevel == 0)
-                        {
-                            //from floor
-                            if (transform.position.x > centerX)
-                            {
-                                moveTarget = jumpPoints[JumpPoint.rightFloor];
-                                storedJumpPoint = jumpPoints[JumpPoint.rightTop];
-                            }
-                            else
-                            {
-                                moveTarget = jumpPoints[JumpPoint.leftFloor];
-                                storedJumpPoint = jumpPoints[JumpPoint.leftTop];
-                            }
-                        }
-                        else if (currentLevel == 1)
-                        {
-                            //from middle
-                            if (transform.position.x > centerX)
-                            {
-                                moveTarget = jumpPoints[JumpPoint.rightMid];
-                                storedJumpPoint = jumpPoints[JumpPoint.rightWall];
-                                storedJumpPointSecondHalf = jumpPoints[JumpPoint.rightTop];
-                            }
-                            else
-                            {
-                                moveTarget = jumpPoints[JumpPoint.leftMid];
-                                storedJumpPoint = jumpPoints[JumpPoint.leftWall];
-                                storedJumpPointSecondHalf = jumpPoints[JumpPoint.leftTop];
-                            }
-                        }
-                    }
-                    isMoving = true;
-                }else 
-                {
-                    if (!isMoving && reachedEndOfPath && !clawPlatformFinishedJump)
-                    {
-                        //start jump
-                        GeneratePath(storedJumpPoint);
-                        GeneratePath(storedJumpPoint, storedJumpPointSecondHalf);
-                    }
-                    else if (!isMoving)
-                    {
-                        moveTarget = new Vector2(playerTransform.position.x, transform.position.y);
-                    }
-                    else
-                    {
-                        //claw down
-
-                        //start anim
-
-                        //if(anim is done)
-
-                        //end anim
-
-                        actionQ.Dequeue();
-                    }
-                        
+                    moveTarget = jumpPoints[JumpPoint.rightFloor];
+                    storedJumpPoint = jumpPoints[JumpPoint.rightMid];
                 }
-                break;
-            case Phase.two:
-
-                break;
+                else
+                {
+                    moveTarget = jumpPoints[JumpPoint.leftFloor];
+                    storedJumpPoint = jumpPoints[JumpPoint.leftMid];
+                }
+            }else if (currentLevel == 2)
+            {
+                //from top
+                if (transform.position.x > centerX)
+                {
+                    moveTarget = jumpPoints[JumpPoint.rightTop];
+                    storedJumpPoint = jumpPoints[JumpPoint.rightWall];
+                    storedJumpPointSecondHalf = jumpPoints[JumpPoint.rightMid];
+                }
+                else
+                {
+                    moveTarget = jumpPoints[JumpPoint.leftTop];
+                    storedJumpPoint = jumpPoints[JumpPoint.leftWall];
+                    storedJumpPointSecondHalf = jumpPoints[JumpPoint.leftMid];
+                }
+            }
         }
+        else
+        {
+            //go to top
+            if(currentLevel == 0)
+            {
+                //from floor
+                if (transform.position.x > centerX)
+                {
+                    moveTarget = jumpPoints[JumpPoint.rightFloor];
+                    storedJumpPoint = jumpPoints[JumpPoint.rightTop];
+                }
+                else
+                {
+                    moveTarget = jumpPoints[JumpPoint.leftFloor];
+                    storedJumpPoint = jumpPoints[JumpPoint.leftTop];
+                }
+            }
+            else if (currentLevel == 1)
+            {
+                //from middle
+                if (transform.position.x > centerX)
+                {
+                    moveTarget = jumpPoints[JumpPoint.rightMid];
+                    storedJumpPoint = jumpPoints[JumpPoint.rightWall];
+                    storedJumpPointSecondHalf = jumpPoints[JumpPoint.rightTop];
+                }
+                else
+                {
+                    moveTarget = jumpPoints[JumpPoint.leftMid];
+                    storedJumpPoint = jumpPoints[JumpPoint.leftWall];
+                    storedJumpPointSecondHalf = jumpPoints[JumpPoint.leftTop];
+                }
+            }
+        }
+        isMoving = true;
+        
+        //start jump
+        GeneratePath(storedJumpPoint);
+        GeneratePath(storedJumpPoint, storedJumpPointSecondHalf);
+
+        yield return new WaitUntil(() => reachedEndOfPath);
+        
+        moveTarget = new Vector2(playerTransform.position.x, transform.position.y);
+
+        yield return new WaitWhile(() => isMoving);
+
+        //claw down
+
+        //start anim (different for phase 1 and 2)
+
+        //spawn claws/moveclaws?
+
+        //if(anim is done)
+
+        //end anim
+
+        actionQ.Dequeue();
+
+        attacking = false;
     }
 
     /// <summary>
     /// Backflip move
     /// </summary>
-    void Backflip()
+    IEnumerator Backflip()
     {
-        switch (phase)
+        attacking = true;
+
+        //start anim
+
+        //generate path
+        GeneratePath(new Vector2(transform.position.x + (facingRight ? -8 : 8), transform.position.y));
+
+        yield return new WaitUntil(() => reachedEndOfPath);
+        
+        if(phase == Phase.two)
         {
-            case Phase.one:
-                if (actionSetupIncomplete)
-                {
-                    actionSetupIncomplete = false;
+            //start stomp/spike anim
 
-                    //start anim
+            /*/wait until anim is doneanim is done)
+                actionSetupIncomplete = true;
 
-                    //generate path
-                    GeneratePath(new Vector2(transform.position.x + (facingRight ? -8 : 8), transform.position.y));
-                }else if (reachedEndOfPath)
-                {
-                    //stop anim?
-
-                    actionSetupIncomplete = true;
-
-                    actionQ.Dequeue();
-                }
-                break;
-            case Phase.two:
-                break;
+                actionQ.Dequeue();
+             /*/
         }
+        else
+        {
+            //stop anim?/wait until anim is done?
+
+            actionQ.Dequeue();
+        }
+        attacking = false;
     }
 
     /// <summary>
     /// Tail swipe attack
     /// </summary>
-    void TailSwipe()
+    IEnumerator TailSwipe()
     {
-        switch (phase)
-        {
-            case Phase.one:
-                if (actionSetupIncomplete)
-                {
-                    actionSetupIncomplete = false;
+        attacking = true;
+        //start anim base on p1 or p2
 
-                    //start anim
-                }
-                else //if(anim is done)
-                {
-                    actionSetupIncomplete = true;
-                    actionQ.Dequeue();
-                }
-                break;
-            case Phase.two:
-                break;
-        }
+        yield return new WaitForSeconds(1f);
+        //wait until anim is done
+
+        actionQ.Dequeue();
+
+        attacking = false;
     }
 
     /// <summary>
     /// Claw swipe attack
     /// </summary>
-    void ClawSwipe()
+    IEnumerator ClawSwipe()
     {
+        attacking = true;
         switch (phase)
         {
             case Phase.one:
-                if (actionSetupIncomplete)
-                {
-                    actionSetupIncomplete = false;
-
-                    //start anim
-                }
-                else //if(Anim is done)
-                {
-                    actionSetupIncomplete = true;
-                    actionQ.Dequeue();
-                }
+                //start anim
+                
+                //wait until(Anim is done)
+                actionQ.Dequeue();
                 break;
             case Phase.two:
+                //start eye flash anim
+
+                //wait until(first anim is done)
+
+                //enable after effect
+
+                //move quickly towards player
+                speedMod = 6f;
+                if(transform.position.x < playerTransform.position.x)
+                {
+                    moveTarget.x = playerTransform.position.x - 0.75f;
+                }
+                else
+                {
+                    moveTarget.x = playerTransform.position.x + 0.75f;
+                }
+
+                yield return new WaitWhile(() => isMoving);
+
+                //disable after effect
+
+                //start claw anim
+
+                //wait until claw anim is done
+
+                actionQ.Dequeue();
+
                 break;
         }
+        attacking = false;
     }
 
     /// <summary>
     /// Charge attack
     /// </summary>
-    void Charge()
+    IEnumerator Charge()
     {
+        attacking = true;
         switch (phase)
         {
             case Phase.one:
-                if (actionSetupIncomplete)
+                
+                //start anim (blur behind?)
+
+                //set target and speed
+                RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, groundLayer);
+                if (hit)
                 {
-                    actionSetupIncomplete = false;
-
-                    //start anim (blur behind?)
-
-                    //set target and speed
-                    RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, groundLayer);
-                    if (hit)
+                    if (playerTransform.position.x < transform.position.x)
                     {
-                        if (playerTransform.position.x < transform.position.x)
-                        {
-                            moveTarget = new Vector2(hit.collider.bounds.min.x + 4, transform.position.y);
-                        }
-                        else
-                        {
-                            moveTarget = new Vector2(hit.collider.bounds.max.x - 4, transform.position.y);
-                        }
-
+                        moveTarget = new Vector2(hit.collider.bounds.min.x + 4, transform.position.y);
                     }
-                    speedMod = 4f;
-                }
-                else if (!isMoving)
-                {
-                    //stop anim
+                    else
+                    {
+                        moveTarget = new Vector2(hit.collider.bounds.max.x - 4, transform.position.y);
+                    }
 
-                    actionQ.Dequeue();
-                    actionSetupIncomplete = true;
                 }
+                speedMod = 4f;
+
+                yield return new WaitWhile(() => isMoving);
+
+                //stop anim
+
+                actionQ.Dequeue();
+                
                 break;
             case Phase.two:
+                //zig zag attack
+
 
                 break;
         }
+        attacking = false;
     }
 
     /// <summary>
@@ -447,12 +465,15 @@ public class BastetScript : MonoBehaviour
     /// <returns>True if snapped to target x</returns>
     bool CheckXDistToMoveTarget()
     {
-        if (moveTarget.x - transform.position.x < speed * Time.fixedDeltaTime * speedMod * velocity.x)
+        if(Mathf.Abs(moveTarget.y - transform.position.y) < 0.5f)
         {
-            transform.position = new Vector3(moveTarget.x, transform.position.y, transform.position.z);
-            velocity.x = 0;
-            isMoving = false;
-            return true;
+            if (moveTarget.x - transform.position.x < speed * Time.fixedDeltaTime * speedMod * velocity.x)
+            {
+                transform.position = new Vector3(moveTarget.x, transform.position.y, transform.position.z);
+                velocity.x = 0;
+                isMoving = false;
+                return true;
+            }
         }
         return false;
     }
