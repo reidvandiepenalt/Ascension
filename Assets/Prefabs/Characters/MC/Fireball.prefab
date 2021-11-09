@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 5947707561955821711}
   - component: {fileID: 7920011613994307912}
   - component: {fileID: 8221108070646366194}
+  - component: {fileID: -7585944666584563263}
   m_Layer: 10
   m_Name: Fireball
   m_TagString: Attack
@@ -4931,3 +4932,18 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 2
+--- !u!114 &-7585944666584563263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4330451085810413023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9819bc6d4d1446c4e88764e6fe26b397, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 2
+  ticks: 6
+  time: 0.2

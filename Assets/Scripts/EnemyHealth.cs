@@ -40,13 +40,17 @@ public class EnemyHealth : MonoBehaviour
         hitThisFrame = false;
     }
 
-    public IEnumerable DOT(int ticks, float time, int damage)
+    public void DOT(int ticks, float time, int damage)
+    {
+        StartCoroutine(DamageOverTime(ticks, time, damage));
+    }
+
+    IEnumerator DamageOverTime(int ticks, float time, int damage)
     {
         //add burning visual
-        for(int i = 0; i < ticks; i++)
+        for (int i = 0; i < ticks; i++)
         {
             Health -= damage;
-            Debug.Log("dot damage");
             yield return new WaitForSeconds(time);
         }
     }

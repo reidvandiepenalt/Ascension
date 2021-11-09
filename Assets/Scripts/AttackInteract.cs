@@ -11,7 +11,7 @@ public class AttackInteract : MonoBehaviour
     void OnTriggerEnter2D(Collider2D target)
     {
         //deal damage if target collision is an enemy and increase combo
-        if (target.gameObject.tag == "Enemy")
+        if (target.gameObject.CompareTag("Enemy"))
         {
             int instanceID = target.GetInstanceID();
             if (instanceIDs.Contains(instanceID)) { return; }

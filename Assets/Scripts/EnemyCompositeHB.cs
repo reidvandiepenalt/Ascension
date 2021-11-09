@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyCompositeHB : MonoBehaviour
 {
-    [SerializeField] EnemyHealth healthManager;
+    public EnemyHealth healthManager;
 
     public void TakeDamage(int damage)
     {

@@ -47,7 +47,9 @@ public class BlessingInventory : MonoBehaviour, ICanvas
         //equip all equipped blessings
         for(int i = 0; i < blessingStorageSlots.Length; i++)
         {
-            if (blessingStorageSlots[i].Blessing.equipped) { blessingStorageSlots[i].AddBlessing(true); }
+            if (blessingStorageSlots[i].Blessing.equipped) { 
+                blessingStorageSlots[i].AddBlessing(true);
+            }
         }
 
         //set selected
