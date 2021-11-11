@@ -10,7 +10,7 @@ public class BastetScript : MonoBehaviour
     [SerializeField] EnemyHealth healthManager;
     [SerializeField] LayerMask groundLayer;
 
-    [SerializeField] GameObject swipePrefab, clawPrefab;
+    [SerializeField] GameObject swipePrefab, clawFacingRight, clawFacingLeft;
 
     [SerializeField] float speed;
     bool facingRight = true;
@@ -173,30 +173,34 @@ public class BastetScript : MonoBehaviour
             }
         }
 
+
+
+        HorizVelCalc();
+
         if (!attacking)
         {
             switch (actionQ.Peek())
             {
                 case Action.walk:
-                    StartCoroutine("Walk");
+                    StartCoroutine(nameof(Walk));
                     break;
                 case Action.sprint:
-                    StartCoroutine("Sprint");
+                    StartCoroutine(nameof(Sprint));
                     break;
                 case Action.charge:
-                    StartCoroutine("Charge");
+                    StartCoroutine(nameof(Charge));
                     break;
                 case Action.clawSwipe:
-                    StartCoroutine("ClawSwipe");
+                    StartCoroutine(nameof(ClawSwipe));
                     break;
                 case Action.tailWhip:
-                    StartCoroutine("TailSwipe");
+                    StartCoroutine(nameof(TailSwipe));
                     break;
                 case Action.clawPlatform:
-                    StartCoroutine("ClawPlatform");
+                    StartCoroutine(nameof(ClawPlatform));
                     break;
                 case Action.backflip:
-                    StartCoroutine("Backflip");
+                    StartCoroutine(nameof(Backflip));
                     break;
             }
         }
@@ -306,9 +310,42 @@ public class BastetScript : MonoBehaviour
 
         //claw down
 
-        //start anim (different for phase 1 and 2)
-
-        //spawn claws/moveclaws?
+        Bounds platform = Physics2D.Raycast(transform.position, Vector2.down, 1f, groundLayer).collider.bounds;
+        //3 or 1 seperate claw spawns (adjust to spawn at paw?)
+        for (int i = 0; i < ((phase == Phase.one)?1:3); i++)
+        {
+            if (i == 0)
+            {
+                if (facingRight)
+                {
+                    clawFacingRight.transform.position = new Vector3(transform.position.x,
+                        platform.min.y, clawFacingRight.transform.position.z);
+                    clawFacingRight.transform.localScale = new Vector3(1.25f, 1.25f, 1.25f);
+                }
+                else
+                {
+                    clawFacingLeft.transform.position = new Vector3(transform.position.x,
+                        platform.min.y, clawFacingLeft.transform.position.z);
+                    clawFacingLeft.transform.localScale = new Vector3(1.25f, 1.25f, 1.25f);
+                }
+            }
+            else
+            {
+                if (platform.min.x < transform.position.x + i || transform.position.x + i < platform.max.x)
+                {
+                    clawFacingRight.transform.position = new Vector3(transform.position.x + i,
+                        platform.min.y, clawFacingRight.transform.position.z);
+                    clawFacingRight.transform.localScale = new Vector3(0.5f + (1f / i) * 0.5f, 0.5f + (1f / i) * 0.5f, 0.5f + (1f / i) * 0.5f);
+                }
+                if (platform.min.x < transform.position.x - i || transform.position.x - i < platform.max.x)
+                {
+                    clawFacingLeft.transform.position = new Vector3(transform.position.x - i,
+                        platform.min.y, clawFacingLeft.transform.position.z);
+                    clawFacingLeft.transform.localScale = new Vector3(0.5f + (1f / i) * 0.5f, 0.5f + (1f / i) * 0.5f, 0.5f + (1f / i) * 0.5f);
+                }
+            }
+            yield return new WaitForSeconds(0.1f);
+        }
 
         //if(anim is done)
 
