@@ -10,7 +10,7 @@ public class BastetScript : MonoBehaviour
     [SerializeField] EnemyHealth healthManager;
     [SerializeField] LayerMask groundLayer;
 
-    [SerializeField] GameObject swipePrefab, clawFacingRight, clawFacingLeft;
+    [SerializeField] GameObject swipePrefab, clawFacingRight, clawFacingLeft, clawUp;
 
     [SerializeField] float speed;
     bool facingRight = true;
@@ -335,13 +335,21 @@ public class BastetScript : MonoBehaviour
                 {
                     clawFacingRight.transform.position = new Vector3(transform.position.x + i,
                         platform.min.y, clawFacingRight.transform.position.z);
-                    clawFacingRight.transform.localScale = new Vector3(0.5f + (1f / i) * 0.5f, 0.5f + (1f / i) * 0.5f, 0.5f + (1f / i) * 0.5f);
+                    clawFacingRight.transform.localScale = new Vector3(0.5f + (1f / (i + 1)) * 0.5f, 0.5f + (1f / (i + 1)) * 0.5f, 0.5f + (1f / (i + 1)) * 0.5f);
+                }
+                else
+                {
+                    clawFacingRight.transform.position = new Vector3(-50, -50, clawFacingRight.transform.position.z);
                 }
                 if (platform.min.x < transform.position.x - i || transform.position.x - i < platform.max.x)
                 {
                     clawFacingLeft.transform.position = new Vector3(transform.position.x - i,
                         platform.min.y, clawFacingLeft.transform.position.z);
-                    clawFacingLeft.transform.localScale = new Vector3(0.5f + (1f / i) * 0.5f, 0.5f + (1f / i) * 0.5f, 0.5f + (1f / i) * 0.5f);
+                    clawFacingLeft.transform.localScale = new Vector3(0.5f + (1f / (i + 1)) * 0.5f, 0.5f + (1f / (i + 1)) * 0.5f, 0.5f + (1f / (i + 1)) * 0.5f);
+                }
+                else
+                {
+                    clawFacingLeft.transform.position = new Vector3(-50, -50, clawFacingLeft.transform.position.z);
                 }
             }
             yield return new WaitForSeconds(0.1f);
@@ -372,13 +380,26 @@ public class BastetScript : MonoBehaviour
         
         if(phase == Phase.two)
         {
-            //start stomp/spike anim
+            //start stomp/spike anim   adjust spawn to be at paw?
+            Bounds platform = Physics2D.Raycast(transform.position, Vector2.down, 1f, groundLayer).collider.bounds;
+            int directionMod = facingRight ? 1 : -1;
+            for (int i = 0; i < 4; i++)
+            {
+                if (platform.min.x < transform.position.x + (i * directionMod) || transform.position.x + (i * directionMod) < platform.max.x)
+                {
+                    clawUp.transform.position = new Vector3(transform.position.x + (i * directionMod),
+                        platform.max.y, clawUp.transform.position.z);
+                    clawUp.transform.localScale = new Vector3(0.5f + (1f / (i + 1)) * 0.5f, 0.5f + (1f / (i + 1)) * 0.5f, 0.5f + (1f / (i + 1)) * 0.5f);
+                }
+                else
+                {
+                    clawUp.transform.position = new Vector3(-50, -50, clawUp.transform.position.z);
+                }
 
-            /*/wait until anim is doneanim is done)
-                actionSetupIncomplete = true;
+                yield return new WaitForSeconds(0.1f);
+            }
 
-                actionQ.Dequeue();
-             /*/
+            actionQ.Dequeue();
         }
         else
         {
@@ -496,6 +517,127 @@ public class BastetScript : MonoBehaviour
         attacking = false;
     }
 
+
+    IEnumerator NavigateTo(Vector2 navTarget)
+    {
+        JumpPoint jumpStart;
+        JumpPoint jumpEnd;
+        bool leftOfCenter = transform.position.x < centerX;
+
+        //same level
+        if (Mathf.Abs(navTarget.y - transform.position.y) < 1)
+        {
+            speedMod = 1f;
+            moveTarget.x = navTarget.x;
+        }
+        else //move to a jump point
+        {
+            //determine closest jump point
+            if(leftOfCenter) //left side
+            {
+                if(Mathf.Abs(transform.position.y - jumpPoints[JumpPoint.leftFloor].y) < 1)//on floor
+                {
+                    moveTarget.x = jumpPoints[JumpPoint.leftFloor].x;
+                    moveTarget.y = transform.position.y;
+                    jumpStart = JumpPoint.leftFloor;
+                }
+                else if (Mathf.Abs(transform.position.y - jumpPoints[JumpPoint.leftMid].y) < 1)//on mid
+                {
+                    moveTarget.x = jumpPoints[JumpPoint.leftMid].x;
+                    moveTarget.y = transform.position.y;
+                    jumpStart = JumpPoint.leftMid;
+                }
+                else //on top
+                {
+                    moveTarget.x = jumpPoints[JumpPoint.leftTop].x;
+                    moveTarget.y = transform.position.y;
+                    jumpStart = JumpPoint.leftTop;
+                }
+            }
+            else //right side
+            {
+                if (Mathf.Abs(transform.position.y - jumpPoints[JumpPoint.rightFloor].y) < 1)//on floor
+                {
+                    moveTarget.x = jumpPoints[JumpPoint.rightFloor].x;
+                    moveTarget.y = transform.position.y;
+                    jumpStart = JumpPoint.rightFloor;
+                }
+                else if (Mathf.Abs(transform.position.y - jumpPoints[JumpPoint.rightMid].y) < 1)//on mid
+                {
+                    moveTarget.x = jumpPoints[JumpPoint.rightMid].x;
+                    moveTarget.y = transform.position.y;
+                    jumpStart = JumpPoint.rightMid;
+                }
+                else //on top
+                {
+                    moveTarget.x = jumpPoints[JumpPoint.rightTop].x;
+                    moveTarget.y = transform.position.y;
+                    jumpStart = JumpPoint.rightTop;
+                }
+            }
+
+
+            //determine where to jump to
+            if (leftOfCenter) //left side
+            {
+                if (Mathf.Abs(navTarget.y - jumpPoints[JumpPoint.leftFloor].y) < 1)//on floor
+                {
+                    jumpEnd = JumpPoint.leftFloor;
+                }
+                else if (Mathf.Abs(navTarget.y - jumpPoints[JumpPoint.leftMid].y) < 1)//on mid
+                {
+                    jumpEnd = JumpPoint.leftMid;
+                }
+                else //on top
+                {
+                    jumpEnd = JumpPoint.leftTop;
+                }
+            }
+            else //right side
+            {
+                if (Mathf.Abs(navTarget.y - jumpPoints[JumpPoint.rightFloor].y) < 1)//on floor
+                {
+                    jumpEnd = JumpPoint.rightFloor;
+                }
+                else if (Mathf.Abs(navTarget.y - jumpPoints[JumpPoint.rightMid].y) < 1)//on mid
+                {
+                    jumpEnd = JumpPoint.rightMid;
+                }
+                else //on top
+                {
+                    jumpEnd = JumpPoint.rightTop;
+                }
+            }
+
+            yield return new WaitWhile(() => isMoving);
+
+            if(jumpStart == JumpPoint.leftFloor || jumpStart == JumpPoint.rightFloor)
+            {
+                GeneratePath(moveTarget, jumpPoints[jumpEnd]);
+            }
+            else
+            {
+                if (leftOfCenter)
+                {
+                    GeneratePath(moveTarget, jumpPoints[JumpPoint.leftMid]);
+                    GeneratePath(jumpPoints[JumpPoint.leftMid], jumpPoints[jumpEnd]);
+                }
+                else
+                {
+                    GeneratePath(moveTarget, jumpPoints[JumpPoint.rightMid]);
+                    GeneratePath(jumpPoints[JumpPoint.rightMid], jumpPoints[jumpEnd]);
+                }
+            }
+        }
+
+        yield return new WaitUntil(() => reachedEndOfPath);
+
+        moveTarget.x = navTarget.x;
+        moveTarget.y = transform.position.y;
+
+        yield return new WaitWhile(() => isMoving);
+    }
+
     /// <summary>
     /// Checks x distance for being close enough to snap to target
     /// </summary>
@@ -530,7 +672,7 @@ public class BastetScript : MonoBehaviour
             facingRight = true;
             //flip gfx
         }
-        isMoving = velocity.x == 0;
+        isMoving = velocity.x != 0;
     }
 
     /// <summary>
