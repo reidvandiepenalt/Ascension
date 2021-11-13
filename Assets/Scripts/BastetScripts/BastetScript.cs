@@ -17,6 +17,7 @@ public class BastetScript : MonoBehaviour
     float speedMod = 1f;
     Vector2 velocity;
     Vector2 moveTarget;
+    Vector2 navTarget;
     Vector2 storedJumpPoint;
     Vector2 storedJumpPointSecondHalf;
     int currentLevel = 2;
@@ -50,8 +51,6 @@ public class BastetScript : MonoBehaviour
     }
     enum Action
     {
-        walk,
-        sprint,
         charge,
         clawSwipe,
         tailWhip,
@@ -181,12 +180,6 @@ public class BastetScript : MonoBehaviour
         {
             switch (actionQ.Peek())
             {
-                case Action.walk:
-                    StartCoroutine(nameof(Walk));
-                    break;
-                case Action.sprint:
-                    StartCoroutine(nameof(Sprint));
-                    break;
                 case Action.charge:
                     StartCoroutine(nameof(Charge));
                     break;
@@ -209,19 +202,6 @@ public class BastetScript : MonoBehaviour
         movement.Move(Time.fixedDeltaTime * velocity);
     }
 
-    IEnumerator Walk()
-    {
-        speedMod = 0.5f;
-        yield return new WaitWhile(() => isMoving);
-        actionQ.Dequeue();
-    }
-
-    IEnumerator Sprint()
-    {
-        speedMod = 1f;
-        yield return new WaitWhile(() => isMoving);
-        actionQ.Dequeue();
-    }
 
     /// <summary>
     /// Claw platform attack
@@ -229,86 +209,13 @@ public class BastetScript : MonoBehaviour
     IEnumerator ClawPlatform()
     {
         attacking = true;
-        if (playerTransform.position.y + playerGroundOffset < jumpPoints[JumpPoint.leftMid].y)
-        {
-            //go to mid
-            if(currentLevel == 0)
-            {
-                //from floor
-                if(transform.position.x > centerX)
-                {
-                    moveTarget = jumpPoints[JumpPoint.rightFloor];
-                    storedJumpPoint = jumpPoints[JumpPoint.rightMid];
-                }
-                else
-                {
-                    moveTarget = jumpPoints[JumpPoint.leftFloor];
-                    storedJumpPoint = jumpPoints[JumpPoint.leftMid];
-                }
-            }else if (currentLevel == 2)
-            {
-                //from top
-                if (transform.position.x > centerX)
-                {
-                    moveTarget = jumpPoints[JumpPoint.rightTop];
-                    storedJumpPoint = jumpPoints[JumpPoint.rightWall];
-                    storedJumpPointSecondHalf = jumpPoints[JumpPoint.rightMid];
-                }
-                else
-                {
-                    moveTarget = jumpPoints[JumpPoint.leftTop];
-                    storedJumpPoint = jumpPoints[JumpPoint.leftWall];
-                    storedJumpPointSecondHalf = jumpPoints[JumpPoint.leftMid];
-                }
-            }
-        }
-        else
-        {
-            //go to top
-            if(currentLevel == 0)
-            {
-                //from floor
-                if (transform.position.x > centerX)
-                {
-                    moveTarget = jumpPoints[JumpPoint.rightFloor];
-                    storedJumpPoint = jumpPoints[JumpPoint.rightTop];
-                }
-                else
-                {
-                    moveTarget = jumpPoints[JumpPoint.leftFloor];
-                    storedJumpPoint = jumpPoints[JumpPoint.leftTop];
-                }
-            }
-            else if (currentLevel == 1)
-            {
-                //from middle
-                if (transform.position.x > centerX)
-                {
-                    moveTarget = jumpPoints[JumpPoint.rightMid];
-                    storedJumpPoint = jumpPoints[JumpPoint.rightWall];
-                    storedJumpPointSecondHalf = jumpPoints[JumpPoint.rightTop];
-                }
-                else
-                {
-                    moveTarget = jumpPoints[JumpPoint.leftMid];
-                    storedJumpPoint = jumpPoints[JumpPoint.leftWall];
-                    storedJumpPointSecondHalf = jumpPoints[JumpPoint.leftTop];
-                }
-            }
-        }
-        isMoving = true;
-        
-        //start jump
-        GeneratePath(storedJumpPoint);
-        GeneratePath(storedJumpPoint, storedJumpPointSecondHalf);
 
-        yield return new WaitUntil(() => reachedEndOfPath);
-        
-        moveTarget = new Vector2(playerTransform.position.x, transform.position.y);
+        navTarget.y = jumpPoints[JumpPoint.leftTop].y;
+        navTarget.x = playerTransform.position.x;
+        //add a way to update constantly?
+        yield return StartCoroutine(nameof(NavigateTo));
 
-        yield return new WaitWhile(() => isMoving);
-
-        //claw down
+        //claw down anim
 
         Bounds platform = Physics2D.Raycast(transform.position, Vector2.down, 1f, groundLayer).collider.bounds;
         //3 or 1 seperate claw spawns (adjust to spawn at paw?)
@@ -416,6 +323,20 @@ public class BastetScript : MonoBehaviour
     IEnumerator TailSwipe()
     {
         attacking = true;
+
+        speedMod = 1f;
+        if (transform.position.x > playerTransform.position.x)
+        {
+            navTarget.y = playerTransform.position.y;
+            navTarget.x = playerTransform.position.x + 0.75f;
+        }
+        else
+        {
+            navTarget.y = playerTransform.position.y;
+            navTarget.x = playerTransform.position.x - 0.75f;
+        }
+        yield return StartCoroutine(nameof(NavigateTo));
+
         //start anim base on p1 or p2
 
         yield return new WaitForSeconds(1f);
@@ -432,6 +353,20 @@ public class BastetScript : MonoBehaviour
     IEnumerator ClawSwipe()
     {
         attacking = true;
+
+        speedMod = 1f;
+        if (transform.position.x > playerTransform.position.x)
+        {
+            navTarget.y = playerTransform.position.y;
+            navTarget.x = playerTransform.position.x + 0.75f;
+        }
+        else
+        {
+            navTarget.y = playerTransform.position.y;
+            navTarget.x = playerTransform.position.x - 0.75f;
+        }
+        yield return StartCoroutine(nameof(NavigateTo));
+
         switch (phase)
         {
             case Phase.one:
@@ -479,46 +414,86 @@ public class BastetScript : MonoBehaviour
     IEnumerator Charge()
     {
         attacking = true;
-        switch (phase)
+
+        speedMod = 1f;
+        if (transform.position.x < centerX) //left side
         {
-            case Phase.one:
-                
-                //start anim (blur behind?)
-
-                //set target and speed
-                RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, groundLayer);
-                if (hit)
-                {
-                    if (playerTransform.position.x < transform.position.x)
-                    {
-                        moveTarget = new Vector2(hit.collider.bounds.min.x + 4, transform.position.y);
-                    }
-                    else
-                    {
-                        moveTarget = new Vector2(hit.collider.bounds.max.x - 4, transform.position.y);
-                    }
-
-                }
-                speedMod = 4f;
-
-                yield return new WaitWhile(() => isMoving);
-
-                //stop anim
-
-                actionQ.Dequeue();
-                
-                break;
-            case Phase.two:
-                //zig zag attack
-
-
-                break;
+            if (playerTransform.position.y < jumpPoints[JumpPoint.leftMid].y - 2)// player on floor
+            {
+                navTarget = jumpPoints[JumpPoint.leftFloor];
+            }
+            else if (playerTransform.position.y < jumpPoints[JumpPoint.leftTop].y - 2)//player on mid
+            {
+                navTarget = jumpPoints[JumpPoint.leftMid];
+            }
+            else //on top
+            {
+                navTarget = jumpPoints[JumpPoint.leftTop];
+            }
         }
+        else //right side
+        {
+            if (playerTransform.position.y < jumpPoints[JumpPoint.leftMid].y - 2)//on floor
+            {
+                navTarget = jumpPoints[JumpPoint.rightFloor];
+            }
+            else if (playerTransform.position.y < jumpPoints[JumpPoint.leftTop].y - 2)//on mid
+            {
+                navTarget = jumpPoints[JumpPoint.rightMid];
+            }
+            else //on top
+            {
+                navTarget = jumpPoints[JumpPoint.rightTop];
+            }
+        }
+
+        yield return StartCoroutine(nameof(NavigateTo));
+
+        //start anim (blur behind?)
+
+        //store start point
+        Vector2 start = transform.position;
+
+        //set target and speed
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, groundLayer);
+        if (hit)
+        {
+            if (playerTransform.position.x < transform.position.x)
+            {
+                moveTarget = new Vector2(hit.collider.bounds.min.x + 4, transform.position.y);
+            }
+            else
+            {
+                moveTarget = new Vector2(hit.collider.bounds.max.x - 4, transform.position.y);
+            }
+
+        }
+        speedMod = 4f;
+
+        yield return new WaitWhile(() => isMoving);
+
+        //stop anim
+
+        if(phase == Phase.two)//go back
+        {
+            yield return new WaitForSeconds(0.2f);
+            //start anim
+
+            //go back
+            moveTarget = start;
+
+            yield return new WaitWhile(() => isMoving);
+
+            //stop anim
+        }
+
+        actionQ.Dequeue();
+
         attacking = false;
     }
 
 
-    IEnumerator NavigateTo(Vector2 navTarget)
+    IEnumerator NavigateTo()
     {
         JumpPoint jumpStart;
         JumpPoint jumpEnd;
@@ -575,7 +550,9 @@ public class BastetScript : MonoBehaviour
                     jumpStart = JumpPoint.rightTop;
                 }
             }
+            
 
+            yield return new WaitWhile(() => isMoving);
 
             //determine where to jump to
             if (leftOfCenter) //left side
@@ -609,23 +586,24 @@ public class BastetScript : MonoBehaviour
                 }
             }
 
-            yield return new WaitWhile(() => isMoving);
-
-            if(jumpStart == JumpPoint.leftFloor || jumpStart == JumpPoint.rightFloor)
+            if(jumpStart != jumpEnd)
             {
-                GeneratePath(moveTarget, jumpPoints[jumpEnd]);
-            }
-            else
-            {
-                if (leftOfCenter)
+                if (jumpStart == JumpPoint.leftFloor || jumpStart == JumpPoint.rightFloor)
                 {
-                    GeneratePath(moveTarget, jumpPoints[JumpPoint.leftMid]);
-                    GeneratePath(jumpPoints[JumpPoint.leftMid], jumpPoints[jumpEnd]);
+                    GeneratePath(moveTarget, jumpPoints[jumpEnd]);
                 }
                 else
                 {
-                    GeneratePath(moveTarget, jumpPoints[JumpPoint.rightMid]);
-                    GeneratePath(jumpPoints[JumpPoint.rightMid], jumpPoints[jumpEnd]);
+                    if (leftOfCenter)
+                    {
+                        GeneratePath(moveTarget, jumpPoints[JumpPoint.leftMid]);
+                        GeneratePath(jumpPoints[JumpPoint.leftMid], jumpPoints[jumpEnd]);
+                    }
+                    else
+                    {
+                        GeneratePath(moveTarget, jumpPoints[JumpPoint.rightMid]);
+                        GeneratePath(jumpPoints[JumpPoint.rightMid], jumpPoints[jumpEnd]);
+                    }
                 }
             }
         }
@@ -697,11 +675,9 @@ public class BastetScript : MonoBehaviour
                 actionQ.Enqueue(Action.tailWhip);
                 break;
             case 1:
-                actionQ.Enqueue(Action.sprint);
                 actionQ.Enqueue(Action.clawSwipe);
                 break;
             case 2:
-                actionQ.Enqueue(Action.walk);
                 actionQ.Enqueue(Action.clawSwipe);
                 break;
             case 3:
@@ -709,7 +685,6 @@ public class BastetScript : MonoBehaviour
                 actionQ.Enqueue(Action.charge);
                 break;
             case 4:
-                actionQ.Enqueue(Action.walk);
                 actionQ.Enqueue(Action.tailWhip);
                 break;
             case 5:
