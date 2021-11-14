@@ -13,10 +13,11 @@ public class AttackInteract : MonoBehaviour
         //deal damage if target collision is an enemy and increase combo
         if (target.gameObject.CompareTag("Enemy"))
         {
-            int instanceID = target.GetInstanceID();
+            EnemyCompositeHB hb = target.gameObject.GetComponent<EnemyCompositeHB>();
+            int instanceID = hb.ParentID;
             if (instanceIDs.Contains(instanceID)) { return; }
             instanceIDs.Add(instanceID);
-            target.gameObject.GetComponent<EnemyCompositeHB>().TakeDamage(attackDamage);
+            hb.TakeDamage(attackDamage);
             player.GetComponent<PlayerTestScript>().ComboInc();
         }
     }

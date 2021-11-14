@@ -12,10 +12,11 @@ public class FireDoT : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            int instanceID = collision.gameObject.GetInstanceID();
+            EnemyCompositeHB hb = collision.gameObject.GetComponent<EnemyCompositeHB>();
+            int instanceID = hb.ParentID;
             if (instanceIDs.Contains(instanceID)) { return; }
             instanceIDs.Add(instanceID);
-            collision.gameObject.GetComponent<EnemyCompositeHB>().healthManager.DOT(ticks, time, damage);
+            hb.healthManager.DOT(ticks, time, damage);
         }
     }
 }

@@ -6,6 +6,13 @@ public class EnemyCompositeHB : MonoBehaviour
 {
     public EnemyHealth healthManager;
 
+    public int ParentID { get; private set; }
+
+    private void Start()
+    {
+        ParentID = healthManager.gameObject.GetInstanceID();
+    }
+
     public void TakeDamage(int damage)
     {
         healthManager.TakeDamage(damage);
