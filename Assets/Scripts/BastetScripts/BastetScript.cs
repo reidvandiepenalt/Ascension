@@ -15,12 +15,27 @@ public class BastetScript : MonoBehaviour
     [SerializeField] float speed;
     bool facingRight = true;
     float speedMod = 1f;
-    Vector2 velocity;
-    Vector2 moveTarget;
-    Vector2 navTarget;
+    [SerializeField] Vector2 velocity;
+    [SerializeField] Vector2 moveTarget;
+    [SerializeField] Vector2 navTarget;
     Vector2 storedJumpPoint;
     Vector2 storedJumpPointSecondHalf;
-    int currentLevel = 2;
+
+    float playerLevelY { get {
+            if (playerTransform.position.y < jumpPoints[JumpPoint.leftMid].y - 5)
+            {
+                return jumpPoints[JumpPoint.leftFloor].y;
+            }
+            else if (playerTransform.position.y < jumpPoints[JumpPoint.leftTop].y - 5)
+            {
+                return jumpPoints[JumpPoint.leftMid].y;
+            }
+            else
+            {
+                return jumpPoints[JumpPoint.leftTop].y;
+            }
+        }
+     }
 
     float centerX { get => jumpPoints[JumpPoint.rightMid].x - jumpPoints[JumpPoint.leftMid].x; }
 
@@ -327,12 +342,12 @@ public class BastetScript : MonoBehaviour
         speedMod = 1f;
         if (transform.position.x > playerTransform.position.x)
         {
-            navTarget.y = playerTransform.position.y;
+            navTarget.y = playerLevelY;
             navTarget.x = playerTransform.position.x + 0.75f;
         }
         else
         {
-            navTarget.y = playerTransform.position.y;
+            navTarget.y = playerLevelY;
             navTarget.x = playerTransform.position.x - 0.75f;
         }
         yield return StartCoroutine(nameof(NavigateTo));
@@ -357,12 +372,12 @@ public class BastetScript : MonoBehaviour
         speedMod = 1f;
         if (transform.position.x > playerTransform.position.x)
         {
-            navTarget.y = playerTransform.position.y;
+            navTarget.y = playerLevelY;
             navTarget.x = playerTransform.position.x + 0.75f;
         }
         else
         {
-            navTarget.y = playerTransform.position.y;
+            navTarget.y = playerLevelY;
             navTarget.x = playerTransform.position.x - 0.75f;
         }
         yield return StartCoroutine(nameof(NavigateTo));
@@ -418,11 +433,11 @@ public class BastetScript : MonoBehaviour
         speedMod = 1f;
         if (transform.position.x < centerX) //left side
         {
-            if (playerTransform.position.y < jumpPoints[JumpPoint.leftMid].y - 2)// player on floor
+            if (playerLevelY == jumpPoints[JumpPoint.leftFloor].y)// player on floor
             {
                 navTarget = jumpPoints[JumpPoint.leftFloor];
             }
-            else if (playerTransform.position.y < jumpPoints[JumpPoint.leftTop].y - 2)//player on mid
+            else if (playerLevelY == jumpPoints[JumpPoint.leftMid].y)//player on mid
             {
                 navTarget = jumpPoints[JumpPoint.leftMid];
             }
@@ -433,11 +448,11 @@ public class BastetScript : MonoBehaviour
         }
         else //right side
         {
-            if (playerTransform.position.y < jumpPoints[JumpPoint.leftMid].y - 2)//on floor
+            if (playerLevelY == jumpPoints[JumpPoint.leftFloor].y)//on floor
             {
                 navTarget = jumpPoints[JumpPoint.rightFloor];
             }
-            else if (playerTransform.position.y < jumpPoints[JumpPoint.leftTop].y - 2)//on mid
+            else if (playerLevelY == jumpPoints[JumpPoint.leftMid].y)//on mid
             {
                 navTarget = jumpPoints[JumpPoint.rightMid];
             }
@@ -460,11 +475,11 @@ public class BastetScript : MonoBehaviour
         {
             if (playerTransform.position.x < transform.position.x)
             {
-                moveTarget = new Vector2(hit.collider.bounds.min.x + 4, transform.position.y);
+                moveTarget = new Vector2(hit.collider.bounds.min.x + 4, hit.collider.bounds.max.y);
             }
             else
             {
-                moveTarget = new Vector2(hit.collider.bounds.max.x - 4, transform.position.y);
+                moveTarget = new Vector2(hit.collider.bounds.max.x - 4, hit.collider.bounds.max.y);
             }
 
         }
@@ -503,7 +518,7 @@ public class BastetScript : MonoBehaviour
         if (Mathf.Abs(navTarget.y - transform.position.y) < 1)
         {
             speedMod = 1f;
-            moveTarget.x = navTarget.x;
+            moveTarget = navTarget;
         }
         else //move to a jump point
         {
@@ -512,20 +527,17 @@ public class BastetScript : MonoBehaviour
             {
                 if(Mathf.Abs(transform.position.y - jumpPoints[JumpPoint.leftFloor].y) < 1)//on floor
                 {
-                    moveTarget.x = jumpPoints[JumpPoint.leftFloor].x;
-                    moveTarget.y = transform.position.y;
+                    moveTarget = jumpPoints[JumpPoint.leftFloor];
                     jumpStart = JumpPoint.leftFloor;
                 }
                 else if (Mathf.Abs(transform.position.y - jumpPoints[JumpPoint.leftMid].y) < 1)//on mid
                 {
-                    moveTarget.x = jumpPoints[JumpPoint.leftMid].x;
-                    moveTarget.y = transform.position.y;
+                    moveTarget = jumpPoints[JumpPoint.leftMid];
                     jumpStart = JumpPoint.leftMid;
                 }
                 else //on top
                 {
-                    moveTarget.x = jumpPoints[JumpPoint.leftTop].x;
-                    moveTarget.y = transform.position.y;
+                    moveTarget = jumpPoints[JumpPoint.leftTop];
                     jumpStart = JumpPoint.leftTop;
                 }
             }
@@ -533,20 +545,17 @@ public class BastetScript : MonoBehaviour
             {
                 if (Mathf.Abs(transform.position.y - jumpPoints[JumpPoint.rightFloor].y) < 1)//on floor
                 {
-                    moveTarget.x = jumpPoints[JumpPoint.rightFloor].x;
-                    moveTarget.y = transform.position.y;
+                    moveTarget = jumpPoints[JumpPoint.rightFloor];
                     jumpStart = JumpPoint.rightFloor;
                 }
                 else if (Mathf.Abs(transform.position.y - jumpPoints[JumpPoint.rightMid].y) < 1)//on mid
                 {
-                    moveTarget.x = jumpPoints[JumpPoint.rightMid].x;
-                    moveTarget.y = transform.position.y;
+                    moveTarget = jumpPoints[JumpPoint.rightMid];
                     jumpStart = JumpPoint.rightMid;
                 }
                 else //on top
                 {
-                    moveTarget.x = jumpPoints[JumpPoint.rightTop].x;
-                    moveTarget.y = transform.position.y;
+                    moveTarget = jumpPoints[JumpPoint.rightTop];
                     jumpStart = JumpPoint.rightTop;
                 }
             }
@@ -610,8 +619,7 @@ public class BastetScript : MonoBehaviour
 
         yield return new WaitUntil(() => reachedEndOfPath);
 
-        moveTarget.x = navTarget.x;
-        moveTarget.y = transform.position.y;
+        moveTarget = navTarget;
 
         yield return new WaitWhile(() => isMoving);
     }
@@ -622,9 +630,9 @@ public class BastetScript : MonoBehaviour
     /// <returns>True if snapped to target x</returns>
     bool CheckXDistToMoveTarget()
     {
-        if(Mathf.Abs(moveTarget.y - transform.position.y) < 0.5f)
+        if(Mathf.Abs(moveTarget.y - transform.position.y) < 3f)
         {
-            if (moveTarget.x - transform.position.x < speed * Time.fixedDeltaTime * speedMod * velocity.x)
+            if (Mathf.Abs(moveTarget.x - transform.position.x) < speed * Time.fixedDeltaTime * speedMod * velocity.x)
             {
                 transform.position = new Vector3(moveTarget.x, transform.position.y, transform.position.z);
                 velocity.x = 0;
