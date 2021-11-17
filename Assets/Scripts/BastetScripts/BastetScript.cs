@@ -49,7 +49,7 @@ public class BastetScript : MonoBehaviour
     float playerGroundOffset;
 
     bool isMoving = false;
-    Queue<Action> actionQ = new Queue<Action>();
+    public Queue<Action> actionQ = new Queue<Action>();
     Phase phase = Phase.one;
     bool attacking = false;
 
@@ -64,7 +64,7 @@ public class BastetScript : MonoBehaviour
         leftTop,
         leftFloor
     }
-    enum Action
+    public enum Action
     {
         charge,
         clawSwipe,
@@ -163,7 +163,10 @@ public class BastetScript : MonoBehaviour
 
         if (movement.collisions.below) { velocity.y = 0; } else
         {
-            velocity.y += gravity * Time.fixedDeltaTime;
+            if (reachedEndOfPath)
+            {
+                velocity.y += gravity * Time.fixedDeltaTime;
+            }
         }
 
         if(actionQ.Count == 0)
@@ -223,10 +226,13 @@ public class BastetScript : MonoBehaviour
     /// </summary>
     IEnumerator ClawPlatform()
     {
+        Debug.Log("clawPlatform");
+
         attacking = true;
 
         navTarget.y = jumpPoints[JumpPoint.leftTop].y;
-        navTarget.x = playerTransform.position.x;
+        navTarget.x = Mathf.Clamp(playerTransform.position.x,
+            jumpPoints[JumpPoint.leftMid].x, jumpPoints[JumpPoint.rightMid].x);
         //add a way to update constantly?
         yield return StartCoroutine(nameof(NavigateTo));
 
@@ -277,6 +283,9 @@ public class BastetScript : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
         }
 
+        clawFacingRight.transform.position = new Vector3(-50, -50, clawFacingRight.transform.position.z);
+        clawFacingLeft.transform.position = new Vector3(-50, -50, clawFacingLeft.transform.position.z);
+
         //if(anim is done)
 
         //end anim
@@ -291,19 +300,23 @@ public class BastetScript : MonoBehaviour
     /// </summary>
     IEnumerator Backflip()
     {
+        Debug.Log("backflip");
+
         attacking = true;
 
         //start anim
 
+        Bounds platform = Physics2D.Raycast(transform.position, Vector2.down, 1f, groundLayer).collider.bounds;
+
         //generate path
-        GeneratePath(new Vector2(transform.position.x + (facingRight ? -8 : 8), transform.position.y));
+        GeneratePath(new Vector2(Mathf.Clamp(transform.position.x + (facingRight ? -8 : 8),
+            platform.min.x, platform.max.x), transform.position.y));
 
         yield return new WaitUntil(() => reachedEndOfPath);
         
         if(phase == Phase.two)
         {
             //start stomp/spike anim   adjust spawn to be at paw?
-            Bounds platform = Physics2D.Raycast(transform.position, Vector2.down, 1f, groundLayer).collider.bounds;
             int directionMod = facingRight ? 1 : -1;
             for (int i = 0; i < 4; i++)
             {
@@ -321,6 +334,8 @@ public class BastetScript : MonoBehaviour
                 yield return new WaitForSeconds(0.1f);
             }
 
+            clawUp.transform.position = new Vector3(-50, -50, clawUp.transform.position.z);
+
             actionQ.Dequeue();
         }
         else
@@ -337,6 +352,8 @@ public class BastetScript : MonoBehaviour
     /// </summary>
     IEnumerator TailSwipe()
     {
+        Debug.Log("tail");
+
         attacking = true;
 
         speedMod = 1f;
@@ -367,6 +384,8 @@ public class BastetScript : MonoBehaviour
     /// </summary>
     IEnumerator ClawSwipe()
     {
+        Debug.Log("claw swipe");
+
         attacking = true;
 
         speedMod = 1f;
@@ -428,6 +447,8 @@ public class BastetScript : MonoBehaviour
     /// </summary>
     IEnumerator Charge()
     {
+        Debug.Log("charge");
+
         attacking = true;
 
         speedMod = 1f;
@@ -605,13 +626,13 @@ public class BastetScript : MonoBehaviour
                 {
                     if (leftOfCenter)
                     {
-                        GeneratePath(moveTarget, jumpPoints[JumpPoint.leftMid]);
-                        GeneratePath(jumpPoints[JumpPoint.leftMid], jumpPoints[jumpEnd]);
+                        GeneratePath(moveTarget, jumpPoints[JumpPoint.leftWall]);
+                        GeneratePath(jumpPoints[JumpPoint.leftWall], jumpPoints[jumpEnd]);
                     }
                     else
                     {
-                        GeneratePath(moveTarget, jumpPoints[JumpPoint.rightMid]);
-                        GeneratePath(jumpPoints[JumpPoint.rightMid], jumpPoints[jumpEnd]);
+                        GeneratePath(moveTarget, jumpPoints[JumpPoint.rightWall]);
+                        GeneratePath(jumpPoints[JumpPoint.rightWall], jumpPoints[jumpEnd]);
                     }
                 }
             }
@@ -724,6 +745,10 @@ public class BastetScript : MonoBehaviour
     /// <param name="endPoint"></param>
     void GeneratePath(Vector2 startPoint, Vector2 endPoint)
     {
+        Debug.Log("generating path");
+
+        endPoint.y += 1.5f;
+
         reachedEndOfPath = false;
         float timeToMove = 0.3f;
         int numSteps = (int)(60f * timeToMove);
