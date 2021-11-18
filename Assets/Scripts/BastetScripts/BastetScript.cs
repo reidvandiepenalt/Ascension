@@ -182,6 +182,7 @@ public class BastetScript : MonoBehaviour
             }
             else
             {
+                Debug.DrawLine(transform.position, path.Peek(), Color.magenta, 5f);
                 transform.position = path.Dequeue();
                 if (!reachedEndOfPath)
                 {
@@ -306,7 +307,7 @@ public class BastetScript : MonoBehaviour
 
         //start anim
 
-        Bounds platform = Physics2D.Raycast(transform.position, Vector2.down, 1f, groundLayer).collider.bounds;
+        Bounds platform = Physics2D.Raycast(transform.position, Vector2.down, 5f, groundLayer).collider.bounds;
 
         //generate path
         GeneratePath(new Vector2(Mathf.Clamp(transform.position.x + (facingRight ? -8 : 8),
@@ -653,7 +654,7 @@ public class BastetScript : MonoBehaviour
     {
         if(Mathf.Abs(moveTarget.y - transform.position.y) < 3f)
         {
-            if (Mathf.Abs(moveTarget.x - transform.position.x) < speed * Time.fixedDeltaTime * speedMod * velocity.x)
+            if (Mathf.Abs(moveTarget.x - transform.position.x) <  2 * speed * Time.fixedDeltaTime * speedMod * velocity.x)
             {
                 transform.position = new Vector3(moveTarget.x, transform.position.y, transform.position.z);
                 velocity.x = 0;
@@ -747,18 +748,18 @@ public class BastetScript : MonoBehaviour
     {
         Debug.Log("generating path");
 
-        endPoint.y += 1.5f;
+        Debug.DrawLine(startPoint, endPoint, Color.red, 5f);
 
         reachedEndOfPath = false;
         float timeToMove = 0.3f;
         int numSteps = (int)(60f * timeToMove);
         float stepDist = (endPoint.x - startPoint.x) / numSteps;
 
-        float initVy = (endPoint.y - transform.position.y - gravity / 2 * Mathf.Pow(timeToMove, 2)) / timeToMove;
+        float initVy = Mathf.Max(endPoint.y - transform.position.y - (gravity / 2) * Mathf.Pow(timeToMove, 2), 2f) / timeToMove;
         for (int i = 0; i < numSteps; i++)
         {
             path.Enqueue(new Vector2(startPoint.x + i * stepDist,
-                gravity / 2 * Mathf.Pow(i * Time.fixedDeltaTime, 2) + (i * Time.fixedDeltaTime * initVy) + startPoint.y));
+                (gravity / 2) * Mathf.Pow(i * Time.fixedDeltaTime, 2) + (i * Time.fixedDeltaTime * initVy) + startPoint.y));
         }
     }
 }
