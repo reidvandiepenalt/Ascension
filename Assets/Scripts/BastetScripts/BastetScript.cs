@@ -239,7 +239,7 @@ public class BastetScript : MonoBehaviour
 
         //claw down anim
 
-        Bounds platform = Physics2D.Raycast(transform.position, Vector2.down, 1f, groundLayer).collider.bounds;
+        Bounds platform = Physics2D.Raycast(transform.position + Vector3.up, Vector2.down, Mathf.Infinity, groundLayer).collider.bounds;
         //3 or 1 seperate claw spawns (adjust to spawn at paw?)
         for (int i = 0; i < ((phase == Phase.one)?1:3); i++)
         {
@@ -307,12 +307,13 @@ public class BastetScript : MonoBehaviour
 
         //start anim
 
-        Bounds platform = Physics2D.Raycast(transform.position, Vector2.down, 5f, groundLayer).collider.bounds;
+        Bounds platform = Physics2D.Raycast(transform.position + Vector3.up, Vector2.down, Mathf.Infinity, groundLayer).collider.bounds;
 
         //generate path
         GeneratePath(new Vector2(Mathf.Clamp(transform.position.x + (facingRight ? -8 : 8),
             platform.min.x, platform.max.x), transform.position.y));
 
+        yield return new WaitForEndOfFrame();
         yield return new WaitUntil(() => reachedEndOfPath);
         
         if(phase == Phase.two)
@@ -492,7 +493,7 @@ public class BastetScript : MonoBehaviour
         Vector2 start = transform.position;
 
         //set target and speed
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, groundLayer);
+        RaycastHit2D hit = Physics2D.Raycast(transform.position + Vector3.up, Vector2.down, 3f, groundLayer);
         if (hit)
         {
             if (playerTransform.position.x < transform.position.x)
@@ -639,9 +640,11 @@ public class BastetScript : MonoBehaviour
             }
         }
 
+        yield return new WaitForEndOfFrame();
         yield return new WaitUntil(() => reachedEndOfPath);
 
-        moveTarget = navTarget;
+        moveTarget.x = navTarget.x;
+        moveTarget.y = transform.position.y;
 
         yield return new WaitWhile(() => isMoving);
     }
@@ -746,17 +749,16 @@ public class BastetScript : MonoBehaviour
     /// <param name="endPoint"></param>
     void GeneratePath(Vector2 startPoint, Vector2 endPoint)
     {
-        Debug.Log("generating path");
-
+        endPoint.y += 0.5f;
         Debug.DrawLine(startPoint, endPoint, Color.red, 5f);
 
         reachedEndOfPath = false;
         float timeToMove = 0.3f;
-        int numSteps = (int)(60f * timeToMove);
+        int numSteps = (int)((1/Time.fixedDeltaTime) * timeToMove);
         float stepDist = (endPoint.x - startPoint.x) / numSteps;
 
-        float initVy = Mathf.Max(endPoint.y - transform.position.y - (gravity / 2) * Mathf.Pow(timeToMove, 2), 2f) / timeToMove;
-        for (int i = 0; i < numSteps; i++)
+        float initVy = ((endPoint.y - startPoint.y) / timeToMove) + (-gravity / 2 * timeToMove);
+        for (int i = 1; i <= numSteps; i++)
         {
             path.Enqueue(new Vector2(startPoint.x + i * stepDist,
                 (gravity / 2) * Mathf.Pow(i * Time.fixedDeltaTime, 2) + (i * Time.fixedDeltaTime * initVy) + startPoint.y));
