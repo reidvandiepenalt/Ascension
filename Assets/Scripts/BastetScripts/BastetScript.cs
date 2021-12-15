@@ -9,6 +9,7 @@ public class BastetScript : MonoBehaviour
     [SerializeField] EnemyCollisionMovementHandler movement;
     [SerializeField] EnemyHealth healthManager;
     [SerializeField] LayerMask groundLayer;
+    [SerializeField] Animator anim;
 
     [SerializeField] GameObject swipePrefab, clawFacingRight, clawFacingLeft, clawUp;
 
@@ -49,6 +50,7 @@ public class BastetScript : MonoBehaviour
     float playerGroundOffset;
 
     bool isMoving = false;
+    bool IsMoving { get => isMoving; set { anim.SetBool("Running", value); isMoving = value; } }
     public Queue<Action> actionQ = new Queue<Action>();
     Phase phase = Phase.one;
     bool attacking = false;
@@ -238,6 +240,7 @@ public class BastetScript : MonoBehaviour
         yield return StartCoroutine(nameof(NavigateTo));
 
         //claw down anim
+        anim.SetTrigger("Stomp");
 
         Bounds platform = Physics2D.Raycast(transform.position + Vector3.up, Vector2.down, Mathf.Infinity, groundLayer).collider.bounds;
         //3 or 1 seperate claw spawns (adjust to spawn at paw?)
@@ -286,10 +289,6 @@ public class BastetScript : MonoBehaviour
 
         clawFacingRight.transform.position = new Vector3(-50, -50, clawFacingRight.transform.position.z);
         clawFacingLeft.transform.position = new Vector3(-50, -50, clawFacingLeft.transform.position.z);
-
-        //if(anim is done)
-
-        //end anim
 
         actionQ.Dequeue();
 
@@ -372,6 +371,7 @@ public class BastetScript : MonoBehaviour
         yield return StartCoroutine(nameof(NavigateTo));
 
         //start anim base on p1 or p2
+        anim.SetTrigger("TailSwipe");
 
         yield return new WaitForSeconds(1f);
         //wait until anim is done
@@ -406,7 +406,7 @@ public class BastetScript : MonoBehaviour
         switch (phase)
         {
             case Phase.one:
-                //start anim
+                anim.SetTrigger("Claw");
                 
                 //wait until(Anim is done)
                 actionQ.Dequeue();
@@ -429,12 +429,11 @@ public class BastetScript : MonoBehaviour
                     moveTarget.x = playerTransform.position.x + 0.75f;
                 }
 
-                yield return new WaitWhile(() => isMoving);
+                yield return new WaitWhile(() => IsMoving);
 
                 //disable after effect
 
-                //start claw anim
-
+                anim.SetTrigger("Claw");
                 //wait until claw anim is done
 
                 actionQ.Dequeue();
@@ -508,7 +507,7 @@ public class BastetScript : MonoBehaviour
         }
         speedMod = 4f;
 
-        yield return new WaitWhile(() => isMoving);
+        yield return new WaitWhile(() => IsMoving);
 
         //stop anim
 
@@ -520,7 +519,7 @@ public class BastetScript : MonoBehaviour
             //go back
             moveTarget = start;
 
-            yield return new WaitWhile(() => isMoving);
+            yield return new WaitWhile(() => IsMoving);
 
             //stop anim
         }
@@ -584,7 +583,7 @@ public class BastetScript : MonoBehaviour
             }
             
 
-            yield return new WaitWhile(() => isMoving);
+            yield return new WaitWhile(() => IsMoving);
 
             //determine where to jump to
             if (leftOfCenter) //left side
@@ -646,7 +645,7 @@ public class BastetScript : MonoBehaviour
         moveTarget.x = navTarget.x;
         moveTarget.y = transform.position.y;
 
-        yield return new WaitWhile(() => isMoving);
+        yield return new WaitWhile(() => IsMoving);
     }
 
     /// <summary>
@@ -661,7 +660,7 @@ public class BastetScript : MonoBehaviour
             {
                 transform.position = new Vector3(moveTarget.x, transform.position.y, transform.position.z);
                 velocity.x = 0;
-                isMoving = false;
+                IsMoving = false;
                 return true;
             }
         }
@@ -683,7 +682,7 @@ public class BastetScript : MonoBehaviour
             facingRight = true;
             //flip gfx
         }
-        isMoving = velocity.x != 0;
+        IsMoving = velocity.x != 0;
     }
 
     /// <summary>
