@@ -184,6 +184,10 @@ public class BastetScript : MonoBehaviour
             }
             else
             {
+                if(path.Count == 5 && actionQ.Peek() != Action.backflip)
+                {
+                    anim.SetTrigger("Land");
+                }
                 Debug.DrawLine(transform.position, path.Peek(), Color.magenta, 5f);
                 transform.position = path.Dequeue();
                 if (!reachedEndOfPath)
@@ -636,6 +640,15 @@ public class BastetScript : MonoBehaviour
                         GeneratePath(jumpPoints[JumpPoint.rightWall], jumpPoints[jumpEnd]);
                     }
                 }
+            }
+
+            if (jumpPoints[jumpEnd].y > transform.position.y)
+            {
+                anim.SetTrigger("UpJump");
+            }
+            else
+            {
+                anim.SetTrigger("DownJump");
             }
         }
 
