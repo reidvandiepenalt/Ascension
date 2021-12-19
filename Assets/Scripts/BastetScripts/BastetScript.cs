@@ -11,7 +11,8 @@ public class BastetScript : MonoBehaviour
     [SerializeField] LayerMask groundLayer;
     [SerializeField] Animator anim;
 
-    [SerializeField] GameObject swipePrefab, clawFacingRight, clawFacingLeft, clawUp;
+    [SerializeField] GameObject swipePrefab, clawFacingRight, clawFacingLeft, clawUp, tailSwipePrefab;
+    [SerializeField] Transform tailEnd;
 
     [SerializeField] float speed;
     bool facingRight = true;
@@ -376,6 +377,13 @@ public class BastetScript : MonoBehaviour
 
         //start anim base on p1 or p2
         anim.SetTrigger("TailSwipe");
+
+        yield return new WaitForSeconds(25f/60f);
+        TailSwipeScript ts = Instantiate(tailSwipePrefab, tailEnd.position, Quaternion.identity).GetComponent<TailSwipeScript>();
+        if (facingRight)
+        {
+            ts.direction = -1;
+        }
 
         yield return new WaitForSeconds(1f);
         //wait until anim is done
