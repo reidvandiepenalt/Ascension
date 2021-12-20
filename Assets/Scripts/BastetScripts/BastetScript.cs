@@ -376,14 +376,34 @@ public class BastetScript : MonoBehaviour
         yield return StartCoroutine(nameof(NavigateTo));
 
         //start anim base on p1 or p2
-        anim.SetTrigger("TailSwipe");
-
-        yield return new WaitForSeconds(25f/60f);
-        TailSwipeScript ts = Instantiate(tailSwipePrefab, tailEnd.position, Quaternion.identity).GetComponent<TailSwipeScript>();
-        if (facingRight)
+        switch (phase)
         {
-            ts.direction = -1;
+            case Phase.one:
+                anim.SetTrigger("TailSwipe");
+                yield return new WaitForSeconds(25f / 60f);
+                TailSwipeScript ts = Instantiate(tailSwipePrefab, tailEnd.position, Quaternion.identity).GetComponent<TailSwipeScript>();
+                if (facingRight)
+                {
+                    ts.direction = -1;
+                }
+                break;
+            case Phase.two:
+                anim.SetTrigger("DoubleTail");
+                yield return new WaitForSeconds(25f / 60f);
+                TailSwipeScript ts1 = Instantiate(tailSwipePrefab, tailEnd.position, Quaternion.identity).GetComponent<TailSwipeScript>();
+                if (facingRight)
+                {
+                    ts1.direction = -1;
+                }
+                yield return new WaitForSeconds(1f / 3f);
+                TailSwipeScript ts2 = Instantiate(tailSwipePrefab, tailEnd.position, Quaternion.identity).GetComponent<TailSwipeScript>();
+                if (facingRight)
+                {
+                    ts2.direction = -1;
+                }
+                break;
         }
+        
 
         yield return new WaitForSeconds(1f);
         //wait until anim is done
