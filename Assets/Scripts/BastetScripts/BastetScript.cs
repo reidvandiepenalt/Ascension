@@ -309,7 +309,7 @@ public class BastetScript : MonoBehaviour
 
         attacking = true;
 
-        //start anim
+        anim.SetTrigger("Backflip");
 
         Bounds platform = Physics2D.Raycast(transform.position + Vector3.up, Vector2.down, Mathf.Infinity, groundLayer).collider.bounds;
 
@@ -322,7 +322,8 @@ public class BastetScript : MonoBehaviour
         
         if(phase == Phase.two)
         {
-            //start stomp/spike anim   adjust spawn to be at paw?
+            anim.SetTrigger("Stomp");
+
             int directionMod = facingRight ? 1 : -1;
             for (int i = 0; i < 4; i++)
             {
@@ -375,7 +376,6 @@ public class BastetScript : MonoBehaviour
         }
         yield return StartCoroutine(nameof(NavigateTo));
 
-        //start anim base on p1 or p2
         switch (phase)
         {
             case Phase.one:
@@ -444,7 +444,7 @@ public class BastetScript : MonoBehaviour
                 actionQ.Dequeue();
                 break;
             case Phase.two:
-                //start eye flash anim
+                anim.SetTrigger("EyeFlash");
 
                 //wait until(first anim is done)
 
