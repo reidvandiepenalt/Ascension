@@ -315,7 +315,7 @@ public class BastetScript : MonoBehaviour
 
         //generate path
         GeneratePath(new Vector2(Mathf.Clamp(transform.position.x + (facingRight ? -8 : 8),
-            platform.min.x, platform.max.x), transform.position.y));
+            platform.min.x + 2, platform.max.x - 2), transform.position.y));
 
         yield return new WaitForEndOfFrame();
         yield return new WaitUntil(() => reachedEndOfPath);
@@ -717,11 +717,13 @@ public class BastetScript : MonoBehaviour
         if(velocity.x < 0 && facingRight)
         {
             facingRight = false;
+            transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, 1);
 
-        }else if(velocity.x > 0 && !facingRight)
+        }
+        else if(velocity.x > 0 && !facingRight)
         {
             facingRight = true;
-            //flip gfx
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, 1);
         }
         IsMoving = velocity.x != 0;
     }
@@ -789,7 +791,7 @@ public class BastetScript : MonoBehaviour
     /// <param name="endPoint"></param>
     void GeneratePath(Vector2 startPoint, Vector2 endPoint)
     {
-        endPoint.y += 0.5f;
+        endPoint.y += 1f;
         Debug.DrawLine(startPoint, endPoint, Color.red, 5f);
 
         reachedEndOfPath = false;
