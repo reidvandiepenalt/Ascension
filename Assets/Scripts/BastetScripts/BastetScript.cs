@@ -448,7 +448,7 @@ public class BastetScript : MonoBehaviour
 
                 //wait until(first anim is done)
 
-                //enable after effect
+                anim.SetBool("Blur", true);
 
                 //move quickly towards player
                 speedMod = 6f;
@@ -463,7 +463,7 @@ public class BastetScript : MonoBehaviour
 
                 yield return new WaitWhile(() => IsMoving);
 
-                //disable after effect
+                anim.SetBool("Blur", false);
 
                 anim.SetTrigger("Claw");
                 //wait until claw anim is done
@@ -518,7 +518,7 @@ public class BastetScript : MonoBehaviour
 
         yield return StartCoroutine(nameof(NavigateTo));
 
-        //start anim (blur behind?)
+        anim.SetBool("Blur", true);
 
         //store start point
         Vector2 start = transform.position;
@@ -541,19 +541,19 @@ public class BastetScript : MonoBehaviour
 
         yield return new WaitWhile(() => IsMoving);
 
-        //stop anim
+        anim.SetBool("Blur", false);
 
         if(phase == Phase.two)//go back
         {
             yield return new WaitForSeconds(0.2f);
-            //start anim
+            anim.SetBool("Blur", true);
 
             //go back
             moveTarget = start;
 
             yield return new WaitWhile(() => IsMoving);
 
-            //stop anim
+            anim.SetBool("Blur", false);
         }
 
         actionQ.Dequeue();
