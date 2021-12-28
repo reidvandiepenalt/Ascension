@@ -14,8 +14,9 @@ public class TailSwipeScript : MonoBehaviour
     {
         if(direction < 0)
         {
-            transform.localScale = new Vector3(1, 1, -1);
+            transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
         }
+        Invoke("Despawn", despawnTime);
     }
 
     private void FixedUpdate()
@@ -28,5 +29,10 @@ public class TailSwipeScript : MonoBehaviour
         if (collision.CompareTag("Inanimate")){
             Destroy(gameObject);
         }
+    }
+
+    private void Despawn()
+    {
+        Destroy(gameObject);
     }
 }

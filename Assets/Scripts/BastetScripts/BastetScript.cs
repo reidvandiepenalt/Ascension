@@ -16,6 +16,7 @@ public class BastetScript : MonoBehaviour
 
     [SerializeField] float speed;
     bool facingRight = true;
+    bool isNavigating = false;
     float speedMod = 1f;
     [SerializeField] Vector2 velocity;
     [SerializeField] Vector2 moveTarget;
@@ -198,10 +199,11 @@ public class BastetScript : MonoBehaviour
             }
         }
 
-
-
-        HorizVelCalc();
-
+        if (isNavigating)
+        {
+            HorizVelCalc();
+        }
+     
         if (!attacking)
         {
             switch (actionQ.Peek())
@@ -367,37 +369,50 @@ public class BastetScript : MonoBehaviour
         if (transform.position.x > playerTransform.position.x)
         {
             navTarget.y = playerLevelY;
-            navTarget.x = playerTransform.position.x + 0.75f;
+            navTarget.x = playerTransform.position.x + 4f;
         }
         else
         {
             navTarget.y = playerLevelY;
-            navTarget.x = playerTransform.position.x - 0.75f;
+            navTarget.x = playerTransform.position.x - 4f;
         }
+
         yield return StartCoroutine(nameof(NavigateTo));
+
+        if(playerTransform.position.x < transform.position.x)
+        {
+            facingRight = false;
+            transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, 1);
+        }
+        else
+        {
+            facingRight = true;
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, 1);
+        }
 
         switch (phase)
         {
             case Phase.one:
+                anim.SetBool("NoTail", true);
                 anim.SetTrigger("TailSwipe");
-                yield return new WaitForSeconds(25f / 60f);
+                yield return new WaitForSeconds(26f / 60f);
                 TailSwipeScript ts = Instantiate(tailSwipePrefab, tailEnd.position, Quaternion.identity).GetComponent<TailSwipeScript>();
-                if (facingRight)
+                if (!facingRight)
                 {
                     ts.direction = -1;
                 }
                 break;
             case Phase.two:
                 anim.SetTrigger("DoubleTail");
-                yield return new WaitForSeconds(25f / 60f);
+                yield return new WaitForSeconds(26f / 60f);
                 TailSwipeScript ts1 = Instantiate(tailSwipePrefab, tailEnd.position, Quaternion.identity).GetComponent<TailSwipeScript>();
-                if (facingRight)
+                if (!facingRight)
                 {
                     ts1.direction = -1;
                 }
                 yield return new WaitForSeconds(1f / 3f);
                 TailSwipeScript ts2 = Instantiate(tailSwipePrefab, tailEnd.position, Quaternion.identity).GetComponent<TailSwipeScript>();
-                if (facingRight)
+                if (!facingRight)
                 {
                     ts2.direction = -1;
                 }
@@ -407,6 +422,7 @@ public class BastetScript : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
         //wait until anim is done
+        anim.SetBool("NoTail", false);
 
         actionQ.Dequeue();
 
@@ -564,6 +580,8 @@ public class BastetScript : MonoBehaviour
 
     IEnumerator NavigateTo()
     {
+        isNavigating = true;
+
         JumpPoint jumpStart;
         JumpPoint jumpEnd;
         bool leftOfCenter = transform.position.x < centerX;
@@ -687,6 +705,8 @@ public class BastetScript : MonoBehaviour
         moveTarget.y = transform.position.y;
 
         yield return new WaitWhile(() => IsMoving);
+
+        isNavigating = false;
     }
 
     /// <summary>
@@ -697,7 +717,7 @@ public class BastetScript : MonoBehaviour
     {
         if(Mathf.Abs(moveTarget.y - transform.position.y) < 3f)
         {
-            if (Mathf.Abs(moveTarget.x - transform.position.x) <  2 * speed * Time.fixedDeltaTime * speedMod * velocity.x)
+            if (Mathf.Abs(moveTarget.x - transform.position.x) <  2 * speed * Time.fixedDeltaTime * speedMod)
             {
                 transform.position = new Vector3(moveTarget.x, transform.position.y, transform.position.z);
                 velocity.x = 0;
@@ -733,6 +753,10 @@ public class BastetScript : MonoBehaviour
     /// </summary>
     void PickAttack()
     {
+        //debug
+        actionQ.Enqueue(Action.tailWhip);
+
+        /*
         bool clawable = false;
 
         //only do claw platform if player not on top
@@ -772,7 +796,7 @@ public class BastetScript : MonoBehaviour
                 actionQ.Enqueue(Action.backflip);
                 actionQ.Enqueue(Action.clawPlatform);
                 break;
-        }
+        }*/
     }
 
     /// <summary>
