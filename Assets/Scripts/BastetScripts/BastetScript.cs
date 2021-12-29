@@ -369,12 +369,12 @@ public class BastetScript : MonoBehaviour
         if (transform.position.x > playerTransform.position.x)
         {
             navTarget.y = playerLevelY;
-            navTarget.x = playerTransform.position.x + 4f;
+            navTarget.x = playerTransform.position.x + 2.5f;
         }
         else
         {
             navTarget.y = playerLevelY;
-            navTarget.x = playerTransform.position.x - 4f;
+            navTarget.x = playerTransform.position.x - 2.5f;
         }
 
         yield return StartCoroutine(nameof(NavigateTo));
@@ -395,7 +395,7 @@ public class BastetScript : MonoBehaviour
             case Phase.one:
                 anim.SetBool("NoTail", true);
                 anim.SetTrigger("TailSwipe");
-                yield return new WaitForSeconds(26f / 60f);
+                yield return new WaitForSeconds(27f / 60f);
                 TailSwipeScript ts = Instantiate(tailSwipePrefab, tailEnd.position, Quaternion.identity).GetComponent<TailSwipeScript>();
                 if (!facingRight)
                 {
@@ -404,7 +404,7 @@ public class BastetScript : MonoBehaviour
                 break;
             case Phase.two:
                 anim.SetTrigger("DoubleTail");
-                yield return new WaitForSeconds(26f / 60f);
+                yield return new WaitForSeconds(27f / 60f);
                 TailSwipeScript ts1 = Instantiate(tailSwipePrefab, tailEnd.position, Quaternion.identity).GetComponent<TailSwipeScript>();
                 if (!facingRight)
                 {
@@ -419,9 +419,8 @@ public class BastetScript : MonoBehaviour
                 break;
         }
         
-
-        yield return new WaitForSeconds(1f);
-        //wait until anim is done
+        //wait for end of anim
+        yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length - anim.GetCurrentAnimatorStateInfo(0).normalizedTime);
         anim.SetBool("NoTail", false);
 
         actionQ.Dequeue();
@@ -698,12 +697,13 @@ public class BastetScript : MonoBehaviour
             }
         }
 
-        yield return new WaitForEndOfFrame();
+        yield return new WaitForFixedUpdate();
         yield return new WaitUntil(() => reachedEndOfPath);
 
         moveTarget.x = navTarget.x;
         moveTarget.y = transform.position.y;
 
+        yield return new WaitForFixedUpdate();
         yield return new WaitWhile(() => IsMoving);
 
         isNavigating = false;
