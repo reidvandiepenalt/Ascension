@@ -533,7 +533,8 @@ public class BastetScript : MonoBehaviour
 
         yield return StartCoroutine(nameof(NavigateTo));
 
-        anim.SetBool("Blur", true);
+        string animBool = (playerTransform.position.x > transform.position.x) ? "BlurRight" : "BlurLeft";
+        anim.SetBool(animBool, true);
 
         //store start point
         Vector2 start = transform.position;
@@ -544,31 +545,39 @@ public class BastetScript : MonoBehaviour
         {
             if (playerTransform.position.x < transform.position.x)
             {
-                moveTarget = new Vector2(hit.collider.bounds.min.x + 4, hit.collider.bounds.max.y);
+                moveTarget = new Vector2(Mathf.Max(hit.collider.bounds.min.x + 2, playerTransform.position.x - 4), start.y);
             }
             else
             {
-                moveTarget = new Vector2(hit.collider.bounds.max.x - 4, hit.collider.bounds.max.y);
+                moveTarget = new Vector2(Mathf.Min(hit.collider.bounds.max.x - 2, playerTransform.position.x + 4), start.y);
             }
 
         }
         speedMod = 4f;
 
+        isNavigating = true;
+        yield return new WaitForFixedUpdate();
         yield return new WaitWhile(() => IsMoving);
+        isNavigating = false;
 
-        anim.SetBool("Blur", false);
+        anim.SetBool(animBool, false);
 
         if(phase == Phase.two)//go back
         {
             yield return new WaitForSeconds(0.2f);
-            anim.SetBool("Blur", true);
+
+            string animBoolP2 = (playerTransform.position.x > transform.position.x) ? "BlurRight" : "BlurLeft";
+            anim.SetBool(animBoolP2, true);
 
             //go back
             moveTarget = start;
 
+            isNavigating = true;
+            yield return new WaitForFixedUpdate();
             yield return new WaitWhile(() => IsMoving);
+            isNavigating = false;
 
-            anim.SetBool("Blur", false);
+            anim.SetBool(animBoolP2, false);
         }
 
         actionQ.Dequeue();
@@ -754,7 +763,7 @@ public class BastetScript : MonoBehaviour
     void PickAttack()
     {
         //debug
-        actionQ.Enqueue(Action.tailWhip);
+        actionQ.Enqueue(Action.charge);
 
         /*
         bool clawable = false;
