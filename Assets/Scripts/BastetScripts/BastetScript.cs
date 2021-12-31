@@ -24,6 +24,8 @@ public class BastetScript : MonoBehaviour
     Vector2 storedJumpPoint;
     Vector2 storedJumpPointSecondHalf;
 
+    int clawAnim, tailAnim, doubleTailAnim, runningAnim, landAnim, stompAnim, backflipAnim, noTailAnim, eyeFlashAnim, blurLeftAnim, blurRightAnim, upJumpAnim, downJumpAnim;
+
     float playerLevelY { get {
             if (playerTransform.position.y < jumpPoints[JumpPoint.leftMid].y - 5)
             {
@@ -52,7 +54,7 @@ public class BastetScript : MonoBehaviour
     float playerGroundOffset;
 
     bool isMoving = false;
-    bool IsMoving { get => isMoving; set { anim.SetBool("Running", value); isMoving = value; } }
+    bool IsMoving { get => isMoving; set { anim.SetBool(runningAnim, value); isMoving = value; } }
     public Queue<Action> actionQ = new Queue<Action>();
     Phase phase = Phase.one;
     bool attacking = false;
@@ -152,6 +154,20 @@ public class BastetScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        runningAnim = Animator.StringToHash("Running");
+        landAnim = Animator.StringToHash("Land");
+        stompAnim = Animator.StringToHash("Stomp");
+        backflipAnim = Animator.StringToHash("Backflip");
+        tailAnim = Animator.StringToHash("TailSwipe");
+        doubleTailAnim = Animator.StringToHash("DoubleTail");
+        noTailAnim = Animator.StringToHash("NoTail");
+        clawAnim = Animator.StringToHash("Claw");
+        eyeFlashAnim = Animator.StringToHash("EyeFlash");
+        blurRightAnim = Animator.StringToHash("BlurRight");
+        blurLeftAnim = Animator.StringToHash("BlurLeft");
+        upJumpAnim = Animator.StringToHash("UpJump");
+        downJumpAnim = Animator.StringToHash("DownJump");
+
         groundLayer = LayerMask.GetMask("Ground");
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
         playerCollider = playerTransform.gameObject.GetComponent<Collider2D>();
@@ -188,7 +204,7 @@ public class BastetScript : MonoBehaviour
             {
                 if(path.Count == 5 && actionQ.Peek() != Action.backflip)
                 {
-                    anim.SetTrigger("Land");
+                    anim.SetTrigger(landAnim);
                 }
                 Debug.DrawLine(transform.position, path.Peek(), Color.magenta, 5f);
                 transform.position = path.Dequeue();
@@ -247,7 +263,7 @@ public class BastetScript : MonoBehaviour
         yield return StartCoroutine(nameof(NavigateTo));
 
         //claw down anim
-        anim.SetTrigger("Stomp");
+        anim.SetTrigger(stompAnim);
 
         Bounds platform = Physics2D.Raycast(transform.position + Vector3.up, Vector2.down, Mathf.Infinity, groundLayer).collider.bounds;
         //3 or 1 seperate claw spawns (adjust to spawn at paw?)
@@ -311,7 +327,7 @@ public class BastetScript : MonoBehaviour
 
         attacking = true;
 
-        anim.SetTrigger("Backflip");
+        anim.SetTrigger(backflipAnim);
 
         Bounds platform = Physics2D.Raycast(transform.position + Vector3.up, Vector2.down, Mathf.Infinity, groundLayer).collider.bounds;
 
@@ -324,7 +340,7 @@ public class BastetScript : MonoBehaviour
         
         if(phase == Phase.two)
         {
-            anim.SetTrigger("Stomp");
+            anim.SetTrigger(stompAnim);
 
             int directionMod = facingRight ? 1 : -1;
             for (int i = 0; i < 4; i++)
@@ -393,8 +409,8 @@ public class BastetScript : MonoBehaviour
         switch (phase)
         {
             case Phase.one:
-                anim.SetBool("NoTail", true);
-                anim.SetTrigger("TailSwipe");
+                anim.SetBool(noTailAnim, true);
+                anim.SetTrigger(tailAnim);
                 yield return new WaitForSeconds(27f / 60f);
                 TailSwipeScript ts = Instantiate(tailSwipePrefab, tailEnd.position, Quaternion.identity).GetComponent<TailSwipeScript>();
                 if (!facingRight)
@@ -403,7 +419,7 @@ public class BastetScript : MonoBehaviour
                 }
                 break;
             case Phase.two:
-                anim.SetTrigger("DoubleTail");
+                anim.SetTrigger(doubleTailAnim);
                 yield return new WaitForSeconds(27f / 60f);
                 TailSwipeScript ts1 = Instantiate(tailSwipePrefab, tailEnd.position, Quaternion.identity).GetComponent<TailSwipeScript>();
                 if (!facingRight)
@@ -421,7 +437,7 @@ public class BastetScript : MonoBehaviour
         
         //wait for end of anim
         yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length - anim.GetCurrentAnimatorStateInfo(0).normalizedTime);
-        anim.SetBool("NoTail", false);
+        anim.SetBool(noTailAnim, false);
 
         actionQ.Dequeue();
 
@@ -453,34 +469,40 @@ public class BastetScript : MonoBehaviour
         switch (phase)
         {
             case Phase.one:
-                anim.SetTrigger("Claw");
+                anim.SetTrigger(clawAnim);
                 
                 //wait until(Anim is done)
                 actionQ.Dequeue();
                 break;
             case Phase.two:
-                anim.SetTrigger("EyeFlash");
+                anim.SetTrigger(eyeFlashAnim);
 
                 //wait until(first anim is done)
 
-                anim.SetBool("Blur", true);
-
+                int animBool;
                 //move quickly towards player
                 speedMod = 6f;
                 if(transform.position.x < playerTransform.position.x)
                 {
                     moveTarget.x = playerTransform.position.x - 0.75f;
+                    animBool = blurRightAnim;
                 }
                 else
                 {
                     moveTarget.x = playerTransform.position.x + 0.75f;
+                    animBool = blurLeftAnim;
                 }
 
+                anim.SetBool(animBool, true);
+
+                isNavigating = true;
+                yield return new WaitForFixedUpdate();
                 yield return new WaitWhile(() => IsMoving);
+                isNavigating = false;
 
-                anim.SetBool("Blur", false);
+                anim.SetBool(animBool, false);
 
-                anim.SetTrigger("Claw");
+                anim.SetTrigger(clawAnim);
                 //wait until claw anim is done
 
                 actionQ.Dequeue();
@@ -533,7 +555,7 @@ public class BastetScript : MonoBehaviour
 
         yield return StartCoroutine(nameof(NavigateTo));
 
-        string animBool = (playerTransform.position.x > transform.position.x) ? "BlurRight" : "BlurLeft";
+        int animBool = (playerTransform.position.x > transform.position.x) ? blurRightAnim : blurLeftAnim;
         anim.SetBool(animBool, true);
 
         //store start point
@@ -566,7 +588,7 @@ public class BastetScript : MonoBehaviour
         {
             yield return new WaitForSeconds(0.2f);
 
-            string animBoolP2 = (playerTransform.position.x > transform.position.x) ? "BlurRight" : "BlurLeft";
+            int animBoolP2 = (playerTransform.position.x > transform.position.x) ? blurRightAnim : blurLeftAnim;
             anim.SetBool(animBoolP2, true);
 
             //go back
@@ -698,11 +720,11 @@ public class BastetScript : MonoBehaviour
 
             if (jumpPoints[jumpEnd].y > transform.position.y)
             {
-                anim.SetTrigger("UpJump");
+                anim.SetTrigger(upJumpAnim);
             }
             else
             {
-                anim.SetTrigger("DownJump");
+                anim.SetTrigger(downJumpAnim);
             }
         }
 
