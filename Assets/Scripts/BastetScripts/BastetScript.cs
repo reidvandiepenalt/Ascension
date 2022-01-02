@@ -328,6 +328,7 @@ public class BastetScript : MonoBehaviour
         attacking = true;
 
         anim.SetTrigger(backflipAnim);
+        yield return new WaitForSeconds(0.25f);
 
         Bounds platform = Physics2D.Raycast(transform.position + Vector3.up, Vector2.down, Mathf.Infinity, groundLayer).collider.bounds;
 
@@ -697,7 +698,18 @@ public class BastetScript : MonoBehaviour
                 }
             }
 
-            if(jumpStart != jumpEnd)
+            if (jumpPoints[jumpEnd].y > transform.position.y)
+            {
+                anim.SetTrigger(upJumpAnim);
+            }
+            else
+            {
+                anim.SetTrigger(downJumpAnim);
+            }
+
+            yield return new WaitForSeconds(0.25f);
+
+            if (jumpStart != jumpEnd)
             {
                 if (jumpStart == JumpPoint.leftFloor || jumpStart == JumpPoint.rightFloor)
                 {
@@ -718,14 +730,7 @@ public class BastetScript : MonoBehaviour
                 }
             }
 
-            if (jumpPoints[jumpEnd].y > transform.position.y)
-            {
-                anim.SetTrigger(upJumpAnim);
-            }
-            else
-            {
-                anim.SetTrigger(downJumpAnim);
-            }
+            
         }
 
         yield return new WaitForFixedUpdate();
