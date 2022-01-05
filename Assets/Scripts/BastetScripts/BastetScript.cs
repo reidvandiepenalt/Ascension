@@ -458,12 +458,12 @@ public class BastetScript : MonoBehaviour
         if (transform.position.x > playerTransform.position.x)
         {
             navTarget.y = playerLevelY;
-            navTarget.x = playerTransform.position.x + 0.75f;
+            navTarget.x = playerTransform.position.x + 5.25f;
         }
         else
         {
             navTarget.y = playerLevelY;
-            navTarget.x = playerTransform.position.x - 0.75f;
+            navTarget.x = playerTransform.position.x - 5.25f;
         }
         yield return StartCoroutine(nameof(NavigateTo));
 
@@ -471,14 +471,20 @@ public class BastetScript : MonoBehaviour
         {
             case Phase.one:
                 anim.SetTrigger(clawAnim);
-                
+
                 //wait until(Anim is done)
+                yield return new WaitForFixedUpdate();
+                yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length - anim.GetCurrentAnimatorStateInfo(0).normalizedTime);
+
                 actionQ.Dequeue();
+
                 break;
             case Phase.two:
                 anim.SetTrigger(eyeFlashAnim);
 
-                //wait until(first anim is done)
+                //wait until first anim is done
+                yield return new WaitForFixedUpdate();
+                yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length - anim.GetCurrentAnimatorStateInfo(0).normalizedTime);
 
                 int animBool;
                 //move quickly towards player
@@ -505,6 +511,8 @@ public class BastetScript : MonoBehaviour
 
                 anim.SetTrigger(clawAnim);
                 //wait until claw anim is done
+                yield return new WaitForFixedUpdate();
+                yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length - anim.GetCurrentAnimatorStateInfo(0).normalizedTime);
 
                 actionQ.Dequeue();
 
@@ -790,7 +798,7 @@ public class BastetScript : MonoBehaviour
     void PickAttack()
     {
         //debug
-        actionQ.Enqueue(Action.charge);
+        actionQ.Enqueue(Action.clawSwipe);
 
         /*
         bool clawable = false;
