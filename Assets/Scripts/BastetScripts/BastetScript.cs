@@ -256,14 +256,27 @@ public class BastetScript : MonoBehaviour
 
         attacking = true;
 
-        navTarget.y = jumpPoints[JumpPoint.leftTop].y;
+        if(playerLevelY == jumpPoints[JumpPoint.leftMid].y)
+        {
+            navTarget.y = jumpPoints[JumpPoint.leftTop].y;
+        }
+        else if (playerLevelY == jumpPoints[JumpPoint.leftFloor].y)
+        {
+            navTarget.y = jumpPoints[JumpPoint.leftMid].y;
+        }
+        else //player on top level
+        {
+            yield break;
+        }
         navTarget.x = Mathf.Clamp(playerTransform.position.x,
             jumpPoints[JumpPoint.leftMid].x, jumpPoints[JumpPoint.rightMid].x);
         //add a way to update constantly?
         yield return StartCoroutine(nameof(NavigateTo));
 
         //claw down anim
-        anim.SetTrigger(stompAnim);
+        anim.SetBool(stompAnim, true);
+        yield return new WaitForFixedUpdate();
+        yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length - anim.GetCurrentAnimatorStateInfo(0).normalizedTime);
 
         Bounds platform = Physics2D.Raycast(transform.position + Vector3.up, Vector2.down, Mathf.Infinity, groundLayer).collider.bounds;
         //3 or 1 seperate claw spawns (adjust to spawn at paw?)
@@ -307,8 +320,10 @@ public class BastetScript : MonoBehaviour
                     clawFacingLeft.transform.position = new Vector3(-50, -50, clawFacingLeft.transform.position.z);
                 }
             }
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.2f);
         }
+
+        anim.SetBool(stompAnim, false);
 
         clawFacingRight.transform.position = new Vector3(-50, -50, clawFacingRight.transform.position.z);
         clawFacingLeft.transform.position = new Vector3(-50, -50, clawFacingLeft.transform.position.z);
@@ -798,7 +813,7 @@ public class BastetScript : MonoBehaviour
     void PickAttack()
     {
         //debug
-        actionQ.Enqueue(Action.clawSwipe);
+        actionQ.Enqueue(Action.clawPlatform);
 
         /*
         bool clawable = false;
