@@ -270,13 +270,15 @@ public class BastetScript : MonoBehaviour
         }
         navTarget.x = Mathf.Clamp(playerTransform.position.x,
             jumpPoints[JumpPoint.leftMid].x, jumpPoints[JumpPoint.rightMid].x);
+
+        bool clawRight = navTarget.x > transform.position.x;
+
         //add a way to update constantly?
         yield return StartCoroutine(nameof(NavigateTo));
 
         //claw down anim
         anim.SetBool(stompAnim, true);
-        yield return new WaitForFixedUpdate();
-        yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length - anim.GetCurrentAnimatorStateInfo(0).normalizedTime);
+        yield return new WaitForSeconds(0.25f);
 
         Bounds platform = Physics2D.Raycast(transform.position + Vector3.up, Vector2.down, Mathf.Infinity, groundLayer).collider.bounds;
         //3 or 1 seperate claw spawns (adjust to spawn at paw?)
