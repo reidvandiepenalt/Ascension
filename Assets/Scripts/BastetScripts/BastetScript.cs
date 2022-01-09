@@ -173,7 +173,7 @@ public class BastetScript : MonoBehaviour
         playerCollider = playerTransform.gameObject.GetComponent<Collider2D>();
         playerGroundOffset = playerCollider.bounds.extents.y;
 
-        phase = Phase.one;
+        phase = Phase.two;
     }
 
 
@@ -358,14 +358,17 @@ public class BastetScript : MonoBehaviour
         
         if(phase == Phase.two)
         {
+            //claw down anim
             anim.SetTrigger(stompAnim);
+            yield return new WaitForEndOfFrame();
+            yield return new WaitForSeconds(0.5f);
 
             int directionMod = facingRight ? 1 : -1;
             for (int i = 0; i < 4; i++)
             {
                 if (platform.min.x < transform.position.x + (i * directionMod) || transform.position.x + (i * directionMod) < platform.max.x)
                 {
-                    clawUp.transform.position = new Vector3(transform.position.x + (i * directionMod),
+                    clawUp.transform.position = new Vector3(transform.position.x + ((3 + i) * directionMod),
                         platform.max.y, clawUp.transform.position.z);
                     clawUp.transform.localScale = new Vector3(0.5f + (1f / (i + 1)) * 0.5f, 0.5f + (1f / (i + 1)) * 0.5f, 0.5f + (1f / (i + 1)) * 0.5f);
                 }
@@ -374,8 +377,10 @@ public class BastetScript : MonoBehaviour
                     clawUp.transform.position = new Vector3(-50, -50, clawUp.transform.position.z);
                 }
 
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(0.2f);
             }
+
+            anim.SetBool(stompAnim, false);
 
             clawUp.transform.position = new Vector3(-50, -50, clawUp.transform.position.z);
 
@@ -424,10 +429,11 @@ public class BastetScript : MonoBehaviour
             transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, 1);
         }
 
+        anim.SetBool(noTailAnim, true);
+
         switch (phase)
         {
             case Phase.one:
-                anim.SetBool(noTailAnim, true);
                 anim.SetTrigger(tailAnim);
                 yield return new WaitForSeconds(27f / 60f);
                 TailSwipeScript ts = Instantiate(tailSwipePrefab, tailEnd.position, Quaternion.identity).GetComponent<TailSwipeScript>();
@@ -815,7 +821,7 @@ public class BastetScript : MonoBehaviour
     void PickAttack()
     {
         //debug
-        actionQ.Enqueue(Action.clawPlatform);
+        actionQ.Enqueue(Action.clawSwipe);
 
         /*
         bool clawable = false;
