@@ -506,8 +506,8 @@ public class BastetScript : MonoBehaviour
                 anim.SetTrigger(eyeFlashAnim);
 
                 //wait until first anim is done
-                yield return new WaitForFixedUpdate();
-                yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length - anim.GetCurrentAnimatorStateInfo(0).normalizedTime);
+                yield return new WaitForEndOfFrame();
+                yield return new WaitForSeconds(17f/60f);
 
                 int animBool;
                 //move quickly towards player
@@ -821,7 +821,7 @@ public class BastetScript : MonoBehaviour
     void PickAttack()
     {
         //debug
-        actionQ.Enqueue(Action.clawSwipe);
+        actionQ.Enqueue(Action.charge);
 
         /*
         bool clawable = false;
