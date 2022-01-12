@@ -173,7 +173,7 @@ public class BastetScript : MonoBehaviour
         playerCollider = playerTransform.gameObject.GetComponent<Collider2D>();
         playerGroundOffset = playerCollider.bounds.extents.y;
 
-        phase = Phase.two;
+        phase = Phase.one;
     }
 
 
@@ -273,8 +273,28 @@ public class BastetScript : MonoBehaviour
 
         bool clawRight = navTarget.x > transform.position.x;
 
-        //add a way to update constantly?
-        yield return StartCoroutine(nameof(NavigateTo));
+        StartCoroutine(nameof(NavigateTo));
+        while (isNavigating)
+        {
+            if (playerLevelY == jumpPoints[JumpPoint.leftMid].y)
+            {
+                navTarget.y = jumpPoints[JumpPoint.leftTop].y;
+            }
+            else if (playerLevelY == jumpPoints[JumpPoint.leftFloor].y)
+            {
+                navTarget.y = jumpPoints[JumpPoint.leftMid].y;
+            }
+            else //player on top level
+            {
+                yield break;
+            }
+            navTarget.x = Mathf.Clamp(playerTransform.position.x,
+                jumpPoints[JumpPoint.leftMid].x, jumpPoints[JumpPoint.rightMid].x);
+
+            clawRight = navTarget.x > transform.position.x;
+
+            yield return null;
+        }
 
         //claw down anim
         anim.SetBool(stompAnim, true);
@@ -388,8 +408,6 @@ public class BastetScript : MonoBehaviour
         }
         else
         {
-            //stop anim?/wait until anim is done?
-
             actionQ.Dequeue();
         }
         attacking = false;
@@ -416,7 +434,20 @@ public class BastetScript : MonoBehaviour
             navTarget.x = playerTransform.position.x - 2.5f;
         }
 
-        yield return StartCoroutine(nameof(NavigateTo));
+        StartCoroutine(nameof(NavigateTo));
+        while (isNavigating)
+        {
+            if (transform.position.x > playerTransform.position.x)
+            {
+                navTarget.y = playerLevelY;
+                navTarget.x = playerTransform.position.x + 2.5f;
+            }
+            else
+            {
+                navTarget.y = playerLevelY;
+                navTarget.x = playerTransform.position.x - 2.5f;
+            }
+        }
 
         if(playerTransform.position.x < transform.position.x)
         {
@@ -488,7 +519,21 @@ public class BastetScript : MonoBehaviour
             navTarget.y = playerLevelY;
             navTarget.x = playerTransform.position.x - 5.25f;
         }
-        yield return StartCoroutine(nameof(NavigateTo));
+
+        StartCoroutine(nameof(NavigateTo));
+        while (isNavigating){
+            if (transform.position.x > playerTransform.position.x)
+            {
+                navTarget.y = playerLevelY;
+                navTarget.x = playerTransform.position.x + 5.25f;
+            }
+            else
+            {
+                navTarget.y = playerLevelY;
+                navTarget.x = playerTransform.position.x - 5.25f;
+            }
+            yield return null;
+        }
 
         switch (phase)
         {
@@ -585,7 +630,42 @@ public class BastetScript : MonoBehaviour
             }
         }
 
-        yield return StartCoroutine(nameof(NavigateTo));
+        StartCoroutine(nameof(NavigateTo));
+        while (isNavigating)
+        {
+            if (transform.position.x < centerX) //left side
+            {
+                if (playerLevelY == jumpPoints[JumpPoint.leftFloor].y)// player on floor
+                {
+                    navTarget = jumpPoints[JumpPoint.leftFloor];
+                }
+                else if (playerLevelY == jumpPoints[JumpPoint.leftMid].y)//player on mid
+                {
+                    navTarget = jumpPoints[JumpPoint.leftMid];
+                }
+                else //on top
+                {
+                    navTarget = jumpPoints[JumpPoint.leftTop];
+                }
+            }
+            else //right side
+            {
+                if (playerLevelY == jumpPoints[JumpPoint.leftFloor].y)//on floor
+                {
+                    navTarget = jumpPoints[JumpPoint.rightFloor];
+                }
+                else if (playerLevelY == jumpPoints[JumpPoint.leftMid].y)//on mid
+                {
+                    navTarget = jumpPoints[JumpPoint.rightMid];
+                }
+                else //on top
+                {
+                    navTarget = jumpPoints[JumpPoint.rightTop];
+                }
+            }
+
+            yield return null;
+        }
 
         int animBool = (playerTransform.position.x > transform.position.x) ? blurRightAnim : blurLeftAnim;
         anim.SetBool(animBool, true);
@@ -656,46 +736,48 @@ public class BastetScript : MonoBehaviour
         }
         else //move to a jump point
         {
-            //determine closest jump point
-            if(leftOfCenter) //left side
+            do
             {
-                if(Mathf.Abs(transform.position.y - jumpPoints[JumpPoint.leftFloor].y) < 1)//on floor
+                //determine closest jump point
+                if (leftOfCenter) //left side
                 {
-                    moveTarget = jumpPoints[JumpPoint.leftFloor];
-                    jumpStart = JumpPoint.leftFloor;
+                    if (Mathf.Abs(transform.position.y - jumpPoints[JumpPoint.leftFloor].y) < 1)//on floor
+                    {
+                        moveTarget = jumpPoints[JumpPoint.leftFloor];
+                        jumpStart = JumpPoint.leftFloor;
+                    }
+                    else if (Mathf.Abs(transform.position.y - jumpPoints[JumpPoint.leftMid].y) < 1)//on mid
+                    {
+                        moveTarget = jumpPoints[JumpPoint.leftMid];
+                        jumpStart = JumpPoint.leftMid;
+                    }
+                    else //on top
+                    {
+                        moveTarget = jumpPoints[JumpPoint.leftTop];
+                        jumpStart = JumpPoint.leftTop;
+                    }
                 }
-                else if (Mathf.Abs(transform.position.y - jumpPoints[JumpPoint.leftMid].y) < 1)//on mid
+                else //right side
                 {
-                    moveTarget = jumpPoints[JumpPoint.leftMid];
-                    jumpStart = JumpPoint.leftMid;
+                    if (Mathf.Abs(transform.position.y - jumpPoints[JumpPoint.rightFloor].y) < 1)//on floor
+                    {
+                        moveTarget = jumpPoints[JumpPoint.rightFloor];
+                        jumpStart = JumpPoint.rightFloor;
+                    }
+                    else if (Mathf.Abs(transform.position.y - jumpPoints[JumpPoint.rightMid].y) < 1)//on mid
+                    {
+                        moveTarget = jumpPoints[JumpPoint.rightMid];
+                        jumpStart = JumpPoint.rightMid;
+                    }
+                    else //on top
+                    {
+                        moveTarget = jumpPoints[JumpPoint.rightTop];
+                        jumpStart = JumpPoint.rightTop;
+                    }
                 }
-                else //on top
-                {
-                    moveTarget = jumpPoints[JumpPoint.leftTop];
-                    jumpStart = JumpPoint.leftTop;
-                }
+                yield return null;
             }
-            else //right side
-            {
-                if (Mathf.Abs(transform.position.y - jumpPoints[JumpPoint.rightFloor].y) < 1)//on floor
-                {
-                    moveTarget = jumpPoints[JumpPoint.rightFloor];
-                    jumpStart = JumpPoint.rightFloor;
-                }
-                else if (Mathf.Abs(transform.position.y - jumpPoints[JumpPoint.rightMid].y) < 1)//on mid
-                {
-                    moveTarget = jumpPoints[JumpPoint.rightMid];
-                    jumpStart = JumpPoint.rightMid;
-                }
-                else //on top
-                {
-                    moveTarget = jumpPoints[JumpPoint.rightTop];
-                    jumpStart = JumpPoint.rightTop;
-                }
-            }
-            
-
-            yield return new WaitWhile(() => IsMoving);
+            while (isMoving);
 
             //determine where to jump to
             if (leftOfCenter) //left side
@@ -738,6 +820,7 @@ public class BastetScript : MonoBehaviour
                 anim.SetTrigger(downJumpAnim);
             }
 
+            //jump anim start
             yield return new WaitForSeconds(0.25f);
 
             if (jumpStart != jumpEnd)
@@ -769,9 +852,13 @@ public class BastetScript : MonoBehaviour
 
         moveTarget.x = navTarget.x;
         moveTarget.y = transform.position.y;
-
         yield return new WaitForFixedUpdate();
-        yield return new WaitWhile(() => IsMoving);
+        do
+        {
+            moveTarget.x = navTarget.x;
+            moveTarget.y = transform.position.y;
+            yield return null;
+        } while (isMoving);
 
         isNavigating = false;
     }
@@ -820,10 +907,6 @@ public class BastetScript : MonoBehaviour
     /// </summary>
     void PickAttack()
     {
-        //debug
-        actionQ.Enqueue(Action.charge);
-
-        /*
         bool clawable = false;
 
         //only do claw platform if player not on top
@@ -863,7 +946,7 @@ public class BastetScript : MonoBehaviour
                 actionQ.Enqueue(Action.backflip);
                 actionQ.Enqueue(Action.clawPlatform);
                 break;
-        }*/
+        }
     }
 
     /// <summary>
