@@ -256,25 +256,11 @@ public class BastetScript : MonoBehaviour
 
         attacking = true;
 
-        if(playerLevelY == jumpPoints[JumpPoint.leftMid].y)
-        {
-            navTarget.y = jumpPoints[JumpPoint.leftTop].y;
-        }
-        else if (playerLevelY == jumpPoints[JumpPoint.leftFloor].y)
-        {
-            navTarget.y = jumpPoints[JumpPoint.leftMid].y;
-        }
-        else //player on top level
-        {
-            yield break;
-        }
-        navTarget.x = Mathf.Clamp(playerTransform.position.x,
-            jumpPoints[JumpPoint.leftMid].x, jumpPoints[JumpPoint.rightMid].x);
-
         bool clawRight = navTarget.x > transform.position.x;
 
         StartCoroutine(nameof(NavigateTo));
-        while (isNavigating)
+        
+        do
         {
             if (playerLevelY == jumpPoints[JumpPoint.leftMid].y)
             {
@@ -286,6 +272,8 @@ public class BastetScript : MonoBehaviour
             }
             else //player on top level
             {
+                isNavigating = false;
+                StopCoroutine(nameof(NavigateTo));
                 yield break;
             }
             navTarget.x = Mathf.Clamp(playerTransform.position.x,
@@ -294,7 +282,7 @@ public class BastetScript : MonoBehaviour
             clawRight = navTarget.x > transform.position.x;
 
             yield return null;
-        }
+        } while (isNavigating);
 
         //claw down anim
         anim.SetBool(stompAnim, true);
@@ -371,7 +359,7 @@ public class BastetScript : MonoBehaviour
 
         //generate path
         GeneratePath(new Vector2(Mathf.Clamp(transform.position.x + (facingRight ? -8 : 8),
-            platform.min.x + 2, platform.max.x - 2), transform.position.y));
+            platform.min.x + 2, platform.max.x - 2), transform.position.y), 0.25f);
 
         yield return new WaitForEndOfFrame();
         yield return new WaitUntil(() => reachedEndOfPath);
@@ -423,19 +411,9 @@ public class BastetScript : MonoBehaviour
         attacking = true;
 
         speedMod = 1f;
-        if (transform.position.x > playerTransform.position.x)
-        {
-            navTarget.y = playerLevelY;
-            navTarget.x = playerTransform.position.x + 2.5f;
-        }
-        else
-        {
-            navTarget.y = playerLevelY;
-            navTarget.x = playerTransform.position.x - 2.5f;
-        }
 
         StartCoroutine(nameof(NavigateTo));
-        while (isNavigating)
+        do
         {
             if (transform.position.x > playerTransform.position.x)
             {
@@ -447,7 +425,9 @@ public class BastetScript : MonoBehaviour
                 navTarget.y = playerLevelY;
                 navTarget.x = playerTransform.position.x - 2.5f;
             }
+            yield return null;
         }
+        while (isNavigating);
 
         if(playerTransform.position.x < transform.position.x)
         {
@@ -509,19 +489,10 @@ public class BastetScript : MonoBehaviour
         attacking = true;
 
         speedMod = 1f;
-        if (transform.position.x > playerTransform.position.x)
-        {
-            navTarget.y = playerLevelY;
-            navTarget.x = playerTransform.position.x + 5.25f;
-        }
-        else
-        {
-            navTarget.y = playerLevelY;
-            navTarget.x = playerTransform.position.x - 5.25f;
-        }
 
         StartCoroutine(nameof(NavigateTo));
-        while (isNavigating){
+        do
+        {
             if (transform.position.x > playerTransform.position.x)
             {
                 navTarget.y = playerLevelY;
@@ -533,7 +504,7 @@ public class BastetScript : MonoBehaviour
                 navTarget.x = playerTransform.position.x - 5.25f;
             }
             yield return null;
-        }
+        } while (isNavigating);
 
         switch (phase)
         {
@@ -827,19 +798,19 @@ public class BastetScript : MonoBehaviour
             {
                 if (jumpStart == JumpPoint.leftFloor || jumpStart == JumpPoint.rightFloor)
                 {
-                    GeneratePath(moveTarget, jumpPoints[jumpEnd]);
+                    GeneratePath(moveTarget, jumpPoints[jumpEnd], 0.5f);
                 }
                 else
                 {
                     if (leftOfCenter)
                     {
-                        GeneratePath(moveTarget, jumpPoints[JumpPoint.leftWall]);
-                        GeneratePath(jumpPoints[JumpPoint.leftWall], jumpPoints[jumpEnd]);
+                        GeneratePath(moveTarget, jumpPoints[JumpPoint.leftWall], 0.5f);
+                        GeneratePath(jumpPoints[JumpPoint.leftWall], jumpPoints[jumpEnd], 0.5f);
                     }
                     else
                     {
-                        GeneratePath(moveTarget, jumpPoints[JumpPoint.rightWall]);
-                        GeneratePath(jumpPoints[JumpPoint.rightWall], jumpPoints[jumpEnd]);
+                        GeneratePath(moveTarget, jumpPoints[JumpPoint.rightWall], 0.5f);
+                        GeneratePath(jumpPoints[JumpPoint.rightWall], jumpPoints[jumpEnd], 0.5f);
                     }
                 }
             }
@@ -953,9 +924,9 @@ public class BastetScript : MonoBehaviour
     /// Generates a jumping path to move through
     /// </summary>
     /// <param name="endPoint">End point of the jump</param>
-    void GeneratePath(Vector2 endPoint)
+    void GeneratePath(Vector2 endPoint, float timeToMove)
     {
-        GeneratePath(transform.position, endPoint);
+        GeneratePath(transform.position, endPoint, timeToMove);
     }
 
     /// <summary>
@@ -963,13 +934,12 @@ public class BastetScript : MonoBehaviour
     /// </summary>
     /// <param name="startPoint"></param>
     /// <param name="endPoint"></param>
-    void GeneratePath(Vector2 startPoint, Vector2 endPoint)
+    void GeneratePath(Vector2 startPoint, Vector2 endPoint, float timeToMove)
     {
         endPoint.y += 1f;
         Debug.DrawLine(startPoint, endPoint, Color.red, 5f);
 
         reachedEndOfPath = false;
-        float timeToMove = 0.3f;
         int numSteps = (int)((1/Time.fixedDeltaTime) * timeToMove);
         float stepDist = (endPoint.x - startPoint.x) / numSteps;
 
