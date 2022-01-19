@@ -204,7 +204,7 @@ public class BastetScript : MonoBehaviour
             {
                 if(path.Count == 5 && actionQ.Peek() != Action.backflip)
                 {
-                    anim.SetTrigger(landAnim);
+                    anim.SetBool(landAnim, true);
                 }
                 Debug.DrawLine(transform.position, path.Peek(), Color.magenta, 5f);
                 transform.position = path.Dequeue();
@@ -790,6 +790,7 @@ public class BastetScript : MonoBehaviour
             {
                 anim.SetTrigger(downJumpAnim);
             }
+            anim.SetBool(landAnim, false);
 
             //jump anim start
             yield return new WaitForSeconds(0.25f);
@@ -798,18 +799,18 @@ public class BastetScript : MonoBehaviour
             {
                 if (jumpStart == JumpPoint.leftFloor || jumpStart == JumpPoint.rightFloor)
                 {
-                    GeneratePath(moveTarget, jumpPoints[jumpEnd], 0.5f);
+                    GeneratePath(transform.position, jumpPoints[jumpEnd], 0.5f);
                 }
                 else
                 {
                     if (leftOfCenter)
                     {
-                        GeneratePath(moveTarget, jumpPoints[JumpPoint.leftWall], 0.5f);
+                        GeneratePath(transform.position, jumpPoints[JumpPoint.leftWall], 0.5f);
                         GeneratePath(jumpPoints[JumpPoint.leftWall], jumpPoints[jumpEnd], 0.5f);
                     }
                     else
                     {
-                        GeneratePath(moveTarget, jumpPoints[JumpPoint.rightWall], 0.5f);
+                        GeneratePath(transform.position, jumpPoints[JumpPoint.rightWall], 0.5f);
                         GeneratePath(jumpPoints[JumpPoint.rightWall], jumpPoints[jumpEnd], 0.5f);
                     }
                 }
