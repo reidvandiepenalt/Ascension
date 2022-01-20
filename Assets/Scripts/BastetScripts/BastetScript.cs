@@ -202,10 +202,27 @@ public class BastetScript : MonoBehaviour
             }
             else
             {
-                if(path.Count == 5 && actionQ.Peek() != Action.backflip)
+                if(actionQ.Peek() != Action.backflip)
                 {
-                    anim.SetBool(landAnim, true);
+                    //flip on inflction point
+                    if (transform.position.x > path.Peek().x && facingRight)
+                    {
+                        facingRight = false;
+                        transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, 1);
+
+                    }
+                    else if (transform.position.x < path.Peek().x && !facingRight)
+                    {
+                        facingRight = true;
+                        transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, 1);
+                    }
+
+                    if (path.Count == 8)
+                    {
+                        anim.SetBool(landAnim, true);
+                    }
                 }
+                
                 Debug.DrawLine(transform.position, path.Peek(), Color.magenta, 5f);
                 transform.position = path.Dequeue();
                 if (!reachedEndOfPath)
