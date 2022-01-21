@@ -27,11 +27,11 @@ public class BastetScript : MonoBehaviour
     int clawAnim, tailAnim, doubleTailAnim, runningAnim, landAnim, stompAnim, backflipAnim, noTailAnim, eyeFlashAnim, blurLeftAnim, blurRightAnim, upJumpAnim, downJumpAnim;
 
     float playerLevelY { get {
-            if (playerTransform.position.y < jumpPoints[JumpPoint.leftMid].y - 5)
+            if (playerTransform.position.y < jumpPoints[JumpPoint.leftMid].y - 2)
             {
                 return jumpPoints[JumpPoint.leftFloor].y;
             }
-            else if (playerTransform.position.y < jumpPoints[JumpPoint.leftTop].y - 5)
+            else if (playerTransform.position.y < jumpPoints[JumpPoint.leftTop].y - 2)
             {
                 return jumpPoints[JumpPoint.leftMid].y;
             }
@@ -355,6 +355,8 @@ public class BastetScript : MonoBehaviour
         clawFacingRight.transform.position = new Vector3(-50, -50, clawFacingRight.transform.position.z);
         clawFacingLeft.transform.position = new Vector3(-50, -50, clawFacingLeft.transform.position.z);
 
+        yield return new WaitForSeconds(0.25f);
+
         actionQ.Dequeue();
 
         attacking = false;
@@ -409,10 +411,14 @@ public class BastetScript : MonoBehaviour
 
             clawUp.transform.position = new Vector3(-50, -50, clawUp.transform.position.z);
 
+            yield return new WaitForSeconds(0.25f);
+
             actionQ.Dequeue();
         }
         else
         {
+            yield return new WaitForSeconds(0.25f);
+
             actionQ.Dequeue();
         }
         attacking = false;
@@ -490,6 +496,8 @@ public class BastetScript : MonoBehaviour
         //wait for end of anim
         yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length - anim.GetCurrentAnimatorStateInfo(0).normalizedTime);
         anim.SetBool(noTailAnim, false);
+
+        yield return new WaitForSeconds(0.25f);
 
         actionQ.Dequeue();
 
@@ -574,6 +582,9 @@ public class BastetScript : MonoBehaviour
 
                 break;
         }
+
+        yield return new WaitForSeconds(0.25f);
+
         attacking = false;
     }
 
@@ -651,7 +662,6 @@ public class BastetScript : MonoBehaviour
                     navTarget = jumpPoints[JumpPoint.rightTop];
                 }
             }
-
             yield return null;
         }
 
@@ -701,6 +711,8 @@ public class BastetScript : MonoBehaviour
 
             anim.SetBool(animBoolP2, false);
         }
+
+        yield return new WaitForSeconds(0.25f);
 
         actionQ.Dequeue();
 
