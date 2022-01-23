@@ -966,7 +966,7 @@ public class BastetScript : MonoBehaviour
     /// <param name="endPoint"></param>
     void GeneratePath(Vector2 startPoint, Vector2 endPoint, float timeToMove)
     {
-        endPoint.y += 1f;
+        endPoint.y += 0.1f;
         Debug.DrawLine(startPoint, endPoint, Color.red, 5f);
 
         reachedEndOfPath = false;
