@@ -441,12 +441,14 @@ public class BastetScript : MonoBehaviour
             if (transform.position.x > playerTransform.position.x)
             {
                 navTarget.y = playerLevelY;
-                navTarget.x = playerTransform.position.x + 2.5f;
+                navTarget.x = Mathf.Clamp(playerTransform.position.x + 2.5f,
+                    jumpPoints[JumpPoint.leftMid].x, jumpPoints[JumpPoint.rightMid].x);
             }
             else
             {
                 navTarget.y = playerLevelY;
-                navTarget.x = playerTransform.position.x - 2.5f;
+                navTarget.x = Mathf.Clamp(playerTransform.position.x - 2.5f,
+                    jumpPoints[JumpPoint.leftMid].x, jumpPoints[JumpPoint.rightMid].x);
             }
             yield return null;
         }
@@ -521,12 +523,14 @@ public class BastetScript : MonoBehaviour
             if (transform.position.x > playerTransform.position.x)
             {
                 navTarget.y = playerLevelY;
-                navTarget.x = playerTransform.position.x + 5.25f;
+                navTarget.x = Mathf.Clamp(playerTransform.position.x + 5.25f,
+                    jumpPoints[JumpPoint.leftMid].x, jumpPoints[JumpPoint.rightMid].x);
             }
             else
             {
                 navTarget.y = playerLevelY;
-                navTarget.x = playerTransform.position.x - 5.25f;
+                navTarget.x = Mathf.Clamp(playerTransform.position.x - 5.25f,
+                    jumpPoints[JumpPoint.leftMid].x, jumpPoints[JumpPoint.rightMid].x);
             }
             yield return null;
         } while (isNavigating);
@@ -555,12 +559,14 @@ public class BastetScript : MonoBehaviour
                 speedMod = 6f;
                 if(transform.position.x < playerTransform.position.x)
                 {
-                    moveTarget.x = playerTransform.position.x - 0.75f;
+                    moveTarget.x = Mathf.Clamp(playerTransform.position.x - 0.75f,
+                        jumpPoints[JumpPoint.leftMid].x, jumpPoints[JumpPoint.rightMid].x);
                     animBool = blurRightAnim;
                 }
                 else
                 {
-                    moveTarget.x = playerTransform.position.x + 0.75f;
+                    moveTarget.x = Mathf.Clamp(playerTransform.position.x + 0.75f,
+                        jumpPoints[JumpPoint.leftMid].x, jumpPoints[JumpPoint.rightMid].x);
                     animBool = blurLeftAnim;
                 }
 
@@ -729,13 +735,14 @@ public class BastetScript : MonoBehaviour
         bool leftOfCenter = transform.position.x < centerX;
 
         //same level
-        if (Mathf.Abs(navTarget.y - transform.position.y) < 1)
+        if (Mathf.Abs(navTarget.y - transform.position.y) < 1.5f)
         {
             speedMod = 1f;
             moveTarget = navTarget;
         }
         else //move to a jump point
         {
+            isMoving = true;
             do
             {
                 //determine closest jump point
@@ -844,8 +851,6 @@ public class BastetScript : MonoBehaviour
                     }
                 }
             }
-
-            
         }
 
         yield return new WaitForFixedUpdate();
