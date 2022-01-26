@@ -275,9 +275,27 @@ public class BastetScript : MonoBehaviour
 
         bool clawRight = navTarget.x > transform.position.x;
 
+        if (playerLevelY == jumpPoints[JumpPoint.leftMid].y)
+        {
+            navTarget.y = jumpPoints[JumpPoint.leftTop].y;
+        }
+        else if (playerLevelY == jumpPoints[JumpPoint.leftFloor].y)
+        {
+            navTarget.y = jumpPoints[JumpPoint.leftMid].y;
+        }
+        else //player on top level
+        {
+            yield break;
+        }
+        navTarget.x = Mathf.Clamp(playerTransform.position.x,
+            jumpPoints[JumpPoint.leftMid].x, jumpPoints[JumpPoint.rightMid].x);
+
+        clawRight = navTarget.x > transform.position.x;
+
         StartCoroutine(nameof(NavigateTo));
-        
-        do
+        yield return new WaitForEndOfFrame();
+
+        while (isNavigating)
         {
             if (playerLevelY == jumpPoints[JumpPoint.leftMid].y)
             {
@@ -299,7 +317,7 @@ public class BastetScript : MonoBehaviour
             clawRight = navTarget.x > transform.position.x;
 
             yield return null;
-        } while (isNavigating);
+        } 
 
         //claw down anim
         anim.SetBool(stompAnim, true);
@@ -435,24 +453,38 @@ public class BastetScript : MonoBehaviour
 
         speedMod = 1f;
 
-        StartCoroutine(nameof(NavigateTo));
-        do
+        if (transform.position.x > playerTransform.position.x)
         {
+            navTarget.y = playerLevelY;
+            navTarget.x = Mathf.Clamp(playerTransform.position.x + 5f,
+                jumpPoints[JumpPoint.leftMid].x, jumpPoints[JumpPoint.rightMid].x);
+        }
+        else
+        {
+            navTarget.y = playerLevelY;
+            navTarget.x = Mathf.Clamp(playerTransform.position.x - 5f,
+                jumpPoints[JumpPoint.leftMid].x, jumpPoints[JumpPoint.rightMid].x);
+        }
+
+        StartCoroutine(nameof(NavigateTo));
+        yield return new WaitForEndOfFrame();
+
+        while (isNavigating) {
             if (transform.position.x > playerTransform.position.x)
             {
                 navTarget.y = playerLevelY;
-                navTarget.x = Mathf.Clamp(playerTransform.position.x + 2.5f,
+                navTarget.x = Mathf.Clamp(playerTransform.position.x + 5f,
                     jumpPoints[JumpPoint.leftMid].x, jumpPoints[JumpPoint.rightMid].x);
             }
             else
             {
                 navTarget.y = playerLevelY;
-                navTarget.x = Mathf.Clamp(playerTransform.position.x - 2.5f,
+                navTarget.x = Mathf.Clamp(playerTransform.position.x - 5f,
                     jumpPoints[JumpPoint.leftMid].x, jumpPoints[JumpPoint.rightMid].x);
             }
             yield return null;
         }
-        while (isNavigating);
+        
 
         if(playerTransform.position.x < transform.position.x)
         {
@@ -517,8 +549,23 @@ public class BastetScript : MonoBehaviour
 
         speedMod = 1f;
 
+        if (transform.position.x > playerTransform.position.x)
+        {
+            navTarget.y = playerLevelY;
+            navTarget.x = Mathf.Clamp(playerTransform.position.x + 5.25f,
+                jumpPoints[JumpPoint.leftMid].x, jumpPoints[JumpPoint.rightMid].x);
+        }
+        else
+        {
+            navTarget.y = playerLevelY;
+            navTarget.x = Mathf.Clamp(playerTransform.position.x - 5.25f,
+                jumpPoints[JumpPoint.leftMid].x, jumpPoints[JumpPoint.rightMid].x);
+        }
+
         StartCoroutine(nameof(NavigateTo));
-        do
+        yield return new WaitForEndOfFrame();
+
+        while (isNavigating)
         {
             if (transform.position.x > playerTransform.position.x)
             {
@@ -533,7 +580,7 @@ public class BastetScript : MonoBehaviour
                     jumpPoints[JumpPoint.leftMid].x, jumpPoints[JumpPoint.rightMid].x);
             }
             yield return null;
-        } while (isNavigating);
+        }
 
         switch (phase)
         {
@@ -636,6 +683,8 @@ public class BastetScript : MonoBehaviour
         }
 
         StartCoroutine(nameof(NavigateTo));
+        yield return new WaitForEndOfFrame();
+
         while (isNavigating)
         {
             if (transform.position.x < centerX) //left side
@@ -737,6 +786,7 @@ public class BastetScript : MonoBehaviour
         //same level
         if (Mathf.Abs(navTarget.y - transform.position.y) < 1.5f)
         {
+            
             speedMod = 1f;
             moveTarget = navTarget;
         }
