@@ -288,7 +288,7 @@ public class BastetScript : MonoBehaviour
             yield break;
         }
         navTarget.x = Mathf.Clamp(playerTransform.position.x,
-            jumpPoints[JumpPoint.leftMid].x, jumpPoints[JumpPoint.rightMid].x);
+            jumpPoints[JumpPoint.leftMid].x + 0.05f, jumpPoints[JumpPoint.rightMid].x - 0.05f);
 
         clawRight = navTarget.x > transform.position.x;
 
@@ -1015,7 +1015,7 @@ public class BastetScript : MonoBehaviour
     }
 
     /// <summary>
-    /// Generates a path from start ot end point
+    /// Generates a path from start to end point
     /// </summary>
     /// <param name="startPoint"></param>
     /// <param name="endPoint"></param>
