@@ -285,6 +285,7 @@ public class BastetScript : MonoBehaviour
         }
         else //player on top level
         {
+            attacking = false;
             yield break;
         }
         navTarget.x = Mathf.Clamp(playerTransform.position.x,
@@ -309,6 +310,7 @@ public class BastetScript : MonoBehaviour
             {
                 isNavigating = false;
                 StopCoroutine(nameof(NavigateTo));
+                attacking = false;
                 yield break;
             }
             navTarget.x = Mathf.Clamp(playerTransform.position.x,
