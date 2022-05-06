@@ -146,35 +146,32 @@ public class HorusAI : MonoBehaviour
     /// </summary>
     void MoveStraight()
     {
-        if (isMoving)
+        //reached destination
+        if (Vector2.Distance(transform.position, moveTarget) < speed * speedMod * Time.deltaTime)
         {
-            //reached destination
-            if (Vector2.Distance(transform.position, moveTarget) < speed * speedMod * Time.deltaTime)
+            isMoving = false;
+            transform.position = moveTarget;
+        }
+        //move toward destination
+        else
+        {
+            Vector2 movement = (moveTarget - (Vector2)transform.position).normalized * speed * speedMod * Time.deltaTime;
+            transform.position += new Vector3(movement.x, movement.y, 0);
+
+            if (spiraling)
             {
-                isMoving = false;
-                transform.position = moveTarget;
+                return;
             }
-            //move toward destination
-            else
+
+            if (movement.x > 0 && !facingRight)
             {
-                Vector2 movement = (moveTarget - (Vector2)transform.position).normalized * speed * speedMod * Time.deltaTime;
-                transform.position += new Vector3(movement.x, movement.y, 0);
-
-                if (spiraling)
-                {
-                    return;
-                }
-
-                if (movement.x > 0 && !facingRight)
-                {
-                    transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-                    facingRight = true;
-                }
-                else if (movement.x < 0 && facingRight)
-                {
-                    transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-                    facingRight = false;
-                }
+                transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+                facingRight = true;
+            }
+            else if (movement.x < 0 && facingRight)
+            {
+                transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+                facingRight = false;
             }
         }
     }

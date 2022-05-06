@@ -28,6 +28,15 @@ public class EnemyHealth : MonoBehaviour
         stunnedThisFrame = true;
     }
 
+    /// <summary>
+    /// Use for bosses to heal on phase changes
+    /// </summary>
+    /// <param name="health">health to set to</param>
+    public void SetHealth(int health)
+    {
+        Health = health;
+    }
+
     private void Start()
     {
         MaxHealth = maxHealth;

@@ -974,7 +974,7 @@ public class BastetScript : MonoBehaviour
         }
 
         //pick random set of attack pattern
-        int randomIndex = Random.Range(0, 6 + (clawable?2:0));
+        int randomIndex = Random.Range(0, 6 + (clawable ? 2 : 0));
         switch (randomIndex)
         {
             case 0:
