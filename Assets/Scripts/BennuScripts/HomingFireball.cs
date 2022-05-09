@@ -7,6 +7,8 @@ public class HomingFireball : MonoBehaviour
     [SerializeField] MiniHomingFireball[] miniFireballs = new MiniHomingFireball[6];
     [SerializeField] float speed_p1, speed_p2;
     [SerializeField] float time_p1, time_p2;
+    [SerializeField] new ParticleSystem particleSystem;
+    [SerializeField] Animator anim;
     float currentTime = 0f;
     Transform playerTransform;
     int curPhase = 1;
@@ -23,7 +25,8 @@ public class HomingFireball : MonoBehaviour
         currentTime += Time.fixedDeltaTime;
         if(currentTime >= ((curPhase == 1) ? time_p1 : time_p2))
         {
-            End();
+            anim.SetTrigger("Explode");
+            Invoke("End", 1f / 6f);
         }
     }
 
