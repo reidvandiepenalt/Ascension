@@ -9,7 +9,7 @@ public class MiniHomingFireball : MonoBehaviour
     float currentTime = 0f;
     Transform playerTransform;
     Vector2 beginTarget;
-    int curPhase = 1;
+    BennuAI.Phase curPhase = BennuAI.Phase.one;
     bool isSpawned = false;
     bool reachedBeginTarget = false;
 
@@ -22,25 +22,25 @@ public class MiniHomingFireball : MonoBehaviour
         {
 
             float angle = Vector2.SignedAngle(transform.position, playerTransform.position);
-            transform.position += new Vector3((curPhase == 1) ? speed_p1 : speed_p2 * Time.fixedDeltaTime * Mathf.Cos(angle * Mathf.Deg2Rad),
-                (curPhase == 1) ? speed_p1 : speed_p2 * Time.fixedDeltaTime * Mathf.Sin(angle * Mathf.Deg2Rad));
+            transform.position += new Vector3((curPhase == BennuAI.Phase.one) ? speed_p1 : speed_p2 * Time.fixedDeltaTime * Mathf.Cos(angle * Mathf.Deg2Rad),
+                (curPhase == BennuAI.Phase.one) ? speed_p1 : speed_p2 * Time.fixedDeltaTime * Mathf.Sin(angle * Mathf.Deg2Rad));
             currentTime += Time.fixedDeltaTime;
         }
         else
         {
             float angle = Vector2.SignedAngle(transform.position, beginTarget);
-            transform.position += new Vector3((curPhase == 1) ? speed_p1 : speed_p2 * Time.fixedDeltaTime * Mathf.Cos(angle * Mathf.Deg2Rad),
-                (curPhase == 1) ? speed_p1 : speed_p2 * Time.fixedDeltaTime * Mathf.Sin(angle * Mathf.Deg2Rad));
+            transform.position += new Vector3((curPhase == BennuAI.Phase.one) ? speed_p1 : speed_p2 * Time.fixedDeltaTime * Mathf.Cos(angle * Mathf.Deg2Rad),
+                (curPhase == BennuAI.Phase.one) ? speed_p1 : speed_p2 * Time.fixedDeltaTime * Mathf.Sin(angle * Mathf.Deg2Rad));
             currentTime += Time.fixedDeltaTime;
         }
 
-        if (currentTime >= ((curPhase == 1) ? time_p1 : time_p2))
+        if (currentTime >= ((curPhase == BennuAI.Phase.one) ? time_p1 : time_p2))
         {
             End();
         }
     }
 
-    public void Begin(Transform player, Vector2 position, Vector2 firstPosition, int phase)
+    public void Begin(Transform player, Vector2 position, Vector2 firstPosition, BennuAI.Phase phase)
     {
         isSpawned = true;
         transform.position = new Vector3(position.x, position.y, transform.position.z);

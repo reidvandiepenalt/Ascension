@@ -4,20 +4,29 @@ using UnityEngine;
 
 public class BennuAI : MonoBehaviour
 {
-    [SerializeField] EnemyCollisionMovementHandler movement;
     [SerializeField] EnemyHealth healthManager;
     [SerializeField] Animator anim;
     [SerializeField] LayerMask groundLayer;
+
+    [SerializeField] float arenaMaxX, arenaMinX, arenaMaxY, arenaMinY;
+    float arenaCenterX, arenaCenterY;
 
     [SerializeField] float speed;
     float speedMod = 1;
     bool facingRight = false;
     float gravity = -80;//same as player
+    const float centerOffset = 3.82f;
     Vector2 moveTarget;
 
     Action attack;
     Phase phase = Phase.one;
 
+    [SerializeField] GameObject rapidFireballParent;
+    List<RapidFireFireball> rapidFireballs;
+    [SerializeField] GameObject fireRainParent;
+    List<FireRainFireball> fireRainFireballs;
+    [SerializeField] HomingFireball homingFireball;
+    
 
     [SerializeField] Transform playerTransform;
     Collider2D playerCollider;
@@ -40,11 +49,19 @@ public class BennuAI : MonoBehaviour
         recoveryMovement
     }
 
-    enum Phase
+    public enum Phase
     {
         one,
         two,
         three
+    }
+
+    enum Quadrant
+    {
+        topRight,
+        topLeft,
+        bottomLeft,
+        bottomRight
     }
 
     public void OnStun(object param)
@@ -80,9 +97,20 @@ public class BennuAI : MonoBehaviour
 
     }
 
+    private void OnValidate()
+    {
+        rapidFireballs = new List<RapidFireFireball>();
+        rapidFireballs.AddRange(rapidFireballParent.GetComponentsInChildren<RapidFireFireball>());
+        fireRainFireballs = new List<FireRainFireball>();
+        fireRainFireballs.AddRange(fireRainParent.GetComponentsInChildren<FireRainFireball>());
+    }
+
     // Start is called before the first frame update
     void Start()
     {
+        arenaCenterX = (arenaMaxX - arenaMinX) / 2 + arenaMinX;
+        arenaCenterY = (arenaMaxY - arenaMinY) / 2 + arenaMinY;
+
         groundLayer = LayerMask.GetMask("Ground");
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
         playerCollider = playerTransform.gameObject.GetComponent<Collider2D>();
@@ -208,6 +236,9 @@ public class BennuAI : MonoBehaviour
         isAttacking = true;
 
 
+
+        homingFireball.Begin(playerTransform, transform.position + Vector3.up * centerOffset, (int)phase + 1);
+
         actionQ.Dequeue();
         isAttacking = false;
         yield return null;
@@ -289,5 +320,57 @@ public class BennuAI : MonoBehaviour
         actionQ.Dequeue();
         isAttacking = false;
         yield return null;
+    }
+
+    /// <summary>
+    /// Helper function for getting a random position in a given quadrant
+    /// </summary>
+    /// <param name="quadrant">cartesian quadrants</param>
+    /// <returns>random position in the quadrant</returns>
+    Vector2 RandomQuadrantPosition(Quadrant quad)
+    {
+        switch (quad)
+        {
+            case Quadrant.topRight:
+                return new Vector2(Random.Range(arenaCenterX, arenaMaxX), Random.Range(arenaCenterY, arenaMaxY));
+            case Quadrant.topLeft:
+                return new Vector2(Random.Range(arenaMinX, arenaCenterX), Random.Range(arenaCenterY, arenaMaxY));
+            case Quadrant.bottomLeft:
+                return new Vector2(Random.Range(arenaMinX, arenaCenterX), Random.Range(arenaMinY, arenaCenterY));
+            case Quadrant.bottomRight:
+                return new Vector2(Random.Range(arenaCenterX, arenaMaxX), Random.Range(arenaMinY, arenaCenterY));
+            default:
+                return Vector2.zero;
+        }
+    }
+
+    /// <summary>
+    /// Helper function for determining what quadrant the player is in
+    /// </summary>
+    /// <returns></returns>
+    Quadrant PlayerQuadrant()
+    {
+        if(playerTransform.position.x > arenaCenterX) //right side
+        {
+            if(playerTransform.position.y > arenaCenterY)//top right
+            {
+                return Quadrant.topRight;
+            }
+            else //bottom right
+            {
+                return Quadrant.bottomRight;
+            }
+        }
+        else //left side
+        {
+            if (playerTransform.position.y > arenaCenterY)//top left
+            {
+                return Quadrant.topLeft;
+            }
+            else //bottom left
+            {
+                return Quadrant.bottomLeft;
+            }
+        }
     }
 }

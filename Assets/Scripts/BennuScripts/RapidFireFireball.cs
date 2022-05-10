@@ -27,6 +27,7 @@ public class RapidFireFireball : MonoBehaviour
         isSpawned = true;
         transform.position = new Vector3(startPos.x, startPos.y, transform.position.z);
         float angle = Vector2.SignedAngle(startPos, target);
+        transform.eulerAngles = new Vector3(0, 0, angle);
         xMove = Mathf.Cos(angle * Mathf.Deg2Rad);
         yMove = Mathf.Sin(angle * Mathf.Deg2Rad);
     }

@@ -11,7 +11,7 @@ public class HomingFireball : MonoBehaviour
     [SerializeField] Animator anim;
     float currentTime = 0f;
     Transform playerTransform;
-    int curPhase = 1;
+    BennuAI.Phase curPhase = BennuAI.Phase.one;
     bool isSpawned = false;
 
 
@@ -20,17 +20,17 @@ public class HomingFireball : MonoBehaviour
         if(!isSpawned) { return; }
 
         float angle = Vector2.SignedAngle(transform.position, playerTransform.position);
-        transform.position += new Vector3((curPhase == 1)?speed_p1:speed_p2 * Time.fixedDeltaTime * Mathf.Cos(angle * Mathf.Deg2Rad),
-            (curPhase == 1) ? speed_p1 : speed_p2 * Time.fixedDeltaTime * Mathf.Sin(angle * Mathf.Deg2Rad));
+        transform.position += new Vector3((curPhase == BennuAI.Phase.one)?speed_p1:speed_p2 * Time.fixedDeltaTime * Mathf.Cos(angle * Mathf.Deg2Rad),
+            (curPhase == BennuAI.Phase.one) ? speed_p1 : speed_p2 * Time.fixedDeltaTime * Mathf.Sin(angle * Mathf.Deg2Rad));
         currentTime += Time.fixedDeltaTime;
-        if(currentTime >= ((curPhase == 1) ? time_p1 : time_p2))
+        if(currentTime >= ((curPhase == BennuAI.Phase.one) ? time_p1 : time_p2))
         {
             anim.SetTrigger("Explode");
             Invoke("End", 1f / 6f);
         }
     }
 
-    public void Begin(Transform player, Vector2 position, int phase)
+    public void Begin(Transform player, Vector2 position, BennuAI.Phase phase)
     {
         isSpawned = true;
         transform.position = new Vector3(position.x, position.y, transform.position.z);
@@ -43,7 +43,7 @@ public class HomingFireball : MonoBehaviour
         isSpawned = false;
         switch (curPhase)
         {
-            case 1:
+            case BennuAI.Phase.one:
                 //spawn 4 minifireballs at position
                 for(int i = 0; i < 4; i++)
                 {
@@ -51,7 +51,7 @@ public class HomingFireball : MonoBehaviour
                     miniFireballs[i].Begin(playerTransform, transform.position, targetPos, curPhase);
                 }
                 break;
-            case 2:
+            case BennuAI.Phase.two:
                 //spawn all minifireballs at position
                 for(int i = 0; i < miniFireballs.Length; i++)
                 {
