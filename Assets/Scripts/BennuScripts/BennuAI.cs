@@ -22,9 +22,9 @@ public class BennuAI : MonoBehaviour
     Phase phase = Phase.one;
 
     [SerializeField] GameObject rapidFireballParent;
-    List<RapidFireFireball> rapidFireballs;
+    [SerializeField] List<RapidFireFireball> rapidFireballs;
     [SerializeField] GameObject fireRainParent;
-    List<FireRainFireball> fireRainFireballs;
+    [SerializeField] List<FireRainFireball> fireRainFireballs;
     [SerializeField] HomingFireball homingFireball;
     
 
@@ -237,7 +237,7 @@ public class BennuAI : MonoBehaviour
 
 
 
-        homingFireball.Begin(playerTransform, transform.position + Vector3.up * centerOffset, (int)phase + 1);
+        homingFireball.Begin(playerTransform, transform.position + Vector3.up * centerOffset, phase);
 
         actionQ.Dequeue();
         isAttacking = false;
