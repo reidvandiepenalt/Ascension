@@ -21,12 +21,18 @@ public class BennuAI : MonoBehaviour
     Action attack;
     Phase phase = Phase.one;
 
+    [SerializeField] Transform mouthTransform;
     [SerializeField] GameObject rapidFireballParent;
     [SerializeField] List<RapidFireFireball> rapidFireballs;
+    int _rapidFireIndex = 0;
+    int RapidFireIndex { get => _rapidFireIndex; 
+        set { if (value >= rapidFireballs.Count) { _rapidFireIndex = value - rapidFireballs.Count; }
+            else { _rapidFireIndex = value; } } }
     [SerializeField] GameObject fireRainParent;
     [SerializeField] List<FireRainFireball> fireRainFireballs;
     [SerializeField] HomingFireball homingFireball;
     [SerializeField] FirePlume firePlume;
+    [SerializeField] FirePlumeFireball diveFireball1, diveFireball2;
 
     [SerializeField] Vector2 platformTL, platformTR, platformMid, platformBL, platformBR;
     Vector2[] platformPoints;
@@ -261,7 +267,7 @@ public class BennuAI : MonoBehaviour
         yield return new WaitWhile(() => isMoving);
 
         //plume anim
-        firePlume.Begin(NearestPlatformPoint(playerTransform.position), phase);
+        firePlume.Begin(NearestPlatformPoint(playerTransform.position, false), phase);
         //wait for anim to finish
 
         actionQ.Dequeue();
@@ -319,7 +325,15 @@ public class BennuAI : MonoBehaviour
         yield return new WaitWhile(() => isMoving);
 
         //fire arc anim
-
+        bool p1 = phase == Phase.one;
+        int offset = p1 ? -3 : -5;
+        for (int i = -offset; i <= offset; i++)
+        {
+            float centerAngle = Mathf.Atan2(transform.position.y, transform.position.x);
+            rapidFireballs[RapidFireIndex].Begin(mouthTransform.position, centerAngle, p1?18:24);
+            RapidFireIndex++;
+            yield return new WaitForSeconds(0.05f);
+        }
         //wait for anim to finish
 
         actionQ.Dequeue();
@@ -356,7 +370,17 @@ public class BennuAI : MonoBehaviour
         yield return new WaitWhile(() => isMoving);
 
         //fire beam anim
-
+        float angle = Mathf.Atan2(transform.position.y, transform.position.x);
+        bool p1 = phase == Phase.one;
+        float time = 0.0f;
+        while(time < 1.25f)
+        {
+            float newAngle = Mathf.Atan2(transform.position.y, transform.position.x);
+            angle = Mathf.Lerp(angle, newAngle, p1 ? 0.4f : 0.2f);
+            rapidFireballs[RapidFireIndex].Begin(mouthTransform.position, angle, p1 ? 18 : 24);
+            RapidFireIndex++;
+            yield return new WaitForSeconds(0.05f);
+        }
         //wait for anim to finish
 
         actionQ.Dequeue();
@@ -378,7 +402,12 @@ public class BennuAI : MonoBehaviour
         yield return new WaitWhile(() => isMoving);
 
         //fire rain anim
+        for(int i = 0; i < fireRainFireballs.Count / (phase == Phase.one ? 2 : 1); i++)
+        {
+            fireRainFireballs[i].Begin(new Vector2(Random.Range(arenaMinX, arenaMaxX), 50));
 
+            yield return new WaitForSeconds(0.1f);
+        }
         //wait for anim to finish
 
         actionQ.Dequeue();
@@ -393,8 +422,26 @@ public class BennuAI : MonoBehaviour
     {
         isAttacking = true;
 
+        //move to top of arena
+        isMoving = true;
+        moveTarget = new Vector2(transform.position.x, arenaMaxY);
+        yield return new WaitWhile(() => isMoving);
+
         //dive to player closest platform
         //dive anim
+        speedMod = 2;
+
+        isMoving = true;
+        moveTarget = NearestPlatformPoint(playerTransform.position, true) + (Vector2.up * 0.5f);
+        yield return new WaitWhile(() => isMoving);
+        speedMod = 1;
+
+        if(phase == Phase.two)
+        {
+            //shoot fireballs
+            diveFireball1.Launch(transform.position, 45);
+            diveFireball2.Launch(transform.position, 135);
+        }
 
         //wait for anim to finish
 
@@ -517,18 +564,25 @@ public class BennuAI : MonoBehaviour
     /// Helper function for finding the nearest platform / ground point to the given position
     /// </summary>
     /// <param name="pos">Position to find nearest platform to</param>
+    /// <param name="platformOnly">Ignore ground floor?</param>
     /// <returns>Nearest platform point</returns>
-    Vector2 NearestPlatformPoint(Vector2 pos)
+    Vector2 NearestPlatformPoint(Vector2 pos, bool platformOnly)
     {
         Vector2 curPoint = new Vector2(pos.x, arenaMinY);
         float minDist = pos.y;
-        foreach(Vector2 platPos in platformPoints)
+        if (platformOnly)
         {
-            float platDist = Vector2.Distance(pos, platPos);
+            curPoint = platformPoints[0];
+            minDist = Vector2.Distance(pos, platformPoints[0]);
+        }
+
+        for(int i = (platformOnly)?1:0; i < platformPoints.Length; i++)
+        {
+            float platDist = Vector2.Distance(pos, platformPoints[i]);
             if (platDist <= minDist)
             {
                 minDist = platDist;
-                curPoint = platPos;
+                curPoint = platformPoints[i];
             }
         }
         return curPoint;

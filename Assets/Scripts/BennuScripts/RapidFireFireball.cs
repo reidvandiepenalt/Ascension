@@ -21,15 +21,14 @@ public class RapidFireFireball : MonoBehaviour
         transform.position += new Vector3(speed * Time.fixedDeltaTime * xMove, speed * Time.fixedDeltaTime * yMove);
     }
 
-    public void Begin(Vector2 startPos, Vector2 target, float speed = baseSpeed)
+    public void Begin(Vector2 startPos, float angRad, float speed = baseSpeed)
     {
         this.speed = speed;
         isSpawned = true;
         transform.position = new Vector3(startPos.x, startPos.y, transform.position.z);
-        float angle = Vector2.SignedAngle(startPos, target);
-        transform.eulerAngles = new Vector3(0, 0, angle);
-        xMove = Mathf.Cos(angle * Mathf.Deg2Rad);
-        yMove = Mathf.Sin(angle * Mathf.Deg2Rad);
+        transform.eulerAngles = new Vector3(0, 0, angRad * Mathf.Rad2Deg);
+        xMove = Mathf.Cos(angRad);
+        yMove = Mathf.Sin(angRad);
     }
 
     void End()
