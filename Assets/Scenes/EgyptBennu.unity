@@ -4023,98 +4023,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 175
---- !u!114 &681170947
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 681170945}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b820263760572141bd814d545731b36, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  healthManager: {fileID: 681170946}
-  anim: {fileID: 681170992}
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 512
-  arenaMaxX: 0
-  arenaMinX: 0
-  arenaMaxY: 0
-  arenaMinY: 0
-  speed: 16
-  rapidFireballParent: {fileID: 1714006063}
-  rapidFireballs:
-  - {fileID: 1920505864709613973}
-  - {fileID: 1348348165}
-  - {fileID: 1497368036}
-  - {fileID: 1064029215}
-  - {fileID: 1352745680}
-  - {fileID: 716279384}
-  - {fileID: 1899255342}
-  - {fileID: 449651119}
-  - {fileID: 1146189064}
-  - {fileID: 422162307}
-  - {fileID: 1225386564}
-  - {fileID: 1574538813}
-  - {fileID: 767246649}
-  - {fileID: 1627946653}
-  - {fileID: 48744389}
-  - {fileID: 1980395690}
-  - {fileID: 1809350556}
-  - {fileID: 482258632}
-  - {fileID: 1266700226}
-  - {fileID: 126814613}
-  - {fileID: 2055891215}
-  - {fileID: 372073122}
-  - {fileID: 70595222}
-  - {fileID: 1411203945}
-  - {fileID: 18118626}
-  - {fileID: 1821308064}
-  - {fileID: 2060475825}
-  - {fileID: 451707108}
-  - {fileID: 480829073}
-  - {fileID: 2034705843}
-  - {fileID: 1815707340}
-  - {fileID: 1482448914}
-  - {fileID: 789258201}
-  - {fileID: 263455647}
-  - {fileID: 1023365873}
-  - {fileID: 1180052517}
-  - {fileID: 204912003}
-  - {fileID: 1669116321}
-  - {fileID: 1514923569}
-  - {fileID: 508846842}
-  - {fileID: 1184084422}
-  - {fileID: 346095326}
-  - {fileID: 2125174445}
-  - {fileID: 1884691641}
-  - {fileID: 1687304306}
-  - {fileID: 1055826988}
-  - {fileID: 843348675}
-  - {fileID: 1925625207}
-  - {fileID: 158624783}
-  - {fileID: 2039712622}
-  - {fileID: 1669687702}
-  - {fileID: 224037628}
-  - {fileID: 17141881}
-  - {fileID: 47731824}
-  - {fileID: 534359445}
-  - {fileID: 1879754553}
-  fireRainParent: {fileID: 8664880136087733956}
-  fireRainFireballs:
-  - {fileID: 8664880136087733957}
-  - {fileID: 1857404319}
-  - {fileID: 1056600686}
-  - {fileID: 1659070184}
-  - {fileID: 167833727}
-  - {fileID: 176625124}
-  - {fileID: 1666381488}
-  - {fileID: 1891434912}
-  homingFireball: {fileID: 3918264467211639845}
-  playerTransform: {fileID: 2118692777}
 --- !u!1 &681170949 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -8759657566584827704, guid: 74da4698f730f0a418091182d1b5ff41,
@@ -4729,6 +4637,12 @@ MonoBehaviour:
   - {fileID: 1666381488}
   - {fileID: 1891434912}
   homingFireball: {fileID: 3918264467211639845}
+  firePlume: {fileID: 7792904678984865190}
+  platformTL: {x: 19, y: 24}
+  platformTR: {x: 47, y: 24}
+  platformMid: {x: 33, y: 16}
+  platformBL: {x: 19, y: 8}
+  platformBR: {x: 47, y: 8}
   playerTransform: {fileID: 2118692777}
 --- !u!4 &681170995 stripped
 Transform:
@@ -38968,6 +38882,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8421188e482a2c6478a05aa5b8116928, type: 3}
+--- !u!114 &7792904678984865190 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7465816457645174362, guid: 8421188e482a2c6478a05aa5b8116928,
+    type: 3}
+  m_PrefabInstance: {fileID: 7792904678984865189}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a64bff7c7aee5b4b80c0fb393e640e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7803114656654862255
 GameObject:
   m_ObjectHideFlags: 0

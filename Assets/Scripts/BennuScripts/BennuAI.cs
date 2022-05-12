@@ -26,7 +26,10 @@ public class BennuAI : MonoBehaviour
     [SerializeField] GameObject fireRainParent;
     [SerializeField] List<FireRainFireball> fireRainFireballs;
     [SerializeField] HomingFireball homingFireball;
-    
+    [SerializeField] FirePlume firePlume;
+
+    [SerializeField] Vector2 platformTL, platformTR, platformMid, platformBL, platformBR;
+    Vector2[] platformPoints;
 
     [SerializeField] Transform playerTransform;
     Collider2D playerCollider;
@@ -110,6 +113,8 @@ public class BennuAI : MonoBehaviour
     {
         arenaCenterX = (arenaMaxX - arenaMinX) / 2 + arenaMinX;
         arenaCenterY = (arenaMaxY - arenaMinY) / 2 + arenaMinY;
+
+        platformPoints = new Vector2[5] { platformTR, platformTL, platformMid, platformBL, platformBR };
 
         groundLayer = LayerMask.GetMask("Ground");
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
@@ -222,6 +227,42 @@ public class BennuAI : MonoBehaviour
     {
         isAttacking = true;
 
+        //move to opposite side random quadrant
+        Quadrant moveQuad = Quadrant.topLeft;
+        switch (PlayerQuadrant())
+        {
+            case Quadrant.topRight:
+            case Quadrant.bottomRight:
+                int rand = Random.Range(0, 2);
+                if(rand == 0)
+                {
+                    moveQuad = Quadrant.topLeft;
+                }
+                else
+                {
+                    moveQuad = Quadrant.bottomLeft;
+                }
+                break;
+            case Quadrant.topLeft:
+            case Quadrant.bottomLeft:
+                int rand2 = Random.Range(0, 2);
+                if (rand2 == 0)
+                {
+                    moveQuad = Quadrant.topRight;
+                }
+                else
+                {
+                    moveQuad = Quadrant.bottomRight;
+                }
+                break;
+        }
+        moveTarget = RandomQuadrantPosition(moveQuad);
+        isMoving = true;
+        yield return new WaitWhile(() => isMoving);
+
+        //plume anim
+        firePlume.Begin(NearestPlatformPoint(playerTransform.position), phase);
+        //wait for anim to finish
 
         actionQ.Dequeue();
         isAttacking = false;
@@ -235,9 +276,30 @@ public class BennuAI : MonoBehaviour
     {
         isAttacking = true;
 
+        //move to other quad on player side
+        Quadrant moveQuad = Quadrant.topLeft;
+        switch (PlayerQuadrant())
+        {
+            case Quadrant.topRight:
+                moveQuad = Quadrant.bottomRight;
+                break;
+            case Quadrant.topLeft:
+                moveQuad = Quadrant.bottomLeft;
+                break;
+            case Quadrant.bottomLeft:
+                moveQuad = Quadrant.topLeft;
+                break;
+            case Quadrant.bottomRight:
+                moveQuad = Quadrant.topRight;
+                break;
+        }
+        moveTarget = RandomQuadrantPosition(moveQuad);
+        isMoving = true;
+        yield return new WaitWhile(() => isMoving);
 
-
+        //homing fireball anim
         homingFireball.Begin(playerTransform, transform.position + Vector3.up * centerOffset, phase);
+        //wait for anim to finish
 
         actionQ.Dequeue();
         isAttacking = false;
@@ -251,6 +313,14 @@ public class BennuAI : MonoBehaviour
     {
         isAttacking = true;
 
+        //move to player quad
+        moveTarget = RandomQuadrantPosition(PlayerQuadrant());
+        isMoving = true;
+        yield return new WaitWhile(() => isMoving);
+
+        //fire arc anim
+
+        //wait for anim to finish
 
         actionQ.Dequeue();
         isAttacking = false;
@@ -264,6 +334,30 @@ public class BennuAI : MonoBehaviour
     {
         isAttacking = true;
 
+        //move to opposite quad
+        Quadrant moveQuad = Quadrant.topLeft;
+        switch (PlayerQuadrant())
+        {
+            case Quadrant.topRight:
+                moveQuad = Quadrant.bottomLeft;
+                break;
+            case Quadrant.topLeft:
+                moveQuad = Quadrant.bottomRight;
+                break;
+            case Quadrant.bottomLeft:
+                moveQuad = Quadrant.topRight;
+                break;
+            case Quadrant.bottomRight:
+                moveQuad = Quadrant.topLeft;
+                break;
+        }
+        moveTarget = RandomQuadrantPosition(moveQuad);
+        isMoving = true;
+        yield return new WaitWhile(() => isMoving);
+
+        //fire beam anim
+
+        //wait for anim to finish
 
         actionQ.Dequeue();
         isAttacking = false;
@@ -277,6 +371,15 @@ public class BennuAI : MonoBehaviour
     {
         isAttacking = true;
 
+        //move to random quad
+        Quadrant moveQuad = (Quadrant) Random.Range(0, 4);
+        moveTarget = RandomQuadrantPosition(moveQuad);
+        isMoving = true;
+        yield return new WaitWhile(() => isMoving);
+
+        //fire rain anim
+
+        //wait for anim to finish
 
         actionQ.Dequeue();
         isAttacking = false;
@@ -290,6 +393,10 @@ public class BennuAI : MonoBehaviour
     {
         isAttacking = true;
 
+        //dive to player closest platform
+        //dive anim
+
+        //wait for anim to finish
 
         actionQ.Dequeue();
         isAttacking = false;
@@ -303,6 +410,9 @@ public class BennuAI : MonoBehaviour
     {
         isAttacking = true;
 
+        //face player
+
+        //start beam anim
 
         actionQ.Dequeue();
         isAttacking = false;
@@ -316,7 +426,36 @@ public class BennuAI : MonoBehaviour
     {
         isAttacking = true;
 
+        speedMod = 0.6f;
+        Quadrant moveQuad = Quadrant.topRight;
+        switch (PlayerQuadrant())
+        {
+            case Quadrant.topRight:
+            case Quadrant.bottomRight:
+                moveQuad = Quadrant.topLeft;
+                break;
+            case Quadrant.topLeft:
+            case Quadrant.bottomLeft:
+                moveQuad = Quadrant.topRight;
+                break;
+        }
+        moveTarget = RandomQuadrantPosition(moveQuad);
+        isMoving = true;
+        yield return new WaitWhile(() => isMoving);
 
+        if(moveQuad == Quadrant.topLeft)
+        {
+            moveQuad = Quadrant.topRight;
+        }
+        else
+        {
+            moveQuad = Quadrant.topLeft;
+        }
+        moveTarget = RandomQuadrantPosition(moveQuad);
+        isMoving = true;
+        yield return new WaitWhile(() => isMoving);
+
+        speedMod = 1f;
         actionQ.Dequeue();
         isAttacking = false;
         yield return null;
@@ -372,5 +511,26 @@ public class BennuAI : MonoBehaviour
                 return Quadrant.bottomLeft;
             }
         }
+    }
+
+    /// <summary>
+    /// Helper function for finding the nearest platform / ground point to the given position
+    /// </summary>
+    /// <param name="pos">Position to find nearest platform to</param>
+    /// <returns>Nearest platform point</returns>
+    Vector2 NearestPlatformPoint(Vector2 pos)
+    {
+        Vector2 curPoint = new Vector2(pos.x, arenaMinY);
+        float minDist = pos.y;
+        foreach(Vector2 platPos in platformPoints)
+        {
+            float platDist = Vector2.Distance(pos, platPos);
+            if (platDist <= minDist)
+            {
+                minDist = platDist;
+                curPoint = platPos;
+            }
+        }
+        return curPoint;
     }
 }
