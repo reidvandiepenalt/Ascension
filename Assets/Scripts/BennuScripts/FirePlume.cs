@@ -25,7 +25,7 @@ public class FirePlume : MonoBehaviour
     {
         for(int i = 0; i < fireballs.Length; i++)
         {
-            fireballs[i].Launch(transform.position, 45 + 22.5f * i);
+            fireballs[i].Launch(transform.position + Vector3.up * 1.5f, 45 + 30 * i);
         }
     }
 

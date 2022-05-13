@@ -22,16 +22,17 @@ public class MiniHomingFireball : MonoBehaviour
         {
 
             float angle = Vector2.SignedAngle(transform.position, playerTransform.position);
-            transform.position += new Vector3((curPhase == BennuAI.Phase.one) ? speed_p1 : speed_p2 * Time.fixedDeltaTime * Mathf.Cos(angle * Mathf.Deg2Rad),
-                (curPhase == BennuAI.Phase.one) ? speed_p1 : speed_p2 * Time.fixedDeltaTime * Mathf.Sin(angle * Mathf.Deg2Rad));
+            transform.position += new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad))
+                * ((curPhase == BennuAI.Phase.one) ? speed_p1 : speed_p2) * Time.fixedDeltaTime;
             currentTime += Time.fixedDeltaTime;
         }
         else
         {
             float angle = Vector2.SignedAngle(transform.position, beginTarget);
-            transform.position += new Vector3((curPhase == BennuAI.Phase.one) ? speed_p1 : speed_p2 * Time.fixedDeltaTime * Mathf.Cos(angle * Mathf.Deg2Rad),
-                (curPhase == BennuAI.Phase.one) ? speed_p1 : speed_p2 * Time.fixedDeltaTime * Mathf.Sin(angle * Mathf.Deg2Rad));
+            transform.position += new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad))
+                * ((curPhase == BennuAI.Phase.one) ? speed_p1 : speed_p2) * Time.fixedDeltaTime;
             currentTime += Time.fixedDeltaTime;
+            if(Vector2.Distance(transform.position, beginTarget) < 0.75f) { reachedBeginTarget = true; }
         }
 
         if (currentTime >= ((curPhase == BennuAI.Phase.one) ? time_p1 : time_p2))
@@ -47,10 +48,12 @@ public class MiniHomingFireball : MonoBehaviour
         playerTransform = player;
         beginTarget = firstPosition;
         curPhase = phase;
+        Debug.Log(position.ToString());
     }
 
     void End()
     {
+        currentTime = 0;
         isSpawned = false;
         reachedBeginTarget = false;
         transform.position = new Vector3(-80, -80, transform.position.z);

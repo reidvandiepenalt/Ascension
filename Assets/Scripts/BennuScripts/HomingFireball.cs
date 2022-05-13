@@ -20,13 +20,13 @@ public class HomingFireball : MonoBehaviour
         if(!isSpawned) { return; }
 
         float angle = Vector2.SignedAngle(transform.position, playerTransform.position);
-        transform.position += new Vector3((curPhase == BennuAI.Phase.one)?speed_p1:speed_p2 * Time.fixedDeltaTime * Mathf.Cos(angle * Mathf.Deg2Rad),
-            (curPhase == BennuAI.Phase.one) ? speed_p1 : speed_p2 * Time.fixedDeltaTime * Mathf.Sin(angle * Mathf.Deg2Rad));
+        transform.position += new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad))
+            * ((curPhase == BennuAI.Phase.one) ? speed_p1 : speed_p2) * Time.fixedDeltaTime;
         currentTime += Time.fixedDeltaTime;
         if(currentTime >= ((curPhase == BennuAI.Phase.one) ? time_p1 : time_p2))
         {
             anim.SetTrigger("Explode");
-            Invoke("End", 1f / 6f);
+            Invoke("End", 1f / 3f);
         }
     }
 
@@ -40,6 +40,7 @@ public class HomingFireball : MonoBehaviour
 
     void End()
     {
+        currentTime = 0;
         isSpawned = false;
         switch (curPhase)
         {
@@ -48,7 +49,7 @@ public class HomingFireball : MonoBehaviour
                 for(int i = 0; i < 4; i++)
                 {
                     Vector2 targetPos = transform.position + new Vector3(Mathf.Cos((i * 90 + 45) * Mathf.Deg2Rad), Mathf.Sin((i * 90 + 45) * Mathf.Deg2Rad));
-                    miniFireballs[i].Begin(playerTransform, transform.position, targetPos, curPhase);
+                    miniFireballs[i].Begin(playerTransform, new Vector2(transform.position.x, transform.position.y), targetPos, curPhase);
                 }
                 break;
             case BennuAI.Phase.two:
@@ -56,10 +57,11 @@ public class HomingFireball : MonoBehaviour
                 for(int i = 0; i < miniFireballs.Length; i++)
                 {
                     Vector2 targetPos = transform.position + new Vector3(Mathf.Cos((i * 60) * Mathf.Deg2Rad), Mathf.Sin((i * 60) * Mathf.Deg2Rad));
-                    miniFireballs[i].Begin(playerTransform, transform.position, targetPos, curPhase);
+                    miniFireballs[i].Begin(playerTransform, new Vector2(transform.position.x, transform.position.y), targetPos, curPhase);
                 }
                 break;
         }
+
         transform.position = new Vector3(-80, -80, transform.position.z);
     }
 }

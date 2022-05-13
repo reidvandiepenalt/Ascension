@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FloorFire : MonoBehaviour
 {
-    const float maxTime = 0.5f;
+    const float maxTime = 1.5f;
     float currentTime = 0.0f;
     bool isSpawned = false;
 

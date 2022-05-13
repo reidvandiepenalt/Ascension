@@ -126,6 +126,8 @@ public class BennuAI : MonoBehaviour
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
         playerCollider = playerTransform.gameObject.GetComponent<Collider2D>();
         playerGroundOffset = playerCollider.bounds.extents.y;
+
+        availableAttacks = new List<Action>();
     }
 
     void FixedUpdate()
@@ -204,10 +206,15 @@ public class BennuAI : MonoBehaviour
     /// </summary>
     void PickAttack()
     {
+        //testing
+        actionQ.Enqueue(Action.homingBomb);
+        phase = Phase.two;
+
+        /*
         float randomFloat = Random.Range(0.0f, 1.0f);
 
         //1/7 to do landing attack
-        if(randomFloat < 1.0f / 7.0f)
+        if(randomFloat < (1.0f / 7.0f))
         {
             actionQ.Enqueue(Action.diveLand);
             actionQ.Enqueue(Action.landedBeam);
@@ -223,7 +230,7 @@ public class BennuAI : MonoBehaviour
                 actionQ.Enqueue(availableAttacks[index]);
                 availableAttacks.RemoveAt(index);
             }
-        }
+        }*/
     }
 
     /// <summary>
@@ -307,6 +314,9 @@ public class BennuAI : MonoBehaviour
         homingFireball.Begin(playerTransform, transform.position + Vector3.up * centerOffset, phase);
         //wait for anim to finish
 
+        //testing
+        yield return new WaitForSeconds(2.5f);
+
         actionQ.Dequeue();
         isAttacking = false;
         yield return null;
@@ -326,13 +336,13 @@ public class BennuAI : MonoBehaviour
 
         //fire arc anim
         bool p1 = phase == Phase.one;
-        int offset = p1 ? -3 : -5;
+        float centerAngle = Mathf.Atan2(playerTransform.position.y - mouthTransform.position.y, playerTransform.position.x - mouthTransform.position.x);
+        int offset = p1 ? 3 : 5;
         for (int i = -offset; i <= offset; i++)
         {
-            float centerAngle = Mathf.Atan2(transform.position.y, transform.position.x);
-            rapidFireballs[RapidFireIndex].Begin(mouthTransform.position, centerAngle, p1?18:24);
+            rapidFireballs[RapidFireIndex].Begin(mouthTransform.position, centerAngle + (i * (5f * Mathf.Deg2Rad)), p1 ? 14 : 18);
             RapidFireIndex++;
-            yield return new WaitForSeconds(0.05f);
+            yield return new WaitForSeconds(0.025f);
         }
         //wait for anim to finish
 
@@ -370,15 +380,28 @@ public class BennuAI : MonoBehaviour
         yield return new WaitWhile(() => isMoving);
 
         //fire beam anim
-        float angle = Mathf.Atan2(transform.position.y, transform.position.x);
+        float angle = Mathf.Atan2(playerTransform.position.y - mouthTransform.position.y, playerTransform.position.x - mouthTransform.position.x);
         bool p1 = phase == Phase.one;
         float time = 0.0f;
-        while(time < 1.25f)
+        while(time < (p1 ? 0.6f : 0.75f))
         {
-            float newAngle = Mathf.Atan2(transform.position.y, transform.position.x);
-            angle = Mathf.Lerp(angle, newAngle, p1 ? 0.4f : 0.2f);
-            rapidFireballs[RapidFireIndex].Begin(mouthTransform.position, angle, p1 ? 18 : 24);
+            //face player
+            if (playerTransform.position.x > transform.position.x && !facingRight)
+            {
+                transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+                facingRight = true;
+            }
+            else if (playerTransform.position.x < transform.position.x && facingRight)
+            {
+                transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+                facingRight = false;
+            }
+
+            float newAngle = Mathf.Atan2(playerTransform.position.y - mouthTransform.position.y, playerTransform.position.x - mouthTransform.position.x);
+            angle = Mathf.LerpAngle(angle, newAngle, p1 ? 2f : 10f);
+            rapidFireballs[RapidFireIndex].Begin(mouthTransform.position, angle, p1 ? 24 : 28);
             RapidFireIndex++;
+            time += Time.deltaTime;
             yield return new WaitForSeconds(0.05f);
         }
         //wait for anim to finish
@@ -458,8 +481,41 @@ public class BennuAI : MonoBehaviour
         isAttacking = true;
 
         //face player
+        if (playerTransform.position.x > transform.position.x && !facingRight)
+        {
+            transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            facingRight = true;
+        }
+        else if (playerTransform.position.x < transform.position.x && facingRight)
+        {
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            facingRight = false;
+        }
 
         //start beam anim
+        bool p1 = phase == Phase.one;
+        float angle = facingRight ? 0 : 180;
+        float time = 0.0f;
+        while (time < 0.6f)
+        {
+            rapidFireballs[RapidFireIndex].Begin(mouthTransform.position, angle * Mathf.Deg2Rad);
+            RapidFireIndex++;
+            time += Time.deltaTime;
+            yield return new WaitForSeconds(0.05f);
+        }
+        if (!p1)
+        {
+            //start head move anim
+            while (time < 1f)
+            {
+                angle = Mathf.LerpAngle(angle, 90, 0.15f);
+                rapidFireballs[RapidFireIndex].Begin(mouthTransform.position, angle * Mathf.Deg2Rad);
+                RapidFireIndex++;
+                time += Time.deltaTime;
+                yield return new WaitForSeconds(0.05f);
+            }
+        }
+        //wait for anim to finish
 
         actionQ.Dequeue();
         isAttacking = false;

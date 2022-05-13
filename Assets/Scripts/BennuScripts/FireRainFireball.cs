@@ -12,9 +12,10 @@ public class FireRainFireball : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if(!spawned) { return; }
+        if (!spawned) { return; }
 
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, speed * Time.fixedDeltaTime, groundLayer); // need to include offset of origin
+        float dist = speed * Time.fixedDeltaTime;
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, dist + 0.75f, groundLayer); // need to include offset of origin
         if (hit)
         {
             if (hit.collider.gameObject.CompareTag("Inanimate"))
@@ -23,6 +24,7 @@ public class FireRainFireball : MonoBehaviour
                 End();
             }
         }
+        transform.position += Vector3.down * dist;
     }
 
     public void Begin(Vector2 startPos)
