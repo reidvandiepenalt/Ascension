@@ -15,7 +15,7 @@ public class FirePlume : MonoBehaviour
         
         if(phase == BennuAI.Phase.two)
         {
-            Invoke("SpawnFireballs", 0.25f);
+            Invoke("SpawnFireballs", 11f/20f);
         }
 
         Invoke("End", 7f/12f);

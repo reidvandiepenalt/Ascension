@@ -13,20 +13,20 @@ public class HomingFireball : MonoBehaviour
     Transform playerTransform;
     BennuAI.Phase curPhase = BennuAI.Phase.one;
     bool isSpawned = false;
-
+    float Speed { get => ((curPhase == BennuAI.Phase.one) ? speed_p1 : speed_p2); }
 
     private void FixedUpdate()
     {
         if(!isSpawned) { return; }
 
-        float angle = Vector2.SignedAngle(transform.position, playerTransform.position);
-        transform.position += new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad))
-            * ((curPhase == BennuAI.Phase.one) ? speed_p1 : speed_p2) * Time.fixedDeltaTime;
+        float angle = Mathf.Atan2(playerTransform.position.y - transform.position.y, playerTransform.position.x - transform.position.x);
+        transform.position += new Vector3(Mathf.Cos(angle) * Speed * Time.fixedDeltaTime, Mathf.Sin(angle) * Speed * Time.fixedDeltaTime);
         currentTime += Time.fixedDeltaTime;
         if(currentTime >= ((curPhase == BennuAI.Phase.one) ? time_p1 : time_p2))
         {
             anim.SetTrigger("Explode");
-            Invoke("End", 1f / 3f);
+            SpawnFBS();
+            Invoke("End", 0.33f);
         }
     }
 
@@ -38,30 +38,33 @@ public class HomingFireball : MonoBehaviour
         curPhase = phase;
     }
 
-    void End()
+    void SpawnFBS()
     {
-        currentTime = 0;
-        isSpawned = false;
         switch (curPhase)
         {
             case BennuAI.Phase.one:
                 //spawn 4 minifireballs at position
-                for(int i = 0; i < 4; i++)
+                for (int i = 0; i < 4; i++)
                 {
-                    Vector2 targetPos = transform.position + new Vector3(Mathf.Cos((i * 90 + 45) * Mathf.Deg2Rad), Mathf.Sin((i * 90 + 45) * Mathf.Deg2Rad));
+                    Vector2 targetPos = transform.position + new Vector3(Mathf.Cos((i * 90 + 45) * Mathf.Deg2Rad), Mathf.Sin((i * 90 + 45) * Mathf.Deg2Rad)) * 5;
                     miniFireballs[i].Begin(playerTransform, new Vector2(transform.position.x, transform.position.y), targetPos, curPhase);
                 }
                 break;
             case BennuAI.Phase.two:
                 //spawn all minifireballs at position
-                for(int i = 0; i < miniFireballs.Length; i++)
+                for (int i = 0; i < miniFireballs.Length; i++)
                 {
-                    Vector2 targetPos = transform.position + new Vector3(Mathf.Cos((i * 60) * Mathf.Deg2Rad), Mathf.Sin((i * 60) * Mathf.Deg2Rad));
+                    Vector2 targetPos = transform.position + new Vector3(Mathf.Cos((i * 60) * Mathf.Deg2Rad), Mathf.Sin((i * 60) * Mathf.Deg2Rad)) * 5;
                     miniFireballs[i].Begin(playerTransform, new Vector2(transform.position.x, transform.position.y), targetPos, curPhase);
                 }
                 break;
         }
+    }
 
+    void End()
+    {
+        currentTime = 0;
+        isSpawned = false;
         transform.position = new Vector3(-80, -80, transform.position.z);
     }
 }

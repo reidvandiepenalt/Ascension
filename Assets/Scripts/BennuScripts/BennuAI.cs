@@ -315,7 +315,7 @@ public class BennuAI : MonoBehaviour
         //wait for anim to finish
 
         //testing
-        yield return new WaitForSeconds(2.5f);
+        yield return new WaitForSeconds(5f);
 
         actionQ.Dequeue();
         isAttacking = false;
