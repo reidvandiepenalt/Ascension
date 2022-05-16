@@ -206,11 +206,6 @@ public class BennuAI : MonoBehaviour
     /// </summary>
     void PickAttack()
     {
-        //testing
-        actionQ.Enqueue(Action.homingBomb);
-        phase = Phase.two;
-
-        /*
         float randomFloat = Random.Range(0.0f, 1.0f);
 
         //1/7 to do landing attack
@@ -230,7 +225,7 @@ public class BennuAI : MonoBehaviour
                 actionQ.Enqueue(availableAttacks[index]);
                 availableAttacks.RemoveAt(index);
             }
-        }*/
+        }
     }
 
     /// <summary>
@@ -313,9 +308,6 @@ public class BennuAI : MonoBehaviour
         //homing fireball anim
         homingFireball.Begin(playerTransform, transform.position + Vector3.up * centerOffset, phase);
         //wait for anim to finish
-
-        //testing
-        yield return new WaitForSeconds(5f);
 
         actionQ.Dequeue();
         isAttacking = false;
