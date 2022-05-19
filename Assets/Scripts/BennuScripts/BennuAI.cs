@@ -8,6 +8,8 @@ public class BennuAI : MonoBehaviour
     [SerializeField] Animator anim;
     [SerializeField] LayerMask groundLayer;
 
+    int phase2Anim, flyingBeamAnim, arcAnim, homingBombAnim, plumeAnim, diveAnim, xDiveAnim, yDiveAnim;
+
     [SerializeField] float arenaMaxX, arenaMinX, arenaMaxY, arenaMinY;
     float arenaCenterX, arenaCenterY;
 
@@ -128,6 +130,15 @@ public class BennuAI : MonoBehaviour
         playerGroundOffset = playerCollider.bounds.extents.y;
 
         availableAttacks = new List<Action>();
+
+        phase2Anim = Animator.StringToHash("Phase2");
+        flyingBeamAnim = Animator.StringToHash("FlyingBeam");
+        arcAnim = Animator.StringToHash("Arc");
+        homingBombAnim = Animator.StringToHash("HomingBomb");
+        plumeAnim = Animator.StringToHash("Plume");
+        diveAnim = Animator.StringToHash("Dive");
+        xDiveAnim = Animator.StringToHash("XDive");
+        yDiveAnim = Animator.StringToHash("YDive");
     }
 
     void FixedUpdate()
