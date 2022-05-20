@@ -92,6 +92,7 @@ public class BennuAI : MonoBehaviour
         else if (health < (healthManager.MaxHealth / 2f) && phase == Phase.one)
         {
             phase = Phase.two;
+            anim.SetBool(phase2Anim, true);
         }
         else if (health < 15)
         {
@@ -280,8 +281,13 @@ public class BennuAI : MonoBehaviour
         yield return new WaitWhile(() => isMoving);
 
         //plume anim
+        anim.SetTrigger(plumeAnim);
+        yield return new WaitForSeconds(1 / 6f);
+
         firePlume.Begin(NearestPlatformPoint(playerTransform.position, false), phase);
+
         //wait for anim to finish
+        yield return new WaitForSeconds(2 / 3f);
 
         actionQ.Dequeue();
         isAttacking = false;
@@ -317,8 +323,13 @@ public class BennuAI : MonoBehaviour
         yield return new WaitWhile(() => isMoving);
 
         //homing fireball anim
+        anim.SetTrigger(homingBombAnim);
+        yield return new WaitForSeconds(7 / 60f);
+
         homingFireball.Begin(playerTransform, transform.position + Vector3.up * centerOffset, phase);
+
         //wait for anim to finish
+        yield return new WaitForSeconds(19 / 30f);
 
         actionQ.Dequeue();
         isAttacking = false;
@@ -338,6 +349,9 @@ public class BennuAI : MonoBehaviour
         yield return new WaitWhile(() => isMoving);
 
         //fire arc anim
+        anim.SetTrigger(arcAnim);
+        yield return new WaitForSeconds(1 / 6f);
+
         bool p1 = phase == Phase.one;
         float centerAngle = Mathf.Atan2(playerTransform.position.y - mouthTransform.position.y, playerTransform.position.x - mouthTransform.position.x);
         int offset = p1 ? 3 : 5;
@@ -347,7 +361,9 @@ public class BennuAI : MonoBehaviour
             RapidFireIndex++;
             yield return new WaitForSeconds(0.025f);
         }
+
         //wait for anim to finish
+        yield return new WaitForSeconds(1 / 3f);
 
         actionQ.Dequeue();
         isAttacking = false;
@@ -383,6 +399,9 @@ public class BennuAI : MonoBehaviour
         yield return new WaitWhile(() => isMoving);
 
         //fire beam anim
+        anim.SetTrigger(flyingBeamAnim);
+        yield return new WaitForSeconds(1/6f);
+
         float angle = Mathf.Atan2(playerTransform.position.y - mouthTransform.position.y, playerTransform.position.x - mouthTransform.position.x);
         bool p1 = phase == Phase.one;
         float time = 0.0f;
@@ -407,7 +426,9 @@ public class BennuAI : MonoBehaviour
             time += Time.deltaTime;
             yield return new WaitForSeconds(0.05f);
         }
+
         //wait for anim to finish
+        yield return new WaitForSeconds(p1 ? (5 / 12f) : 0.25f);
 
         actionQ.Dequeue();
         isAttacking = false;
@@ -428,13 +449,19 @@ public class BennuAI : MonoBehaviour
         yield return new WaitWhile(() => isMoving);
 
         //fire rain anim
-        for(int i = 0; i < fireRainFireballs.Count / (phase == Phase.one ? 2 : 1); i++)
+        anim.SetTrigger(plumeAnim);
+        yield return new WaitForSeconds(1 / 6f);
+
+        bool p1 = phase == Phase.one;
+        for (int i = 0; i < fireRainFireballs.Count / (p1 ? 2 : 1); i++)
         {
             fireRainFireballs[i].Begin(new Vector2(Random.Range(arenaMinX, arenaMaxX), 50));
 
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(p1 ? 0.01f : 0.05f);
         }
+
         //wait for anim to finish
+        yield return new WaitForSeconds(4/15f);
 
         actionQ.Dequeue();
         isAttacking = false;
