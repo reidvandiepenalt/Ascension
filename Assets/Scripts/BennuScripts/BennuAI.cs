@@ -8,7 +8,7 @@ public class BennuAI : MonoBehaviour
     [SerializeField] Animator anim;
     [SerializeField] LayerMask groundLayer;
 
-    int phase2Anim, flyingBeamAnim, arcAnim, homingBombAnim, plumeAnim, diveAnim, xDiveAnim, yDiveAnim;
+    int phase2Anim, flyingBeamAnim, arcAnim, homingBombAnim, plumeAnim, diveAnim, xDiveAnim, yDiveAnim, landedBeamAnim;
 
     [SerializeField] float arenaMaxX, arenaMinX, arenaMaxY, arenaMinY;
     float arenaCenterX, arenaCenterY;
@@ -140,6 +140,7 @@ public class BennuAI : MonoBehaviour
         diveAnim = Animator.StringToHash("Dive");
         xDiveAnim = Animator.StringToHash("XDive");
         yDiveAnim = Animator.StringToHash("YDive");
+        landedBeamAnim = Animator.StringToHash("LandedBeam");
     }
 
     void FixedUpdate()
@@ -404,8 +405,7 @@ public class BennuAI : MonoBehaviour
 
         float angle = Mathf.Atan2(playerTransform.position.y - mouthTransform.position.y, playerTransform.position.x - mouthTransform.position.x);
         bool p1 = phase == Phase.one;
-        float time = 0.0f;
-        while(time < (p1 ? 0.6f : 0.75f))
+        for(int i = 0; i < (p1 ? 12 : 15); i++)
         {
             //face player
             if (playerTransform.position.x > transform.position.x && !facingRight)
@@ -423,7 +423,6 @@ public class BennuAI : MonoBehaviour
             angle = Mathf.LerpAngle(angle, newAngle, p1 ? 2f : 10f);
             rapidFireballs[RapidFireIndex].Begin(mouthTransform.position, angle, p1 ? 24 : 28);
             RapidFireIndex++;
-            time += Time.deltaTime;
             yield return new WaitForSeconds(0.05f);
         }
 
@@ -481,11 +480,15 @@ public class BennuAI : MonoBehaviour
         yield return new WaitWhile(() => isMoving);
 
         //dive to player closest platform
-        //dive anim
-        speedMod = 2;
-
-        isMoving = true;
         moveTarget = NearestPlatformPoint(playerTransform.position, true) + (Vector2.up * 0.5f);
+        float angle = Mathf.Atan2(moveTarget.y, moveTarget.x);
+        anim.SetFloat(xDiveAnim, Mathf.Cos(angle));
+        anim.SetFloat(yDiveAnim, Mathf.Sin(angle));
+        //dive anim
+        anim.SetTrigger(diveAnim);
+
+        speedMod = 2;
+        isMoving = true;
         yield return new WaitWhile(() => isMoving);
         speedMod = 1;
 
@@ -496,7 +499,6 @@ public class BennuAI : MonoBehaviour
             diveFireball2.Launch(transform.position, 135);
         }
 
-        //wait for anim to finish
 
         actionQ.Dequeue();
         isAttacking = false;
@@ -522,30 +524,32 @@ public class BennuAI : MonoBehaviour
             facingRight = false;
         }
 
-        //start beam anim
+        //start landed beam anim
+        anim.SetTrigger(landedBeamAnim);
+        yield return new WaitForSeconds(0.25f);
+
         bool p1 = phase == Phase.one;
         float angle = facingRight ? 0 : 180;
-        float time = 0.0f;
-        while (time < 0.6f)
+        for(int i = 0; i < 12; i++)
         {
             rapidFireballs[RapidFireIndex].Begin(mouthTransform.position, angle * Mathf.Deg2Rad);
             RapidFireIndex++;
-            time += Time.deltaTime;
             yield return new WaitForSeconds(0.05f);
         }
         if (!p1)
         {
             //start head move anim
-            while (time < 1f)
+            for(int i = 0; i < 8; i++)
             {
                 angle = Mathf.LerpAngle(angle, 90, 0.15f);
                 rapidFireballs[RapidFireIndex].Begin(mouthTransform.position, angle * Mathf.Deg2Rad);
                 RapidFireIndex++;
-                time += Time.deltaTime;
                 yield return new WaitForSeconds(0.05f);
             }
         }
+
         //wait for anim to finish
+        yield return new WaitForSeconds(p1 ? 0.25f : 1 / 3f);
 
         actionQ.Dequeue();
         isAttacking = false;
