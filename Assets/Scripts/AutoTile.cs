@@ -6,7 +6,9 @@ public class AutoTile : MonoBehaviour
 {
     [SerializeField] private float multiplierX = 1;
     [SerializeField] private float multiplierY = 1;
+    [SerializeField] private int renderQueue = 2000;
     [SerializeField] bool overrideScale = false;
+    [SerializeField] Vector2 offset = Vector2.zero;
     Mesh mesh;
     Renderer Rend;
     private Material matCopy;
@@ -20,5 +22,7 @@ public class AutoTile : MonoBehaviour
         float tileX = transform.localScale.x * multiplierX;
         float tileY = transform.localScale.y * multiplierY;
         Rend.material.mainTextureScale = new Vector2(tileX, tileY);
+        Rend.material.renderQueue = renderQueue;
+        Rend.material.mainTextureOffset = offset;
     }
 }
