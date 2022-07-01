@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 7101101510556868269}
   - component: {fileID: 7101101510556868268}
   - component: {fileID: 7101101510556868259}
-  - component: {fileID: 7101101510556868258}
   - component: {fileID: 7101101510556868257}
-  m_Layer: 0
+  - component: {fileID: 9094858066638587082}
+  m_Layer: 9
   m_Name: EgyptTriangle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -62,7 +62,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ebe5758ee3b844242a5674c33851b1f9, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -84,20 +84,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &7101101510556868258
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7101101510556868256}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300000, guid: f9150ad2376ea1743b6e45f6e34290d2, type: 2}
 --- !u!114 &7101101510556868257
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -115,3 +101,31 @@ MonoBehaviour:
   renderQueue: 2000
   overrideScale: 1
   offset: {x: 0, y: 0}
+--- !u!60 &9094858066638587082
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7101101510556868256}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: -0.50026953, y: 0.5000757}
+      - {x: -0.5000697, y: -0.5001259}
+      - {x: 0.50013876, y: -0.50007945}

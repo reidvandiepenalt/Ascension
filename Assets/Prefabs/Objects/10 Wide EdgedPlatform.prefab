@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9060404717964960112}
-  - component: {fileID: 4559266349335009333}
   m_Layer: 9
   m_Name: 10 Wide EdgedPlatform
   m_TagString: Inanimate
@@ -34,13 +33,13 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!60 &4559266349335009333
-PolygonCollider2D:
+--- !u!61 &1149210131750990874
+BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 707023427600131186}
+  m_GameObject: {fileID: 2199497921247525556}
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
@@ -57,12 +56,9 @@ PolygonCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Points:
-    m_Paths:
-    - - {x: -6.04751, y: 0.5133052}
-      - {x: -4.9678016, y: -0.5294415}
-      - {x: 5.010162, y: -0.5040255}
-      - {x: 6.029695, y: 0.5108448}
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
 --- !u!1001 &441719201592683688
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -295,6 +291,12 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 8124039557655038336, guid: 0c0c9eba071775d49979270d03c7d0c4, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 0c0c9eba071775d49979270d03c7d0c4, type: 3}
+--- !u!1 &2199497921247525556 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7999186154499283120, guid: 0c0c9eba071775d49979270d03c7d0c4,
+    type: 3}
+  m_PrefabInstance: {fileID: 8179943034244047364}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8117178717506096799 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 81906816333900955, guid: 0c0c9eba071775d49979270d03c7d0c4,
