@@ -9,18 +9,17 @@ public class AutoTile : MonoBehaviour
     [SerializeField] private int renderQueue = 2000;
     [SerializeField] bool overrideScale = false;
     [SerializeField] Vector2 offset = Vector2.zero;
-    Mesh mesh;
     Renderer Rend;
-    private Material matCopy;
     public void OnValidate()
     {
         //get the renderer and scale the texture to size of transform
         Rend = GetComponent<Renderer>();
-        mesh = GetComponent<MeshFilter>().sharedMesh;
+        Material tempMaterial = new Material(Rend.sharedMaterial);
         float tileX = transform.localScale.x * multiplierX;
         float tileY = transform.localScale.y * multiplierY;
-        Rend.material.mainTextureScale = new Vector2(tileX, tileY);
-        Rend.material.renderQueue = renderQueue;
-        Rend.material.mainTextureOffset = offset;
+        tempMaterial.mainTextureScale = new Vector2(tileX, tileY);
+        tempMaterial.renderQueue = renderQueue;
+        tempMaterial.mainTextureOffset = offset;
+        Rend.sharedMaterial = tempMaterial;
     }
 }
