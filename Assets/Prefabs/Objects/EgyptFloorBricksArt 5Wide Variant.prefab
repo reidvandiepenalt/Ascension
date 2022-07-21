@@ -1,5 +1,57 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!61 &766491492350674155
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2032439767126215242}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
+--- !u!114 &4304374598750773960
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2032439767126215242}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7db70e0ea77f5ac47a8f4565a9406397, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShadowGroup: 0
+  m_HasRenderer: 1
+  m_UseRendererSilhouette: 1
+  m_CastsShadows: 1
+  m_SelfShadows: 1
+  m_ApplyToSortingLayers: 952d0e510000000005561c21911f05c52d0b05fc359069d9
+  m_ShapePath:
+  - {x: -0.5, y: -0.5, z: 0}
+  - {x: -0.5, y: 0.5, z: 0}
+  - {x: 0.5, y: 0.5, z: 0}
+  - {x: 0.5, y: -0.5, z: 0}
+  m_ShapePathHash: 0
+  m_Mesh: {fileID: 0}
+  m_InstanceId: -89640
 --- !u!1001 &4906928383883871274
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11,6 +63,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: EgyptFloorBricksArt 5Wide Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 6353528417060752992, guid: c7c69d51eaecb38498c80bf8ed4996f7,
+        type: 3}
+      propertyPath: m_TagString
+      value: Inanimate
+      objectReference: {fileID: 0}
+    - target: {fileID: 6353528417060752992, guid: c7c69d51eaecb38498c80bf8ed4996f7,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     - target: {fileID: 6353528417060752993, guid: c7c69d51eaecb38498c80bf8ed4996f7,
         type: 3}
@@ -72,6 +134,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6353528417060753020, guid: c7c69d51eaecb38498c80bf8ed4996f7,
+        type: 3}
+      propertyPath: renderQueue
+      value: 2000
+      objectReference: {fileID: 0}
     - target: {fileID: 6353528417060753022, guid: c7c69d51eaecb38498c80bf8ed4996f7,
         type: 3}
       propertyPath: m_Mesh
@@ -79,8 +146,19 @@ PrefabInstance:
       objectReference: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
     - target: {fileID: 6353528417060753023, guid: c7c69d51eaecb38498c80bf8ed4996f7,
         type: 3}
+      propertyPath: m_DynamicOccludee
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6353528417060753023, guid: c7c69d51eaecb38498c80bf8ed4996f7,
+        type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c7c69d51eaecb38498c80bf8ed4996f7, type: 3}
+--- !u!1 &2032439767126215242 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6353528417060752992, guid: c7c69d51eaecb38498c80bf8ed4996f7,
+    type: 3}
+  m_PrefabInstance: {fileID: 4906928383883871274}
+  m_PrefabAsset: {fileID: 0}
