@@ -12,6 +12,7 @@ public class AutoTile : MonoBehaviour
     Renderer Rend;
     public void OnValidate()
     {
+        /*
         //get the renderer and scale the texture to size of transform
         Rend = GetComponent<Renderer>();
         Material tempMaterial = new Material(Rend.sharedMaterial);
@@ -21,5 +22,6 @@ public class AutoTile : MonoBehaviour
         tempMaterial.renderQueue = renderQueue;
         tempMaterial.mainTextureOffset = offset;
         Rend.sharedMaterial = tempMaterial;
+        */
     }
 }
