@@ -76,9 +76,14 @@ PrefabInstance:
       objectReference: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
     - target: {fileID: 5979119247573428171, guid: 6f5535de37ce1ea49b58cd8400aeab40,
         type: 3}
+      propertyPath: m_StaticShadowCaster
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5979119247573428171, guid: 6f5535de37ce1ea49b58cd8400aeab40,
+        type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 2100000, guid: 1030f244ddcf6ad419ad6d866dc5f7f9, type: 2}
     - target: {fileID: 5979119247573428180, guid: 6f5535de37ce1ea49b58cd8400aeab40,
         type: 3}
       propertyPath: m_Name
@@ -159,7 +164,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5979119247573428168, guid: 6f5535de37ce1ea49b58cd8400aeab40, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 6f5535de37ce1ea49b58cd8400aeab40, type: 3}
 --- !u!1 &6353528417060752992 stripped
 GameObject:
