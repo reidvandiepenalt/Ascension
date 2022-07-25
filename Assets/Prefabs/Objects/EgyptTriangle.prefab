@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 7101101510556868269}
   - component: {fileID: 7101101510556868268}
   - component: {fileID: 7101101510556868259}
-  - component: {fileID: 7101101510556868257}
   - component: {fileID: 9094858066638587082}
   m_Layer: 9
   m_Name: EgyptTriangle
@@ -84,23 +83,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &7101101510556868257
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7101101510556868256}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 07906ba1cc43f57429f9a7b79b5cb901, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  multiplierX: 0.25
-  multiplierY: 0.5
-  renderQueue: 2000
-  overrideScale: 1
-  offset: {x: 0, y: 0}
 --- !u!60 &9094858066638587082
 PolygonCollider2D:
   m_ObjectHideFlags: 0
