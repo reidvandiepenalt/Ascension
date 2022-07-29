@@ -18,6 +18,8 @@ public class MummyGraph : MonoBehaviour
     public Path path;
     private int currentWaypoint = 0;
 
+    public EnemyCollisionMovementHandler movement;
+
     public State state = State.idle;
     public Transform player;
     float playerYOffset;
@@ -26,7 +28,7 @@ public class MummyGraph : MonoBehaviour
     private ContactFilter2D filter;
     private Collider2D collider;
     public float attackRange = 10f;
-    public float distToNextWaypoint = 2f;
+    public float distToNextWaypoint = 1f;
     public float speed = 10;
     public float jumpDistToTime = 1f;
     public GameObject enemyGFX;
@@ -58,8 +60,6 @@ public class MummyGraph : MonoBehaviour
 
     float horizontalRaySpacing;
     float verticalRaySpacing;
-    RaycastOrigins raycastOrigins;
-    private CollisionInfo collisions;
     const float skinWidth = 0.05f;
     const float distBetweenRays = 0.2f;
 
@@ -95,18 +95,15 @@ public class MummyGraph : MonoBehaviour
         seeker.pathCallback += OnPathComplete;
         seeker.StartPath(transform.position - (Vector3.up * nodeOffset), player.position + (Vector3.down * playerYOffset));
 
-        //calc for collisions
-        CalculateRaySpacing();
-
         //initial ground test
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 10f, groundLayer);
+        /*RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 10f, groundLayer);
         if (hit)
         {
             collisions.platform = hit.collider;
-        }
+        }*/
 
         //set checkdist to repeatedly invoke
-        InvokeRepeating("CheckDist", 0f, 0.25f);
+        InvokeRepeating("CheckDist", 0f, 0.5f);
     }
 
     /// <summary>
@@ -129,6 +126,10 @@ public class MummyGraph : MonoBehaviour
                 if (transform.position.x > path.vectorPath[i].x)
                 {
                     currentWaypoint++;
+                }
+                else
+                {
+                    break;
                 }
             }
             else
@@ -165,6 +166,7 @@ public class MummyGraph : MonoBehaviour
         //do nothing if paused
         if (Pause.isPaused) { return; }
 
+        /*
         RaycastHit2D leftHit;
         RaycastHit2D rightHit;
         if (state != State.jumpStart)
@@ -187,7 +189,7 @@ public class MummyGraph : MonoBehaviour
             {
                 collisions.below = false;
             }
-        }
+        }*/
 
         switch (state)
         {
@@ -272,12 +274,14 @@ public class MummyGraph : MonoBehaviour
                             //move toward location to jump from
                             float dir = ((jumpFailedMoveTo.x - transform.position.x) > 0) ? 1 : -1;
                             velocity.x = dir * speed;
+                            anim.SetBool("Walk", true);
                         }
                         else
                         {
                             //move toward next waypoint
                             float dir = ((path.vectorPath[currentWaypoint].x - transform.position.x) > 0) ? 1 : -1;
                             velocity.x = dir * speed;
+                            anim.SetBool("Walk", true);
 
                             //dont walk if next node is air
                             try
@@ -285,6 +289,7 @@ public class MummyGraph : MonoBehaviour
                                 if (path.path[currentWaypoint + 1].Tag == 1)
                                 {
                                     velocity.x = 0;
+                                    anim.SetBool("Walk", false);
                                 }
                             }
                             catch 
@@ -292,6 +297,7 @@ public class MummyGraph : MonoBehaviour
                                 if (path.path[currentWaypoint].Tag == 1)
                                 {
                                     velocity.x = 0;
+                                    anim.SetBool("Walk", false);
                                 }
                             }
                             
@@ -318,10 +324,10 @@ public class MummyGraph : MonoBehaviour
         velocity.y = Mathf.Max(velocity.y, terminalVelocity);
 
         //move
-        Move(velocity * Time.deltaTime);
+        movement.Move(Time.fixedDeltaTime * velocity);
 
         //grounded / ceiling
-        if (collisions.above || collisions.below)
+        if (movement.collisions.above || movement.collisions.below)
         {
             velocity.y = 0;
         }
@@ -385,7 +391,6 @@ public class MummyGraph : MonoBehaviour
         {
             //inside aggro range; aggro
             state = State.walking;
-            anim.SetBool("Walk", true);
         }
 
         //dont do anything if not walking
@@ -402,9 +407,12 @@ public class MummyGraph : MonoBehaviour
         seeker.StartPath(transform.position - Vector3.up * nodeOffset, player.position + (Vector3.down * playerYOffset));
 
         //reached next node of air, need to jump
-        if (path.path[currentWaypoint].Tag == 1 && state == State.walking && !jumpFailed)
+        if(path != null)
         {
-            Jump();
+            if (path.path[currentWaypoint].Tag == 1 && state == State.walking && !jumpFailed)
+            {
+                Jump();
+            }
         }
     }
 
@@ -419,7 +427,7 @@ public class MummyGraph : MonoBehaviour
     void Jump()
     {
         //dont jump if in air
-        if (!collisions.below) { return; }
+        if (!movement.collisions.below) { return; }
 
         if(currentWaypoint + 1 >= path.path.Count) { noNextPlatform = true; velocity.x = 0; return; }
 
@@ -448,7 +456,7 @@ public class MummyGraph : MonoBehaviour
                     anim.SetBool("Grounded", false);
                     UpdateJumpFailMoveTo(landingPoint);
                     state = State.jumpStart;
-                    Invoke("JumpStartFinished", 0.2f);
+                    Invoke("JumpStartFinished", 0.1f);
                     return;
                 }
                 else //if ceiling; try shallower angle
@@ -528,7 +536,7 @@ public class MummyGraph : MonoBehaviour
         //check if current platform can be used to jump from
         if (landingPoint.x > jumpTargetPlatform.bounds.center.x)
         {
-            if(collisions.platform.bounds.max.x  > jumpTargetPlatform.bounds.max.x + 5)
+            if(movement.collisions.platform.bounds.max.x  > jumpTargetPlatform.bounds.max.x + 5)
             {
                 jumpFailedMoveRight = true;
                 jumpFailedMoveTo = new Vector2(jumpTargetPlatform.bounds.max.x + 5, transform.position.y);
@@ -537,7 +545,7 @@ public class MummyGraph : MonoBehaviour
             //check if there is a connected platform
             else
             {
-                RaycastHit2D hit = Physics2D.Raycast(new Vector2(collisions.platform.bounds.max.x + 0.25f, transform.position.y + 3),
+                RaycastHit2D hit = Physics2D.Raycast(new Vector2(movement.collisions.platform.bounds.max.x + 0.25f, transform.position.y + 3),
                     Vector2.down, 6, groundLayer);
                 if (hit)
                 {
@@ -556,15 +564,15 @@ public class MummyGraph : MonoBehaviour
             }
         }
         jumpFailedMoveRight = false;
-        if (collisions.platform.bounds.min.x < jumpTargetPlatform.bounds.min.x - 5)
+        if (movement.collisions.platform.bounds.min.x < jumpTargetPlatform.bounds.min.x - 5)
         {
-            jumpFailedMoveTo = new Vector2(Mathf.Max(jumpTargetPlatform.bounds.min.x - 5, collisions.platform.bounds.min.x),
+            jumpFailedMoveTo = new Vector2(Mathf.Max(jumpTargetPlatform.bounds.min.x - 5, movement.collisions.platform.bounds.min.x),
                 transform.position.y);
             return;
         }
         else
         {
-            RaycastHit2D hit = Physics2D.Raycast(new Vector2(collisions.platform.bounds.min.x - 0.25f, transform.position.y + 3),
+            RaycastHit2D hit = Physics2D.Raycast(new Vector2(movement.collisions.platform.bounds.min.x - 0.25f, transform.position.y + 3),
                     Vector2.down, 6, groundLayer);
             if (hit)
             {
@@ -613,252 +621,5 @@ public class MummyGraph : MonoBehaviour
         }
         state = State.idle;
         yield break;
-    }
-
-
-    /// <summary>
-    /// Moves the enemy based on given move distance
-    /// </summary>
-    public void Move(Vector2 moveDistance)
-    {
-        UpdateRaycastOrigins();
-        collisions.Reset();
-        collisions.moveDistanceOld = moveDistance;
-
-        //call collision functions
-
-        if (moveDistance.y < 0)
-        {
-            DescendSlope(ref moveDistance);
-        }
-        if (moveDistance.x != 0)
-        {
-            HorizontalCollisions(ref moveDistance);
-        }
-        if (moveDistance.y != 0)
-        {
-            VerticalCollisions(ref moveDistance);
-        }
-
-        //move based on collision-modified distance
-        transform.Translate(moveDistance);
-        //update physics engine
-        Physics2D.SyncTransforms();
-    }
-
-    /// <summary>
-    /// Check for collisions in the horizontal direction
-    /// </summary>
-    /// <param name="moveDistance">Direction being moved</param>
-    void HorizontalCollisions(ref Vector2 moveDistance)
-    {
-        float directionX = Mathf.Sign(moveDistance.x);
-        float rayLength = Mathf.Abs(moveDistance.x) + skinWidth;
-        for (int i = 0; i < horizontalRayCount; i++)
-        {
-            Vector2 rayOrigin = (directionX == -1) ? raycastOrigins.bottomLeft : raycastOrigins.bottomRight;
-            rayOrigin += Vector2.up * (horizontalRaySpacing * i);
-            RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.right * directionX, rayLength, groundLayer);
-
-            if (hit)
-            {
-                float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
-                if (slopeAngle <= maxClimbAngle)
-                {
-                    if (!collisions.below && i != 0)
-                    {
-                        break;
-                    }
-
-                    if (collisions.descendingSlope)
-                    {
-                        collisions.descendingSlope = false;
-                        moveDistance = collisions.moveDistanceOld;
-                    }
-                    float distanceToSlopeStart = 0;
-                    if (slopeAngle != collisions.slopeAngleOld)
-                    {
-                        distanceToSlopeStart = hit.distance - skinWidth;
-                        moveDistance.x -= distanceToSlopeStart * directionX;
-                    }
-                    ClimbSlope(ref moveDistance, slopeAngle);
-                    moveDistance.x += directionX * distanceToSlopeStart;
-                }
-
-                if (!collisions.climbingSlope || slopeAngle > maxClimbAngle)
-                {
-                    moveDistance.x = (hit.distance - skinWidth) * directionX;
-                    rayLength = hit.distance;
-
-                    if (collisions.climbingSlope)
-                    {
-                        moveDistance.y = Mathf.Tan(collisions.slopeAngle * Mathf.Deg2Rad) * Mathf.Abs(moveDistance.x);
-                    }
-
-                    collisions.left = directionX == -1;
-                    collisions.right = directionX == 1;
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// Check for collisions in y axis
-    /// </summary>
-    /// <param name="moveDistance">Current move distance</param>
-    void VerticalCollisions(ref Vector2 moveDistance)
-    {
-        float directionY = Mathf.Sign(moveDistance.y);
-        float rayLength = Mathf.Abs(moveDistance.y) + skinWidth;
-        for (int i = 0; i < verticalRayCount; i++)
-        {
-            Vector2 rayOrigin = (directionY == -1) ? raycastOrigins.bottomLeft : raycastOrigins.topLeft;
-            rayOrigin += Vector2.right * (verticalRaySpacing * i + moveDistance.x);
-            RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.up * directionY, rayLength, groundLayer);
-
-            if (hit)
-            {
-                moveDistance.y = (hit.distance - skinWidth) * directionY;
-                rayLength = hit.distance;
-
-                if (collisions.climbingSlope)
-                {
-                    moveDistance.x = moveDistance.y / Mathf.Tan(collisions.slopeAngle * Mathf.Deg2Rad) * Mathf.Sign(moveDistance.x);
-                }
-
-                collisions.below = directionY == -1;
-                collisions.above = directionY == 1;
-                collisions.platform = hit.collider;
-            }
-        }
-
-        if (collisions.climbingSlope)
-        {
-            float directionX = Mathf.Sign(moveDistance.x);
-            rayLength = Mathf.Abs(moveDistance.x) + skinWidth;
-            Vector2 rayOrigin = ((directionX == -1) ? raycastOrigins.bottomLeft : raycastOrigins.bottomRight) + Vector2.up * moveDistance.y;
-            RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.right * directionX, rayLength, groundLayer);
-
-            if (hit)
-            {
-                float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
-                if (slopeAngle != collisions.slopeAngle)
-                {
-                    moveDistance.x = (hit.distance - skinWidth) * directionX;
-                    collisions.slopeAngle = slopeAngle;
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// Climbs up a slope if on one
-    /// </summary>
-    /// <param name="moveDistance">Current move distance</param>
-    /// <param name="slopeAngle">Angle of slope</param>
-    void ClimbSlope(ref Vector2 moveDistance, float slopeAngle)
-    {
-        float moveDistanceDirection = Mathf.Abs(moveDistance.x);
-        float climbmoveDistanceY = Mathf.Sin(slopeAngle * Mathf.Deg2Rad) * moveDistanceDirection;
-        if (moveDistance.y <= climbmoveDistanceY)
-        {
-            moveDistance.y = climbmoveDistanceY;
-            moveDistance.x = Mathf.Cos(slopeAngle * Mathf.Deg2Rad) * moveDistanceDirection * Mathf.Sign(moveDistance.x);
-            collisions.below = true;
-            collisions.climbingSlope = true;
-            collisions.slopeAngle = slopeAngle;
-        }
-    }
-
-    /// <summary>
-    /// Smoothly descends a slope if on one
-    /// </summary>
-    /// <param name="moveDistance">Current move distance</param>
-    void DescendSlope(ref Vector2 moveDistance)
-    {
-        float directionX = Mathf.Sign(moveDistance.x);
-        Vector2 rayOrigin = (directionX == -1) ? raycastOrigins.bottomRight : raycastOrigins.bottomLeft;
-        RaycastHit2D hit = Physics2D.Raycast(rayOrigin, -Vector2.up, Mathf.Infinity, groundLayer);
-
-        if (hit)
-        {
-            float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
-            if (slopeAngle != 0 && slopeAngle <= maxDescendAngle)
-            {
-                if (Mathf.Sign(hit.normal.x) == directionX)
-                {
-                    if (hit.distance - skinWidth <= Mathf.Tan(slopeAngle * Mathf.Deg2Rad) * Mathf.Abs(moveDistance.x))
-                    {
-                        float moveDistanceDirection = Mathf.Abs(moveDistance.x);
-                        float descendmoveDistanceY = Mathf.Sin(slopeAngle * Mathf.Deg2Rad) * moveDistanceDirection;
-                        moveDistance.x = Mathf.Cos(slopeAngle * Mathf.Deg2Rad) * moveDistanceDirection * Mathf.Sign(moveDistance.x);
-                        moveDistance.y -= descendmoveDistanceY;
-
-                        collisions.slopeAngle = slopeAngle;
-                        collisions.descendingSlope = true;
-                        collisions.below = true;
-                    }
-                }
-            }
-        }
-    }
-
-
-    /// <summary>
-    /// Update raycasts to current position
-    /// </summary>
-    void UpdateRaycastOrigins()
-    {
-        Bounds bounds = collider.bounds;
-        bounds.Expand(skinWidth * -2);
-
-        raycastOrigins.bottomLeft = new Vector2(bounds.min.x, bounds.min.y);
-        raycastOrigins.bottomRight = new Vector2(bounds.max.x, bounds.min.y);
-        raycastOrigins.topLeft = new Vector2(bounds.min.x, bounds.max.y);
-        raycastOrigins.topRight = new Vector2(bounds.max.x, bounds.max.y);
-    }
-
-    /// <summary>
-    /// Calculate spacing between collision detection rays
-    /// </summary>
-    void CalculateRaySpacing()
-    {
-        Bounds bounds = collider.bounds;
-        bounds.Expand(skinWidth * -2);
-
-        float boundsWidth = bounds.size.x;
-        float boundsHeight = bounds.size.y;
-
-        horizontalRayCount = Mathf.RoundToInt(boundsHeight / distBetweenRays);
-        verticalRayCount = Mathf.RoundToInt(boundsWidth / distBetweenRays);
-
-        horizontalRaySpacing = bounds.size.y / (horizontalRayCount - 1);
-        verticalRaySpacing = bounds.size.x / (verticalRayCount - 1);
-    }
-
-    /// <summary>
-    /// Structure to hold raycast origins
-    /// </summary>
-    struct RaycastOrigins
-    {
-        public Vector2 topLeft, topRight, bottomLeft, bottomRight;
-    }
-
-    /// <summary>
-    /// Holds information about current collisions
-    /// </summary>
-    private struct CollisionInfo
-    {
-        public bool above, below, left, right, climbingSlope, descendingSlope;
-        public float slopeAngle, slopeAngleOld;
-        public Vector2 moveDistanceOld;
-        public Collider2D platform;
-
-        public void Reset()
-        {
-            above = below = left = right = climbingSlope = descendingSlope = false;
-            slopeAngleOld = slopeAngle;
-            slopeAngle = 0;
-        }
     }
 }

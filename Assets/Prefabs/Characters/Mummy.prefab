@@ -603,7 +603,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 504533812733750348}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -7.13}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -7.131}
 --- !u!1 &2005965147
 GameObject:
   m_ObjectHideFlags: 0
@@ -3311,6 +3311,8 @@ GameObject:
   - component: {fileID: 194530366324524149}
   - component: {fileID: 109017768594975972}
   - component: {fileID: 437657112488277012}
+  - component: {fileID: 2223799489948501638}
+  - component: {fileID: 3578134088794753452}
   m_Layer: 15
   m_Name: Mummy
   m_TagString: Enemy
@@ -3382,6 +3384,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seeker: {fileID: 1797496276}
+  movement: {fileID: 3578134088794753452}
   state: 3
   player: {fileID: 0}
   groundLayer:
@@ -3395,11 +3398,13 @@ MonoBehaviour:
   aggroRange: 75
   velocity: {x: 0, y: 0}
   terminalVelocity: 0
+  nodeOffset: 2
   noNextPlatform: 0
   jumpFailed: 0
   jumpFailedMoveTo: {x: 0, y: 0}
   jumpFailedMoveRight: 0
   landingTarget: {x: 0, y: 0}
+  jumpHandler: {fileID: 2223799489948501638}
   anim: {fileID: 8439016276462191370}
 --- !u!114 &1797496276
 MonoBehaviour:
@@ -3481,6 +3486,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 50
+--- !u!114 &2223799489948501638
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8439016276479724414}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d61ed35847615249854075a71a18426, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3578134088794753452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8439016276479724414}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 685fa8ff6ded5c94198860d6ec7343de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 512
+  collider: {fileID: 194530366324524149}
 --- !u!1 &8615643252319715076
 GameObject:
   m_ObjectHideFlags: 0
