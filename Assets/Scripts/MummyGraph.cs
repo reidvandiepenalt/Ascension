@@ -27,17 +27,17 @@ public class MummyGraph : MonoBehaviour
     public LayerMask groundLayer;
     private ContactFilter2D filter;
     private Collider2D collider;
-    public float attackRange = 10f;
-    public float distToNextWaypoint = 1f;
-    public float speed = 10;
-    public float jumpDistToTime = 1f;
+    public float attackRange;
+    public float distToNextWaypoint;
+    public float speed;
+    public float jumpDistToTime;
     public GameObject enemyGFX;
     public float aggroRange;
     private float gravity;
     public Vector2 velocity = Vector2.zero;
     public float terminalVelocity;
     private float yOffset = 2.87f;
-    public float nodeOffset = 2f;
+    public float nodeOffset;
 
     public bool noNextPlatform = false;
 
@@ -199,10 +199,6 @@ public class MummyGraph : MonoBehaviour
                         reachedEndOfPath = true; 
                     } else {
                         transform.position = jumpPath.Dequeue();
-                        if (!reachedEndOfPath)
-                        {
-                            return;
-                        }
                     }
                 }
                 else
@@ -284,7 +280,7 @@ public class MummyGraph : MonoBehaviour
                             anim.SetBool("Walk", true);
 
                             //dont walk if next node is air
-                            try
+                            /*try
                             {
                                 if (path.path[currentWaypoint + 1].Tag == 1)
                                 {
@@ -293,13 +289,13 @@ public class MummyGraph : MonoBehaviour
                                 }
                             }
                             catch 
-                            {
+                            {*/
                                 if (path.path[currentWaypoint].Tag == 1)
                                 {
                                     velocity.x = 0;
                                     anim.SetBool("Walk", false);
                                 }
-                            }
+                            //}
                             
                         }
                     }
@@ -358,7 +354,7 @@ public class MummyGraph : MonoBehaviour
             seeker.StartPath(transform.position - Vector3.up * nodeOffset, player.position + (Vector3.down * playerYOffset));
             return;
         }
-        else if(Vector2.Distance(transform.position, path.vectorPath[currentWaypoint]) < distToNextWaypoint)
+        else if(Vector2.Distance(transform.position - Vector3.up * nodeOffset, path.vectorPath[currentWaypoint]) < distToNextWaypoint * (movement.collisions.descendingSlope ? 2: 1))
         {
             //reached next waypoint; update
             currentWaypoint++;
@@ -443,7 +439,7 @@ public class MummyGraph : MonoBehaviour
                 float yVel = (landingPoint.y - collider.bounds.min.y) / jumpTime - (gravity * jumpTime / 2);
                 float xVel = (landingPoint.x - transform.position.x) / jumpTime;
 
-                jumpTime = Mathf.Abs((landingPoint.x - transform.position.x) / xVel);
+                //jumpTime = Mathf.Abs((landingPoint.x - transform.position.x) / xVel);
 
                 landingTarget = landingPoint;
 
