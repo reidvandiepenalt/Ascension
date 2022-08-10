@@ -9,28 +9,20 @@ public class NovaDirectedLaser : MonoBehaviour
     public Vector2 initPosition;
     public LayerMask playerLayer;
     public LayerMask groundLayer;
+    public Transform endParticles;
 
     private bool damaging = false;
-    private LineRenderer lr;
     void Start()
     {
-        //sets the position of second point to that of the first collision of ground in the direction of target position
-        lr = GetComponent<LineRenderer>();
-        lr.SetPosition(0, initPosition);
+        //rotate to aim at target
+        transform.position = initPosition;
+        Vector2 dif = targetPosition - initPosition;
+        dif.Normalize();
+        transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(dif.y, dif.x) * Mathf.Rad2Deg);
         RaycastHit2D hit;
-        if (hit = Physics2D.Raycast(transform.position, (targetPosition - (Vector2)transform.position).normalized, Mathf.Infinity, groundLayer))
+        if(hit = Physics2D.Raycast(initPosition, (targetPosition - initPosition).normalized, Mathf.Infinity, groundLayer))
         {
-            if (hit.collider)
-            {
-
-                lr.SetPosition(1, (hit.point - initPosition).normalized * 3 + initPosition);
-                lr.SetPosition(2, hit.point);
-            }
-        }
-        else
-        {
-            lr.SetPosition(1, (targetPosition - (Vector2)transform.position).normalized * 3);
-            lr.SetPosition(2, (targetPosition - (Vector2)transform.position).normalized * 5000);
+            endParticles.position = hit.point;
         }
     }
 

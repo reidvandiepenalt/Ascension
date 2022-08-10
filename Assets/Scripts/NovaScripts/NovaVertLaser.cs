@@ -8,6 +8,7 @@ public class NovaVertLaser : MonoBehaviour
     public LayerMask playerLayer;
     public LayerMask groundLayer;
     public float activationTime, activeTime;
+    public Transform endParticles;
 
     private bool damaging = false;
     private LineRenderer lr;
@@ -22,13 +23,14 @@ public class NovaVertLaser : MonoBehaviour
         {
             lr.SetPosition(0, topCheck.point);
         }
-        RaycastHit2D hit;
-        if (hit = Physics2D.Raycast(transform.position, Vector2.down, Mathf.Infinity, groundLayer))
+        RaycastHit2D downCheck;
+        if (downCheck = Physics2D.Raycast(transform.position, Vector2.down, Mathf.Infinity, groundLayer))
         {
-            if (hit.collider)
+            if (downCheck.collider)
             {
 
-                lr.SetPosition(1, hit.point);
+                lr.SetPosition(1, downCheck.point);
+                endParticles.position = downCheck.point;
             }
         }
         else lr.SetPosition(1, Vector2.down * 5000);
