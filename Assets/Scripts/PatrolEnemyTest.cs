@@ -9,6 +9,7 @@ public class PatrolEnemyTest : EnemyAI
     public Transform rightPatrolPoint;
     public Patrolling initDirection;
     public LayerMask layerMask;
+    [SerializeField] bool usePlatformEdges;
 
     Patrolling patrolling;
 
@@ -22,7 +23,10 @@ public class PatrolEnemyTest : EnemyAI
     {
         base.Start();
 
-        GetPoints();
+        if (usePlatformEdges)
+        {
+            GetPoints();
+        }
 
         //starting direction
         if(initDirection == Patrolling.left)

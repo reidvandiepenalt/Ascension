@@ -8,6 +8,7 @@ public abstract class EnemyAI : MonoBehaviour
     public Transform target;
 
     public float speed = 200f;
+    public float maxSpeed = 20f;
     public float nextWaypointDistance = 1f;
     public float aggroDistance = 20f;
     public float stopDistance = 40f;

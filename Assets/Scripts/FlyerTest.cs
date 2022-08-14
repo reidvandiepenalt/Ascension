@@ -9,6 +9,7 @@ public class FlyerTest : EnemyAI
     {
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
+        target = GameObject.FindGameObjectWithTag("Player").transform;
 
         InvokeRepeating("CheckDist", 0f, 1f);
     }
@@ -72,7 +73,7 @@ public class FlyerTest : EnemyAI
 
         //calculate direction and move towards it
         Vector2 direction = ((Vector2)path.vectorPath[currentWaypoint] - rb.position).normalized;
-        Vector2 force = direction * speed * Time.deltaTime;
+        Vector2 force = direction * speed * Time.fixedDeltaTime;
 
         //force is more floaty, but could use position instead
         rb.AddForce(force);

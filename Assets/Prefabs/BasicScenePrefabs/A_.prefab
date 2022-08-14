@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2298315267085421964}
   - component: {fileID: 2298315267085421965}
+  - component: {fileID: 581058302}
+  - component: {fileID: 581058303}
   m_Layer: 0
   m_Name: A_
   m_TagString: Untagged
@@ -26,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 2298315267085421970}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 15.429375, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -45,14 +47,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   version: 1
   data:
-    dataString: UEsDBBQAAAgIAACYn+tBNnfzcAIAAB0FAAALACQAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQFlVEtz2jAQ/iuMzoXBQMDurTWE9EDIhHZy8UXYa6xBljx6hEeG/96VbGOXmoPFt69vv135izChK0iNVGvFso3MgHwfEHcm3wad8QXO9CDFjl2h9flgmSmcE/U+79QwiXjgwrQswSiW/hAH7pzHCFrBcqnKVXaAWGqjEc4p14AmJY2LFgh9DcgZX8PIhVzwNFm40xVP0Xhww2MKwoDqXKeL0SzCZzJrIoKoB7jA6WgWzvG3mK+G47lPYkXKaVlB5jrqcgVB1CR5CkcuRzSfeH+BTTeursFUcs50w5iYS+UViWmlLfaLDhmjqICnGYymCBTADoVx/fTDt3muwTQCKXpZMoVS1nnJT1nrW1J9rCl+Um5dpUU486zqpJv/7MPAm3Mly5e2bjB2NUzB0uM7vaRUm94A+vCyR90rdaL8SPccPgoQr3KtpBUZGo2yLtRqmCy7v/fW4gLSY4fXVB9AW3XSt/Nup+16uPnuzzFn5d6ZRrMa2HHpFfdLAgpn8wsJ+xXSTQpEHYs/Gn7TQ3/XGsMzU9qgqelSOHp7aZVzJSuvmevGmlgqAR5uSFcgKDeXN0xjHkf4YOuVfbA8U3ermuKNrb0sDyEe7vzH4wfTmzzdh6ULedqALrbWcCagI+0Mr6hTLIWoN6yvSRu2syqnaS/sYFn272qRfJLPIwC6yHM6Cel+GEbTaZS667aYPYXhlPjdYwL7pPytJtrIg1MTXXKBe9Z+bAZrRSu/7ZmipzW7lrJPkIlc7lIFILZ1ijtzUFgFL2a2yhgqtANjmPADJ18J4TI9Qpbcaya+1dXZKJp0WRJSsU9pHJKQ2H9eEnIjt79QSwMEFAAACAgAAJif62u9/tRtAAAAeAAAAAkAJABtZXRhLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQGrVipLLSrOzM9TslIw0TPSMzTVUVBKL0osyCgGihiCOKWZKSB2tFKaUZqZZWpqonlaWqKRRWKSroWlsbFlsqWlkYm5iamFhbFSLFB9SWVBql9ibipET0BiSUZaZl5KZl66nntRZoo7yGil2FoAUEsBAi0AFAAACAgAAJif60E2d/NwAgAAHQUAAAsAJAAAAAAAAAAAAAAAAAAAAGdyYXBoMC5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0BUEsBAi0AFAAACAgAAJif62u9/tRtAAAAeAAAAAkAJAAAAAAAAAAAAAAAvQIAAG1ldGEuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAVBLBQYAAAAAAgACALgAAAB1AwAAAAA=
+    dataString: UEsDBBQAAAgIAACYn+tQuXQjZwIAAAYFAAALACQAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQFlVMty4jAQ/BVK54Xyg4e9t10gZA+EVMhWLr4Ie2yrkCWXJIdHin9fSRbY8Z4Q0z2j6Z6RvxBhsoZUcbERJNvyDNDPETJn9GPUgc9wxgVne3KFO+eDZKo0JGw5b1gRruO+SZO8AiVI+osV1JA9HWwYybmo1lkBSy6V1OEcUwkaElyZbKZDXyN01j/j2KRc9ClYmNNVn2JvdNPHFJgC0VHD+WTmuLPZZDFz7JbcsJTiqobMdN7l+OG9vO9PLZFpVY5jFKScUiJdS0hdait5X5cgwGjOCNYKbRveJDB3lkCKUpmG++m7PJegnAMCX1ZEaK/auug3bw2ssDy2vX1i2pibZkFku2qLbv/Dx76Fc8Gr5/u9vmfuUCVJj2/4kmKpeg73w6uud99adML0iA8UPkpgL3wjeMMyDSrRmNRGQrDq/j6kLUtIj128bXUQbOrO88dAJ2E09aN5OF+PvYWblhF0s1acl5RUB+vrtA3sKbf225UAoQf1R3dvF0a6ujpqWvor4R0X/c1ywBMRUmnISWam1wNvhKGitTXQSGvUkgsGNuwU1MAwVZdXXUYN5znAetcOkCds3pC73GH3pzFIseGO73kD6JWfHpOTJT9tQZa7RlHC+sUM8qKNWnLG2n2TA9Tk7RuR4xQ6sUVDsu+LhvIgn8cAeJHnOIjwYRzFYRincRxMF9NZFIXIbiJhWiimr22nzh89NtYVZ3rrrN3FpVYL+4gEPm3IteI9vwnL+T4VAGz3LVuC0PX1A83WGdHm7EEpwuys0VeCKE+PkCUPfmJFrs9K4KRTnqCafHJlIgla2u9Igm7o9g9QSwMEFAAACAgAAJif62u9/tRtAAAAeAAAAAkAJABtZXRhLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQGrVipLLSrOzM9TslIw0TPSMzTVUVBKL0osyCgGihiCOKWZKSB2tFKaUZqZZWpqonlaWqKRRWKSroWlsbFlsqWlkYm5iamFhbFSLFB9SWVBql9ibipET0BiSUZaZl5KZl66nntRZoo7yGil2FoAUEsBAi0AFAAACAgAAJif61C5dCNnAgAABgUAAAsAJAAAAAAAAAAAAAAAAAAAAGdyYXBoMC5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0BUEsBAi0AFAAACAgAAJif62u9/tRtAAAAeAAAAAkAJAAAAAAAAAAAAAAAtAIAAG1ldGEuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAVBLBQYAAAAAAgACALgAAABsAwAAAAA=
     upgradeData: 
     file_cachedStartup: {fileID: 0}
     data_cachedStartup: 
     cacheStartup: 0
   showNavGraphs: 1
   showUnwalkableNodes: 1
-  debugMode: 0
+  debugMode: 4
   debugFloor: 0
   debugRoof: 1
   manualDebugFloorRoof: 0
@@ -75,7 +77,7 @@ MonoBehaviour:
     - {r: 0, g: 0, b: 0, a: 0}
   tagNames:
   - Basic Ground
-  - 1
+  - Air
   - 2
   - 3
   - 4
@@ -118,3 +120,29 @@ MonoBehaviour:
     pivotPointRoot: {fileID: 0}
     spreadOutCount: 1
   showGraphs: 1
+--- !u!114 &581058302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2298315267085421970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7047c37099b61c643a49d5e9e36110ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fileName: Egypt7
+--- !u!114 &581058303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2298315267085421970}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9010f0270c737c1458fb33267520fa19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  graphData: {fileID: 4900000, guid: 70ee07a685df70a4996d312d0f2de701, type: 3}
