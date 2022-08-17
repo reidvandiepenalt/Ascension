@@ -20,6 +20,7 @@ public class ChangeScenes : MonoBehaviour
         {
             GameObject panel = Instantiate(fadeInPanel, Vector3.zero, Quaternion.identity);
             Destroy(panel, fadeWait);
+
         }
     }
 

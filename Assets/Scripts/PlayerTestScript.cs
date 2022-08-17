@@ -189,6 +189,8 @@ public class PlayerTestScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        DontDestroyOnLoad(this);
+
         //set up
         state = PlayerState.idle;
         controller = GetComponent<Controller2D>();
@@ -203,11 +205,17 @@ public class PlayerTestScript : MonoBehaviour
 
 
         //ui set up
-        Instantiate(eventSystemPrefab, Vector3.zero, Quaternion.identity);
+        GameObject es = Instantiate(eventSystemPrefab, Vector3.zero, Quaternion.identity);
         pauseCanvas = Instantiate(PauseCanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
         inGameMenuCanvas = Instantiate(InGameMenuCanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
         settingsCanvas = Instantiate(SettingsCanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
         UICanvas = Instantiate(UICanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
+
+        DontDestroyOnLoad(es);
+        DontDestroyOnLoad(pauseCanvas);
+        DontDestroyOnLoad(inGameMenuCanvas);
+        DontDestroyOnLoad(settingsCanvas);
+        DontDestroyOnLoad(UICanvas);
 
         //set cameras
         pauseCanvas.GetComponent<Canvas>().worldCamera = mainCam;
@@ -272,7 +280,7 @@ public class PlayerTestScript : MonoBehaviour
 
         if (loadFromTransition.Value)
         {
-            transform.position = transitionPosition.storedValue;
+            transform.position = new Vector3(transitionPosition.storedValue.x, transitionPosition.storedValue.y, -40);
             loadFromTransition.Value = false;
         }
 
