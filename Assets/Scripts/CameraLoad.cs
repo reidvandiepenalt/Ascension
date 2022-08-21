@@ -2,19 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using UnityEngine.SceneManagement;
 
 public class CameraLoad : MonoBehaviour
 {
-    [SerializeField] CinemachineVirtualCamera cam;
+    [SerializeField] CinemachineConfiner confiner;
 
-    // Start is called before the first frame update
-    void Start()
+    private void OnEnable()
     {
-        if(cam.Follow == null)
-        {
-            Transform followTarget = GameObject.FindGameObjectWithTag("CamFollowTarget").transform;
-            cam.Follow = followTarget;
-            cam.LookAt = followTarget;
-        }
+        SceneManager.sceneLoaded += OnLevelFinishedLoading;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnLevelFinishedLoading;
+    }
+
+    private void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode)
+    {
+        confiner.m_BoundingShape2D = GameObject.FindGameObjectWithTag("Room").GetComponent<PolygonCollider2D>();
     }
 }

@@ -40,7 +40,7 @@ public class FlyerTest : EnemyAI
     {
         if (seeker.IsDone())
         {
-            seeker.StartPath(rb.position, target.position, OnPathComplete);
+            seeker.StartPath(transform.position, target.position, OnPathComplete);
         }
     }
 

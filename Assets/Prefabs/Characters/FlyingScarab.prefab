@@ -81,10 +81,10 @@ MonoBehaviour:
       serializedVersion: 2
       m_Bits: 4294967295
     useGraphRaycasting: 0
-  traversableTags: -1
+  traversableTags: -2
   tagPenalties: 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   graphMask:
-    value: -1
+    value: 2147483647
 --- !u!50 &3671915331801974328
 Rigidbody2D:
   serializedVersion: 4
@@ -164,7 +164,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 3.9095974, y: -0.055530548}
+  m_Offset: {x: -0.4036827, y: 1.1407738}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -175,7 +175,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 6.5203743, y: 2.5772629}
+  m_Size: {x: 2.7668304, y: 2.0723953}
   m_EdgeRadius: 0
 --- !u!1 &3671915331943647943
 GameObject:
@@ -236,8 +236,8 @@ CapsuleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 4.132344, y: 0.37700295}
-  m_Size: {x: 7.5259953, y: 3.0251234}
+  m_Offset: {x: 0.5566248, y: 0.69232345}
+  m_Size: {x: 7.945237, y: 3.0209813}
   m_Direction: 1
 --- !u!1001 &5407114053610166033
 PrefabInstance:
@@ -449,12 +449,12 @@ PrefabInstance:
     - target: {fileID: 6947432645027167400, guid: 6ae7eac119e56104aa42c0b28c9d217d,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.9199982
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6947432645027167400, guid: 6ae7eac119e56104aa42c0b28c9d217d,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -4.02
+      value: -2.8399963
       objectReference: {fileID: 0}
     - target: {fileID: 6947432645027167400, guid: 6ae7eac119e56104aa42c0b28c9d217d,
         type: 3}

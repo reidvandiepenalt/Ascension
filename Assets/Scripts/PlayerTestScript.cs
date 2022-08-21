@@ -6,6 +6,7 @@ using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerTestScript : MonoBehaviour
 {
@@ -278,13 +279,26 @@ public class PlayerTestScript : MonoBehaviour
             UISkillScripts.Add(dashUIScript);
         }
 
+        InvokeRepeating("UpdateLastGround", 0f, 0.33f);
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnLevelFinishedLoading;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnLevelFinishedLoading;
+    }
+
+    void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode)
+    {
         if (loadFromTransition.Value)
         {
             transform.position = new Vector3(transitionPosition.storedValue.x, transitionPosition.storedValue.y, -40);
             loadFromTransition.Value = false;
         }
-
-        InvokeRepeating("UpdateLastGround", 0f, 0.33f);
     }
 
     /// <summary>
