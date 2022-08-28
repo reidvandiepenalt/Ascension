@@ -160,12 +160,20 @@ public class PlayerTestScript : MonoBehaviour
 
     public VectorValue transitionPosition;
     public BoolValue loadFromTransition;
-    [SerializeField] Vector3 spawnPoint;
-    public Vector3 SpawnPoint
+    [SerializeField] Vector2 spawnPoint;
+    [SerializeField] int respawnScene;
+    public Vector2 SpawnPoint
     {
         set
         {
             spawnPoint = value;
+        }
+    }
+    public int RespawnScene
+    {
+        set
+        {
+            respawnScene = value;
         }
     }
 
@@ -638,6 +646,7 @@ public class PlayerTestScript : MonoBehaviour
             {
                 anim.SetTrigger("Dead");
                 dead = true;
+                Invoke("Respawn", 0.5f);
             }
             else if (!dead)
             {
@@ -666,8 +675,9 @@ public class PlayerTestScript : MonoBehaviour
     /// </summary>
     public void Respawn()
     {
+        Debug.Log(respawnScene);
+        SceneManager.LoadScene(respawnScene);
         gameObject.transform.position = spawnPoint;
-        
     }
 
     /// <summary>
