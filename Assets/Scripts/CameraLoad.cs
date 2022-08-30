@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 public class CameraLoad : MonoBehaviour
 {
     [SerializeField] CinemachineConfiner confiner;
+    public CinemachineVirtualCamera cam;
 
     private void OnEnable()
     {
@@ -19,6 +20,11 @@ public class CameraLoad : MonoBehaviour
     }
 
     private void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode)
+    {
+        confiner.m_BoundingShape2D = GameObject.FindGameObjectWithTag("Room").GetComponent<PolygonCollider2D>();
+    }
+
+    private void Start()
     {
         confiner.m_BoundingShape2D = GameObject.FindGameObjectWithTag("Room").GetComponent<PolygonCollider2D>();
     }

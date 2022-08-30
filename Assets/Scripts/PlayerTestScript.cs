@@ -7,6 +7,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using Cinemachine;
 
 public class PlayerTestScript : MonoBehaviour
 {
@@ -122,6 +123,10 @@ public class PlayerTestScript : MonoBehaviour
     public GameObject SkillGridPrefab;
     public GameObject eventSystemPrefab;
     public GameObject HBGribPrefab;
+    public GameObject MainCamPrefab;
+    public GameObject vmCamPrefab;
+
+    [SerializeField] Transform camFollowTarget;
 
     GameObject pauseCanvas;
     GameObject inGameMenuCanvas;
@@ -161,7 +166,7 @@ public class PlayerTestScript : MonoBehaviour
     public VectorValue transitionPosition;
     public BoolValue loadFromTransition;
     [SerializeField] Vector2 spawnPoint;
-    [SerializeField] int respawnScene;
+    [SerializeField] string respawnScene;
     public Vector2 SpawnPoint
     {
         set
@@ -169,7 +174,7 @@ public class PlayerTestScript : MonoBehaviour
             spawnPoint = value;
         }
     }
-    public int RespawnScene
+    public string RespawnScene
     {
         set
         {
@@ -195,99 +200,116 @@ public class PlayerTestScript : MonoBehaviour
         attacking
     }
 
+    private static GameObject playerInstance;
+
     // Start is called before the first frame update
     void Start()
     {
-        DontDestroyOnLoad(this);
-
-        //set up
-        state = PlayerState.idle;
-        controller = GetComponent<Controller2D>();
-        anim = GetComponent<Animator>();
-
-        gravity = -(2 * maxJumpHeight) / Mathf.Pow(timeToJumpApex, 2);
-        maxJumpVelocity = Mathf.Abs(gravity * timeToJumpApex);
-        minJumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(gravity) * minJumpHeight);
-        terminalVelocity = -20f * maxJumpVelocity;
-
-        currentCharge = maxJumpVelocity / 2;
-
-
-        //ui set up
-        GameObject es = Instantiate(eventSystemPrefab, Vector3.zero, Quaternion.identity);
-        pauseCanvas = Instantiate(PauseCanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
-        inGameMenuCanvas = Instantiate(InGameMenuCanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
-        settingsCanvas = Instantiate(SettingsCanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
-        UICanvas = Instantiate(UICanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
-
-        DontDestroyOnLoad(es);
-        DontDestroyOnLoad(pauseCanvas);
-        DontDestroyOnLoad(inGameMenuCanvas);
-        DontDestroyOnLoad(settingsCanvas);
-        DontDestroyOnLoad(UICanvas);
-
-        //set cameras
-        pauseCanvas.GetComponent<Canvas>().worldCamera = mainCam;
-        inGameMenuCanvas.GetComponent<Canvas>().worldCamera = mainCam;
-        settingsCanvas.GetComponent<Canvas>().worldCamera = mainCam;
-        UICanvas.GetComponent<Canvas>().worldCamera = mainCam;
-
-        PauseMenu pauseUIScript = pauseCanvas.GetComponent<PauseMenu>();
-        pauseUIScript.SkillsUI = UICanvas;
-        pauseUIScript.settingMenuUI = settingsCanvas;
-        inGameMenuCanvas.GetComponent<InventoryMenu>().SkillsUICanvas = UICanvas;
-        inGameMenuCanvas.GetComponent<InventoryMenu>().player = this;
-        skillsGrid = UICanvas.GetComponentInChildren<SkillsGridManager>();
-
-        //change?
-        currentHealth.Value = maxHealth.Value;
-
-        //set up skill ui's if unlocked
-        if (slamUnlock)
+        if(playerInstance == null)
         {
-            slamUIScript = skillsGrid.AddIcon(slamUI).GetComponent<ProgressBarScript>();
-            slamTypeScripts.slamUIScript = slamUIScript;
-            slamUIScript.comboToCharge = slamComboCount;
-            slam = slamTypeScripts.DefaultSlam;
-            UISkillScripts.Add(slamUIScript);
-        }
-        if (sprayUnlock)
-        {
-            sprayUIScript = skillsGrid.AddIcon(sprayUI).GetComponent<ProgressBarScript>();
-            sprayTypeScripts.sprayUIScript = sprayUIScript;
-            sprayUIScript.comboToCharge = sprayComboCount;
-            spray = sprayTypeScripts.DefaultSpray;
-            UISkillScripts.Add(sprayUIScript);
-        }
-        if (shootUnlock)
-        {
-            shotUIScript = skillsGrid.AddIcon(shotUI).GetComponent<ProgressBarScript>();
-            featherShotsScripts.shotUIScript = shotUIScript;
-            featherShotsScripts.shotUIScript.comboToCharge = shootComboCount;
-            fs = featherShotsScripts.DefaultShot;
-            UISkillScripts.Add(shotUIScript);
-        }
-        if (guardUnlock)
-        {
-            guardUIScript = skillsGrid.AddIcon(guardUI).GetComponent<GuardUIScript>();
-            guardTypeScripts.guardUIScript = guardUIScript;
-            guardUIScript.maximum = guardTypeScripts.hitguardCD;
-            guard = guardTypeScripts.DefaultGuard;
-        }
-        if (backstepUnlock)
-        {
-            backstepUIScript = skillsGrid.AddIcon(backstepUI).GetComponent<ProgressBarScript>();
-            backstepUIScript.comboToCharge = backstepComboCount;
-            UISkillScripts.Add(backstepUIScript);
-        }
-        if (dashUnlock)
-        {
-            dashUIScript = skillsGrid.AddIcon(dashUI).GetComponent<ProgressBarScript>();
-            dashUIScript.comboToCharge = dashComboCount;
-            UISkillScripts.Add(dashUIScript);
-        }
+            Debug.Log("init player");
+            DontDestroyOnLoad(gameObject);
+            playerInstance = gameObject;
 
-        InvokeRepeating("UpdateLastGround", 0f, 0.33f);
+            //set up
+            state = PlayerState.idle;
+            controller = GetComponent<Controller2D>();
+            anim = GetComponent<Animator>();
+
+            gravity = -(2 * maxJumpHeight) / Mathf.Pow(timeToJumpApex, 2);
+            maxJumpVelocity = Mathf.Abs(gravity * timeToJumpApex);
+            minJumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(gravity) * minJumpHeight);
+            terminalVelocity = -20f * maxJumpVelocity;
+
+            currentCharge = maxJumpVelocity / 2;
+
+            //camera set up
+            mainCam = Instantiate(MainCamPrefab, Vector3.zero, Quaternion.identity).GetComponent<Camera>();
+            CinemachineVirtualCamera vmCam = Instantiate(vmCamPrefab, Vector3.zero, Quaternion.identity).GetComponent<CinemachineVirtualCamera>();
+            vmCam.Follow = camFollowTarget;
+
+            //ui set up
+            GameObject es = Instantiate(eventSystemPrefab, Vector3.zero, Quaternion.identity);
+            pauseCanvas = Instantiate(PauseCanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
+            inGameMenuCanvas = Instantiate(InGameMenuCanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
+            settingsCanvas = Instantiate(SettingsCanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
+            UICanvas = Instantiate(UICanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
+
+            DontDestroyOnLoad(es);
+            DontDestroyOnLoad(pauseCanvas);
+            DontDestroyOnLoad(inGameMenuCanvas);
+            DontDestroyOnLoad(settingsCanvas);
+            DontDestroyOnLoad(UICanvas);
+
+
+            //set cameras
+            pauseCanvas.GetComponent<Canvas>().worldCamera = mainCam;
+            inGameMenuCanvas.GetComponent<Canvas>().worldCamera = mainCam;
+            settingsCanvas.GetComponent<Canvas>().worldCamera = mainCam;
+            UICanvas.GetComponent<Canvas>().worldCamera = mainCam;
+
+            PauseMenu pauseUIScript = pauseCanvas.GetComponent<PauseMenu>();
+            pauseUIScript.SkillsUI = UICanvas;
+            pauseUIScript.settingMenuUI = settingsCanvas;
+            inGameMenuCanvas.GetComponent<InventoryMenu>().SkillsUICanvas = UICanvas;
+            inGameMenuCanvas.GetComponent<InventoryMenu>().player = this;
+            skillsGrid = UICanvas.GetComponentInChildren<SkillsGridManager>();
+
+            //change?
+            currentHealth.Value = maxHealth.Value;
+
+            //set up skill ui's if unlocked
+            if (slamUnlock)
+            {
+                slamUIScript = skillsGrid.AddIcon(slamUI).GetComponent<ProgressBarScript>();
+                slamTypeScripts.slamUIScript = slamUIScript;
+                slamUIScript.comboToCharge = slamComboCount;
+                slam = slamTypeScripts.DefaultSlam;
+                UISkillScripts.Add(slamUIScript);
+            }
+            if (sprayUnlock)
+            {
+                sprayUIScript = skillsGrid.AddIcon(sprayUI).GetComponent<ProgressBarScript>();
+                sprayTypeScripts.sprayUIScript = sprayUIScript;
+                sprayUIScript.comboToCharge = sprayComboCount;
+                spray = sprayTypeScripts.DefaultSpray;
+                UISkillScripts.Add(sprayUIScript);
+            }
+            if (shootUnlock)
+            {
+                shotUIScript = skillsGrid.AddIcon(shotUI).GetComponent<ProgressBarScript>();
+                featherShotsScripts.shotUIScript = shotUIScript;
+                featherShotsScripts.shotUIScript.comboToCharge = shootComboCount;
+                fs = featherShotsScripts.DefaultShot;
+                UISkillScripts.Add(shotUIScript);
+            }
+            if (guardUnlock)
+            {
+                guardUIScript = skillsGrid.AddIcon(guardUI).GetComponent<GuardUIScript>();
+                guardTypeScripts.guardUIScript = guardUIScript;
+                guardUIScript.maximum = guardTypeScripts.hitguardCD;
+                guard = guardTypeScripts.DefaultGuard;
+            }
+            if (backstepUnlock)
+            {
+                backstepUIScript = skillsGrid.AddIcon(backstepUI).GetComponent<ProgressBarScript>();
+                backstepUIScript.comboToCharge = backstepComboCount;
+                UISkillScripts.Add(backstepUIScript);
+            }
+            if (dashUnlock)
+            {
+                dashUIScript = skillsGrid.AddIcon(dashUI).GetComponent<ProgressBarScript>();
+                dashUIScript.comboToCharge = dashComboCount;
+                UISkillScripts.Add(dashUIScript);
+            }
+
+            InvokeRepeating("UpdateLastGround", 0f, 0.33f);
+        }
+        else
+        {
+            Debug.Log("destroy player");
+            Destroy(gameObject);
+        }
     }
 
     private void OnEnable()
@@ -675,9 +697,8 @@ public class PlayerTestScript : MonoBehaviour
     /// </summary>
     public void Respawn()
     {
-        Debug.Log(respawnScene);
         SceneManager.LoadScene(respawnScene);
-        gameObject.transform.position = spawnPoint;
+        gameObject.transform.position = new Vector3(spawnPoint.x, spawnPoint.y, gameObject.transform.position.z);
     }
 
     /// <summary>

@@ -5,15 +5,14 @@ using UnityEngine.SceneManagement;
 
 public class RespawnPoint : MonoBehaviour
 {
-    public int sceneIndex;
+    public string sceneName;
     private void OnTriggerEnter2D(Collider2D collision)
     {
         //update player spawn point if they enter this respawns area
         if(collision.gameObject.CompareTag("Player"))
         {
-            Debug.Log("rs collide");
             PlayerTestScript playerScript = collision.gameObject.GetComponent<PlayerTestScript>();
-            playerScript.RespawnScene = sceneIndex;
+            playerScript.RespawnScene = sceneName;
             playerScript.SpawnPoint = gameObject.transform.position;
         }
     }
