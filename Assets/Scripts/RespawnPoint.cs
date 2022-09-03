@@ -11,9 +11,12 @@ public class RespawnPoint : MonoBehaviour
         //update player spawn point if they enter this respawns area
         if(collision.gameObject.CompareTag("Player"))
         {
+            PlayerInfo.Instance.loadPos = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y, -50);
+            PlayerInfo.Instance.sceneName = sceneName;
+            /*
             PlayerTestScript playerScript = collision.gameObject.GetComponent<PlayerTestScript>();
             playerScript.RespawnScene = sceneName;
-            playerScript.SpawnPoint = gameObject.transform.position;
+            playerScript.SpawnPoint = gameObject.transform.position;*/
         }
     }
 }

@@ -166,22 +166,6 @@ public class PlayerTestScript : MonoBehaviour
     public VectorValue transitionPosition;
     public BoolValue loadFromTransition;
     [SerializeField] Signal fadeSceneOut;
-    [SerializeField] Vector2 spawnPoint;
-    [SerializeField] string respawnScene;
-    public Vector2 SpawnPoint
-    {
-        set
-        {
-            spawnPoint = value;
-        }
-    }
-    public string RespawnScene
-    {
-        set
-        {
-            respawnScene = value;
-        }
-    }
 
     public static int blessingTotal = 7;
     public PlayerState state;
@@ -699,8 +683,8 @@ public class PlayerTestScript : MonoBehaviour
     public void Respawn()
     {
         fadeSceneOut.RaiseSignal();
-        SceneManager.LoadScene(respawnScene);
-        gameObject.transform.position = new Vector3(spawnPoint.x, spawnPoint.y, gameObject.transform.position.z);
+        SceneManager.LoadScene(PlayerInfo.Instance.sceneName);
+        gameObject.transform.position = PlayerInfo.Instance.loadPos;
     }
 
     /// <summary>
