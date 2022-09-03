@@ -12,6 +12,7 @@ public class ChangeScenes : MonoBehaviour
     public GameObject fadeInPanel;
     public GameObject fadeOutPanel;
     public float fadeWait;
+    [SerializeField] Signal fadeSceneOutSignal;
 
     private void Awake()
     {
@@ -27,10 +28,8 @@ public class ChangeScenes : MonoBehaviour
     {
         if (collision.CompareTag("Player") && !collision.isTrigger)
         {
-            //set player starting position to the new scenes entry position
-            loadFromTransition.Value = true;
-            positionStorage.storedValue = startPosition;
-            StartCoroutine(FadeCo());
+            fadeSceneOutSignal.RaiseSignal();
+            LoadScene();
         }
     }
 
@@ -43,13 +42,8 @@ public class ChangeScenes : MonoBehaviour
 
     public IEnumerator FadeCo()
     {
-        //fade screen then load it
-        if(fadeOutPanel != null)
-        {
-            Instantiate(fadeOutPanel, Vector3.zero, Quaternion.identity);
-        }
-        yield return new WaitForSeconds(fadeWait);
         AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(levelName);
+        yield return new WaitForSeconds(fadeWait);
         while (!asyncOperation.isDone)
         {
             yield return null;

@@ -18,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5648731320160177713
 Transform:
   m_ObjectHideFlags: 0
@@ -46,7 +46,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 4.77696, y: 12.027592}
+  m_Offset: {x: 4.77696, y: 7.0315714}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -57,7 +57,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 10.55392, y: 25.055183}
+  m_Size: {x: 10.55392, y: 15.063143}
   m_EdgeRadius: 0
 --- !u!114 &3292103354991808973
 MonoBehaviour:
@@ -71,8 +71,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39559886a5ad9834c94fb2552b40692d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelName: 
-  startPosition: {x: 0, y: 0}
+  levelName: Egypt3
+  startPosition: {x: 53, y: 106.5}
   positionStorage: {fileID: 11400000, guid: 907afd3e3b95c7f4bae60a7ebe201aef, type: 2}
   loadFromTransition: {fileID: 11400000, guid: 356eb9852c7b7bf42a3ddf9cd39f792c, type: 2}
   fadeInPanel: {fileID: 6132142747770595009, guid: 4eed555dfee287c4c9fb990bbffcb536,
@@ -80,6 +80,7 @@ MonoBehaviour:
   fadeOutPanel: {fileID: 8831782752586667611, guid: 59d5179c1b412e643aa51bbaa37f73fe,
     type: 3}
   fadeWait: 1
+  fadeSceneOutSignal: {fileID: 11400000, guid: 2a786a0c82453834fa2706746ca3d1aa, type: 2}
 --- !u!50 &6715972783916732892
 Rigidbody2D:
   serializedVersion: 4
