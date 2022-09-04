@@ -9,20 +9,8 @@ public class ChangeScenes : MonoBehaviour
     public Vector2 startPosition;
     public VectorValue positionStorage;
     public BoolValue loadFromTransition;
-    public GameObject fadeInPanel;
-    public GameObject fadeOutPanel;
     public float fadeWait;
     [SerializeField] Signal fadeSceneOutSignal;
-
-    private void Awake()
-    {
-        //fade the screen in
-        if (fadeInPanel != null)
-        {
-            GameObject panel = Instantiate(fadeInPanel, Vector3.zero, Quaternion.identity);
-            Destroy(panel, fadeWait);
-        }
-    }
 
     public void OnTriggerEnter2D(Collider2D collision)
     {

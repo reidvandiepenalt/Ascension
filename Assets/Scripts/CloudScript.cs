@@ -20,8 +20,8 @@ public class CloudScript : MonoBehaviour
         if (camBased)
         {
             camWidth = camera.orthographicSize;
-            leftBound = -camWidth;
-            rightBound = camWidth;
+            leftBound = -camWidth * 2f;
+            rightBound = camWidth * 2f;
         }
         
         spriteWidth = gameObject.GetComponent<SpriteRenderer>().bounds.extents.x;
