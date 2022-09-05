@@ -7,7 +7,6 @@ public class ChangeScenes : MonoBehaviour
 {
     public string levelName;
     public Vector2 startPosition;
-    public VectorValue positionStorage;
     public BoolValue loadFromTransition;
     public float fadeWait;
     [SerializeField] Signal fadeSceneOutSignal;
@@ -24,7 +23,7 @@ public class ChangeScenes : MonoBehaviour
     public void LoadScene()
     {
         loadFromTransition.Value = true;
-        positionStorage.storedValue = startPosition;
+        PlayerInfo.Instance.loadPos = startPosition;
         StartCoroutine(FadeCo());
     }
 

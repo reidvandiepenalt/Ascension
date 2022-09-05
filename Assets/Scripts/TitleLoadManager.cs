@@ -17,4 +17,9 @@ public class TitleLoadManager : MonoBehaviour
 
         //load in player settings (here or in player?)
     }
+
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
 }

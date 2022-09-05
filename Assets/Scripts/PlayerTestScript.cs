@@ -64,34 +64,22 @@ public class PlayerTestScript : MonoBehaviour
     [SerializeField] float backstepSpeed = 0.50f;
     [SerializeField] float backstepStunRange = 3.50f;
     [SerializeField] float backstepStunTime;
-    [SerializeField] bool backstepUnlock = true;
     private int backstepComboCount = 2;
 
     private bool dead = false;
 
-    [SerializeField] bool slamUnlock = true;
     private int slamComboCount = 4;
 
-    [SerializeField] bool doubleJumpUnlock = true;
     private bool doubleJumpUsed = false;
-    [SerializeField] bool doubleJumpUpgrade = true;
     [SerializeField] float doubleJumpStunRange = 6.0f;
 
-    [SerializeField] bool chargeJumpUnlock = true;
     [SerializeField] float chargeStepper = 0.05f;
     [SerializeField] float currentCharge;
 
-    [SerializeField] bool sprayUnlock = true;
     private int sprayComboCount = 7;
 
-    
-    [SerializeField] bool shootUnlock = true;
     private int shootComboCount = 3;
 
-    [SerializeField] bool guardUnlock = true;
-
-    [SerializeField] bool dashUnlock = true;
-    [SerializeField] bool dashUpgrade = true;
     [SerializeField] float dashSpeed = 15.0f;
     float dashAngle = 0f;
     [SerializeField] float dashTime = 0.5f;
@@ -163,7 +151,6 @@ public class PlayerTestScript : MonoBehaviour
 
     [SerializeField] Sprite defaultShotUIIcon;
 
-    public VectorValue transitionPosition;
     public BoolValue loadFromTransition;
     [SerializeField] Signal fadeSceneOut;
 
@@ -244,7 +231,7 @@ public class PlayerTestScript : MonoBehaviour
             currentHealth.Value = maxHealth.Value;
 
             //set up skill ui's if unlocked
-            if (slamUnlock)
+            if (PlayerInfo.Instance.slamUnlock)
             {
                 slamUIScript = skillsGrid.AddIcon(slamUI).GetComponent<ProgressBarScript>();
                 slamTypeScripts.slamUIScript = slamUIScript;
@@ -252,7 +239,7 @@ public class PlayerTestScript : MonoBehaviour
                 slam = slamTypeScripts.DefaultSlam;
                 UISkillScripts.Add(slamUIScript);
             }
-            if (sprayUnlock)
+            if (PlayerInfo.Instance.sprayUnlock)
             {
                 sprayUIScript = skillsGrid.AddIcon(sprayUI).GetComponent<ProgressBarScript>();
                 sprayTypeScripts.sprayUIScript = sprayUIScript;
@@ -260,7 +247,7 @@ public class PlayerTestScript : MonoBehaviour
                 spray = sprayTypeScripts.DefaultSpray;
                 UISkillScripts.Add(sprayUIScript);
             }
-            if (shootUnlock)
+            if (PlayerInfo.Instance.shootUnlock)
             {
                 shotUIScript = skillsGrid.AddIcon(shotUI).GetComponent<ProgressBarScript>();
                 featherShotsScripts.shotUIScript = shotUIScript;
@@ -268,20 +255,20 @@ public class PlayerTestScript : MonoBehaviour
                 fs = featherShotsScripts.DefaultShot;
                 UISkillScripts.Add(shotUIScript);
             }
-            if (guardUnlock)
+            if (PlayerInfo.Instance.guardUnlock)
             {
                 guardUIScript = skillsGrid.AddIcon(guardUI).GetComponent<GuardUIScript>();
                 guardTypeScripts.guardUIScript = guardUIScript;
                 guardUIScript.maximum = guardTypeScripts.hitguardCD;
                 guard = guardTypeScripts.DefaultGuard;
             }
-            if (backstepUnlock)
+            if (PlayerInfo.Instance.backstepUnlock)
             {
                 backstepUIScript = skillsGrid.AddIcon(backstepUI).GetComponent<ProgressBarScript>();
                 backstepUIScript.comboToCharge = backstepComboCount;
                 UISkillScripts.Add(backstepUIScript);
             }
-            if (dashUnlock)
+            if (PlayerInfo.Instance.dashUnlock)
             {
                 dashUIScript = skillsGrid.AddIcon(dashUI).GetComponent<ProgressBarScript>();
                 dashUIScript.comboToCharge = dashComboCount;
@@ -311,7 +298,7 @@ public class PlayerTestScript : MonoBehaviour
     {
         if (loadFromTransition.Value)
         {
-            transform.position = new Vector3(transitionPosition.storedValue.x, transitionPosition.storedValue.y, -40);
+            transform.position = new Vector3(PlayerInfo.Instance.loadPos.x, PlayerInfo.Instance.loadPos.y, -40);
             loadFromTransition.Value = false;
         }
     }
@@ -341,7 +328,7 @@ public class PlayerTestScript : MonoBehaviour
             controller.collisions.below = false;
             state = PlayerState.idle;
         }
-        else if (doubleJumpUnlock && !doubleJumpUsed && !controller.collisions.below && 
+        else if (PlayerInfo.Instance.doubleJumpUnlock && !doubleJumpUsed && !controller.collisions.below && 
             (state == PlayerState.idle || state == PlayerState.gliding || state == PlayerState.walking))//doublejump
         {
             velocity.y = maxJumpVelocity;
@@ -349,7 +336,7 @@ public class PlayerTestScript : MonoBehaviour
             state = PlayerState.gliding;
             anim.SetTrigger("DoubleJump");
             //if upgraded, spawn stun objects
-            if (doubleJumpUpgrade)
+            if (PlayerInfo.Instance.doubleJumpUpgrade)
             {
                 RaycastHit2D hit = Physics2D.Raycast(gameObject.transform.position, Vector2.down, doubleJumpStunRange, LayerMask.GetMask("Ground"));
                 if (hit.transform != null)
@@ -449,31 +436,31 @@ public class PlayerTestScript : MonoBehaviour
                 nextAttackTime = Time.time + attackRate;
             }
         }
-        if (chargeJumpUnlock)
+        if (PlayerInfo.Instance.chargeJumpUnlock)
         {
             ChargeJump();
         }
-        if (slamUnlock && (state == PlayerState.slamming || Input.GetKeyDown("k")))
+        if (PlayerInfo.Instance.slamUnlock && (state == PlayerState.slamming || Input.GetKeyDown("k")))
         {
             slam();
         }
-        if (sprayUnlock && (state == PlayerState.spraying || Input.GetKeyDown("j")))
+        if (PlayerInfo.Instance.sprayUnlock && (state == PlayerState.spraying || Input.GetKeyDown("j")))
         {
             spray();
         }
-        if (shootUnlock && (state == PlayerState.shooting || Input.GetKeyDown("l")))
+        if (PlayerInfo.Instance.shootUnlock && (state == PlayerState.shooting || Input.GetKeyDown("l")))
         {
             fs();
         }
-        if (guardUnlock && (state == PlayerState.guarding || Input.GetKeyDown("y")))
+        if (PlayerInfo.Instance.guardUnlock && (state == PlayerState.guarding || Input.GetKeyDown("y")))
         {
             guard();
         }
-        if (backstepUnlock)
+        if (PlayerInfo.Instance.backstepUnlock)
         {
             Backstep();
         }
-        if (dashUnlock)
+        if (PlayerInfo.Instance.dashUnlock)
         {
             Dash();
         }
@@ -532,7 +519,7 @@ public class PlayerTestScript : MonoBehaviour
     /// </summary>
     void ChargeJump()
     {
-        if (controller.collisions.below && Input.GetKey(KeyCode.LeftControl) && chargeJumpUnlock)
+        if (controller.collisions.below && Input.GetKey(KeyCode.LeftControl) && PlayerInfo.Instance.chargeJumpUnlock)
         {
             if (state == PlayerState.walking || state == PlayerState.idle)//begin jump
             {
@@ -768,7 +755,7 @@ public class PlayerTestScript : MonoBehaviour
         Vector2 dashDirection;
         //start dashing
         if ((state == PlayerState.gliding || state == PlayerState.idle || state == PlayerState.walking)
-            && dashUpgrade && Input.GetKeyDown("u") && dashUIScript.charge >= 1) //upgraded dash
+            && PlayerInfo.Instance.dashUpgrade && Input.GetKeyDown("u") && dashUIScript.charge >= 1) //upgraded dash
         {
             dashDidHit = false;
             dashUIScript.ResetCombo();
