@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class BastetScript : MonoBehaviour
 {
+    [SerializeField] GameObject item;
     [SerializeField] Dictionary<JumpPoint, Vector2> jumpPoints;
     [SerializeField] GameObject jumpParent;
     [SerializeField] EnemyCollisionMovementHandler movement;
@@ -148,7 +149,11 @@ public class BastetScript : MonoBehaviour
 
     void Die()
     {
+        //implement
 
+        Destroy(gameObject);
+
+        item.transform.position = new Vector3(35, 14, 0);
     }
 
     // Start is called before the first frame update

@@ -50,6 +50,8 @@ public class HorusAI : MonoBehaviour
 
     [SerializeField] HorusWingAttackScript wingAttack;
 
+    [SerializeField] GameObject item;
+
     public Vector2 topLeft;
     public Vector2 bottomRight;
     public LayerMask groundMask;
@@ -110,7 +112,11 @@ public class HorusAI : MonoBehaviour
 
     void Die()
     {
+        //implement
 
+        Destroy(gameObject);
+
+        item.transform.position = new Vector3(36, 5, 0);
     }
 
     // Start is called before the first frame update

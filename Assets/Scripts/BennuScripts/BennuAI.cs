@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class BennuAI : MonoBehaviour
 {
+    [SerializeField] GameObject item;
     [SerializeField] EnemyHealth healthManager;
     [SerializeField] Animator anim;
     [SerializeField] LayerMask groundLayer;
@@ -106,7 +107,11 @@ public class BennuAI : MonoBehaviour
 
     void Die()
     {
+        //implement
 
+        Destroy(gameObject);
+
+        item.transform.position = new Vector3(33,5,0);
     }
 
     private void OnValidate()
