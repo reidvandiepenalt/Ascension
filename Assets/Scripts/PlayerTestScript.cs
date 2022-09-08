@@ -115,12 +115,8 @@ public class PlayerTestScript : MonoBehaviour
     public GameObject vmCamPrefab;
 
     [SerializeField] Transform camFollowTarget;
-
-    GameObject pauseCanvas;
-    GameObject inGameMenuCanvas;
-    GameObject settingsCanvas;
-    GameObject UICanvas;
-    Camera mainCam;
+    public static Camera mainCam;
+    public static GameObject vmCam;
 
     SkillsGridManager skillsGrid;
 
@@ -172,14 +168,18 @@ public class PlayerTestScript : MonoBehaviour
         attacking
     }
 
-    private static GameObject playerInstance;
+    public static GameObject playerInstance;
+    public static GameObject eventSystem;
+    public static GameObject pauseCanvas;
+    public static GameObject inGameMenuCanvas;
+    public static GameObject settingsCanvas;
+    public static GameObject UICanvas;
 
     // Start is called before the first frame update
     void Start()
     {
         if(playerInstance == null)
         {
-            Debug.Log("init player");
             DontDestroyOnLoad(gameObject);
             playerInstance = gameObject;
 
@@ -201,13 +201,13 @@ public class PlayerTestScript : MonoBehaviour
             vmCam.Follow = camFollowTarget;
 
             //ui set up
-            GameObject es = Instantiate(eventSystemPrefab, Vector3.zero, Quaternion.identity);
+            eventSystem = Instantiate(eventSystemPrefab, Vector3.zero, Quaternion.identity);
             pauseCanvas = Instantiate(PauseCanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
             inGameMenuCanvas = Instantiate(InGameMenuCanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
             settingsCanvas = Instantiate(SettingsCanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
             UICanvas = Instantiate(UICanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
 
-            DontDestroyOnLoad(es);
+            DontDestroyOnLoad(eventSystem);
             DontDestroyOnLoad(pauseCanvas);
             DontDestroyOnLoad(inGameMenuCanvas);
             DontDestroyOnLoad(settingsCanvas);

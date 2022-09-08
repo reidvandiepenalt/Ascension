@@ -9,6 +9,9 @@ public class TitleLoadManager : MonoBehaviour
 
     public void LoadGame()
     {
+        BossStatuses.Load();
+        PlayerInfo.Load();
+
         changeScenes.levelName = PlayerInfo.Instance.sceneName;
         changeScenes.startPosition = PlayerInfo.Instance.loadPos;
 
