@@ -1,10 +1,39 @@
 using System;
 using ZSerializer;
 using UnityEngine;
+using System.Collections.Generic;
 
 [Serializable, SerializeGlobalData(GlobalDataType.PerSaveFile)]
 public partial class PlayerInfo
 {
+    public enum EgyptRooms
+    {
+        egypt1,
+        egypt2,
+        egypt3,
+        egypt4,
+        egypt5,
+        egypt7,
+        egypt8,
+        egypt13,
+        bastet,
+        bennu,
+        horus
+    }
+    public enum EgyptTransitions
+    {
+        egypt1to2,
+        egypt2to3,
+        egypt2to4,
+        egypt3to5,
+        egypt5to8,
+        egypt8toBastet,
+        egypt4toHorus,
+        egypt4to7,
+        egypt7to13,
+        egypt13toBennu,
+    }
+
     //  Add serializable variables to this object to be able to serialize and access them.
     public string sceneName;
     public Vector3 loadPos;
@@ -22,4 +51,7 @@ public partial class PlayerInfo
     public bool guardUnlock = false;
     public bool dashUnlock = false;
     public bool dashUpgrade = false;
+
+    public List<EgyptRooms> travelledRooms;
+    public List<EgyptTransitions> travelledTransitions;
 }

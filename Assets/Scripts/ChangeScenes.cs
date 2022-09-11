@@ -10,11 +10,15 @@ public class ChangeScenes : MonoBehaviour
     public BoolValue loadFromTransition;
     public float fadeWait;
     [SerializeField] Signal fadeSceneOutSignal;
-
+    public PlayerInfo.EgyptTransitions roomTransition;
+ 
     public void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player") && !collision.isTrigger)
         {
+            if (!PlayerInfo.Instance.travelledTransitions.Contains(roomTransition)) { 
+                PlayerInfo.Instance.travelledTransitions.Add(roomTransition);
+            }
             fadeSceneOutSignal.RaiseSignal();
             LoadScene();
         }
