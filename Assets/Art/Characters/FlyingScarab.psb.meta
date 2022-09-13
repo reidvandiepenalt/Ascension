@@ -25,6 +25,7 @@ ScriptedImporter:
     streamingMipmaps: 1
     streamingMipmapsPriority: 0
     vTOnly: 0
+    ignoreMasterTextureLimit: 0
     nPOTScale: 1
     sRGBTexture: 1
     spriteMode: 2
@@ -46,6 +47,7 @@ ScriptedImporter:
     flipbookRows: 0
     flipbookColumns: 0
     ignorePngGamma: 0
+    cookieMode: 0
     filterMode: 1
     aniso: 1
     mipBias: 0
@@ -79,7 +81,6 @@ ScriptedImporter:
       width: 0
       height: 0
     spriteID: 
-    internalID: 0
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -103,7 +104,6 @@ ScriptedImporter:
       width: 490
       height: 378
     spriteID: bb91320e9eef96d449fd0f8f1c787a0b
-    internalID: 0
     spriteBone:
     - name: bone_2
       guid: fb0efb0315a2c5146a68a26637cbc765
@@ -516,7 +516,6 @@ ScriptedImporter:
       width: 429
       height: 278
     spriteID: 3b7a4af75dc215a49b5cd0196bdb02e8
-    internalID: 0
     spriteBone:
     - name: bone_1
       guid: c13bc89b31b38f84bb6e139b03db1e14
@@ -895,7 +894,6 @@ ScriptedImporter:
       width: 939
       height: 460
     spriteID: 82cef2fd80e594f4fa4482e70efe46f9
-    internalID: 0
     spriteBone: []
     spriteOutline: []
     vertices:
@@ -1446,7 +1444,6 @@ ScriptedImporter:
       width: 115
       height: 198
     spriteID: 2d84047bf48587d41822cc949dc27057
-    internalID: 0
     spriteBone: []
     spriteOutline: []
     vertices:
@@ -1817,7 +1814,6 @@ ScriptedImporter:
       width: 88
       height: 161
     spriteID: bdd936dcfebc6034cad30e74df16b92e
-    internalID: 0
     spriteBone: []
     spriteOutline: []
     vertices:
@@ -2188,7 +2184,6 @@ ScriptedImporter:
       width: 85
       height: 161
     spriteID: 4637886efeb76a049a9e7b3acef54753
-    internalID: 0
     spriteBone: []
     spriteOutline: []
     vertices:
@@ -2559,7 +2554,6 @@ ScriptedImporter:
       width: 95
       height: 173
     spriteID: ff0bf01a788252d40875b4da018ec05f
-    internalID: 0
     spriteBone: []
     spriteOutline: []
     vertices:
@@ -2919,7 +2913,6 @@ ScriptedImporter:
       width: 79
       height: 148
     spriteID: 35ba0a88dca252748a43a1a4a1cf7baf
-    internalID: 0
     spriteBone: []
     spriteOutline: []
     vertices:
@@ -3300,7 +3293,6 @@ ScriptedImporter:
       width: 83
       height: 140
     spriteID: c7d2270a5097e9444855952ec5f73d11
-    internalID: 0
     spriteBone: []
     spriteOutline: []
     vertices:
@@ -3787,16 +3779,13 @@ ScriptedImporter:
   documentPivot: {x: 0, y: 0}
   documentAlignment: 7
   importHiddenLayers: 0
-  importedTextureWidth: 1024
-  importedTextureHeight: 1024
-  documentSize: {x: 939, y: 987}
+  layerMappingOption: 2
+  generatePhysicsShape: 0
   paperDollMode: 0
   keepDupilcateSpriteName: 1
   skeletonAssetReferenceID: 
   spriteCategoryList:
     categories: []
-  textureActualWidth: 1024
-  textureActualHeight: 1024
   spritePackingTag: 
   resliceFromLayer: 0
   mosaicPSDLayers: []
@@ -3805,16 +3794,22 @@ ScriptedImporter:
     spriteName: 
     isGroup: 1
     parentIndex: -1
-    spriteID: 00000000000000000000000000000000
+    spriteID: a91a717230ba8e040a9c20e3b677ac07
     layerID: 45
     mosaicPosition: {x: 0, y: 0}
+    flatten: 0
+    isImported: 0
+    isVisible: 1
   - name: Live Paint
     spriteName: 
     isGroup: 1
     parentIndex: 0
-    spriteID: 00000000000000000000000000000000
+    spriteID: 8ea48cbe8b4e2804d960a645f7b27d98
     layerID: 43
     mosaicPosition: {x: 0, y: 0}
+    flatten: 0
+    isImported: 0
+    isVisible: 1
   - name: <Group>
     spriteName: <Group>
     isGroup: 0
@@ -3822,13 +3817,19 @@ ScriptedImporter:
     spriteID: bb91320e9eef96d449fd0f8f1c787a0b
     layerID: 42
     mosaicPosition: {x: 4, y: 472}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
   - name: Layer 3
     spriteName: 
     isGroup: 1
     parentIndex: -1
-    spriteID: 00000000000000000000000000000000
+    spriteID: cdf5c683f3c99ef4cb2c13a2030b5c8f
     layerID: 40
     mosaicPosition: {x: 0, y: 0}
+    flatten: 0
+    isImported: 0
+    isVisible: 1
   - name: <Group>
     spriteName: <Group>
     isGroup: 0
@@ -3836,13 +3837,19 @@ ScriptedImporter:
     spriteID: 3b7a4af75dc215a49b5cd0196bdb02e8
     layerID: 39
     mosaicPosition: {x: 502, y: 472}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
   - name: Layer 2
     spriteName: 
     isGroup: 1
     parentIndex: -1
-    spriteID: 00000000000000000000000000000000
+    spriteID: c65dc4ddcea4fb94083482cce3e93248
     layerID: 37
     mosaicPosition: {x: 0, y: 0}
+    flatten: 0
+    isImported: 0
+    isVisible: 1
   - name: <Group>
     spriteName: <Group>
     isGroup: 0
@@ -3850,20 +3857,29 @@ ScriptedImporter:
     spriteID: 82cef2fd80e594f4fa4482e70efe46f9
     layerID: 36
     mosaicPosition: {x: 4, y: 4}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
   - name: Layer 7
     spriteName: 
     isGroup: 1
     parentIndex: -1
-    spriteID: 00000000000000000000000000000000
+    spriteID: f917139d4d8639f49b819deb398b128f
     layerID: 34
     mosaicPosition: {x: 0, y: 0}
+    flatten: 0
+    isImported: 0
+    isVisible: 1
   - name: Live Paint
     spriteName: 
     isGroup: 1
     parentIndex: 7
-    spriteID: 00000000000000000000000000000000
+    spriteID: 854cc240f779c1a49b18cd62400ecbc6
     layerID: 32
     mosaicPosition: {x: 0, y: 0}
+    flatten: 0
+    isImported: 0
+    isVisible: 1
   - name: <Group>
     spriteName: <Group>
     isGroup: 0
@@ -3871,20 +3887,29 @@ ScriptedImporter:
     spriteID: 2d84047bf48587d41822cc949dc27057
     layerID: 31
     mosaicPosition: {x: 502, y: 758}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
   - name: Layer 6
     spriteName: 
     isGroup: 1
     parentIndex: -1
-    spriteID: 00000000000000000000000000000000
+    spriteID: 8e56efc5783bce145b3dc39b2cd9e307
     layerID: 29
     mosaicPosition: {x: 0, y: 0}
+    flatten: 0
+    isImported: 0
+    isVisible: 1
   - name: Live Paint
     spriteName: 
     isGroup: 1
     parentIndex: 10
-    spriteID: 00000000000000000000000000000000
+    spriteID: e67d22c3269fdda499a4ef69d1243847
     layerID: 27
     mosaicPosition: {x: 0, y: 0}
+    flatten: 0
+    isImported: 0
+    isVisible: 1
   - name: <Group>
     spriteName: <Group>
     isGroup: 0
@@ -3892,13 +3917,19 @@ ScriptedImporter:
     spriteID: bdd936dcfebc6034cad30e74df16b92e
     layerID: 26
     mosaicPosition: {x: 728, y: 758}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
   - name: Layer 5
     spriteName: 
     isGroup: 1
     parentIndex: -1
-    spriteID: 00000000000000000000000000000000
+    spriteID: d6eb97935fd9c9748889950b3efdce69
     layerID: 24
     mosaicPosition: {x: 0, y: 0}
+    flatten: 0
+    isImported: 0
+    isVisible: 1
   - name: <Group>
     spriteName: <Group>
     isGroup: 0
@@ -3906,27 +3937,39 @@ ScriptedImporter:
     spriteID: 4637886efeb76a049a9e7b3acef54753
     layerID: 23
     mosaicPosition: {x: 824, y: 758}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
   - name: Layer 9
     spriteName: 
     isGroup: 1
     parentIndex: -1
-    spriteID: 00000000000000000000000000000000
+    spriteID: e445b4b04a2ed2e42b0872668462f0ed
     layerID: 21
     mosaicPosition: {x: 0, y: 0}
+    flatten: 0
+    isImported: 0
+    isVisible: 1
   - name: <Group>
     spriteName: 
     isGroup: 1
     parentIndex: 15
-    spriteID: 00000000000000000000000000000000
+    spriteID: 4d33f9a39656c814b9939f60bb3a5421
     layerID: 19
     mosaicPosition: {x: 0, y: 0}
+    flatten: 0
+    isImported: 0
+    isVisible: 1
   - name: Live Paint
     spriteName: 
     isGroup: 1
     parentIndex: 16
-    spriteID: 00000000000000000000000000000000
+    spriteID: 58a68ff58e4346541ad183af8b83d549
     layerID: 17
     mosaicPosition: {x: 0, y: 0}
+    flatten: 0
+    isImported: 0
+    isVisible: 1
   - name: <Group>
     spriteName: <Group>
     isGroup: 0
@@ -3934,27 +3977,39 @@ ScriptedImporter:
     spriteID: ff0bf01a788252d40875b4da018ec05f
     layerID: 16
     mosaicPosition: {x: 625, y: 758}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
   - name: Layer 8
     spriteName: 
     isGroup: 1
     parentIndex: -1
-    spriteID: 00000000000000000000000000000000
+    spriteID: b015677768011a34e96f3c274ee6f187
     layerID: 14
     mosaicPosition: {x: 0, y: 0}
+    flatten: 0
+    isImported: 0
+    isVisible: 1
   - name: <Group>
     spriteName: 
     isGroup: 1
     parentIndex: 19
-    spriteID: 00000000000000000000000000000000
+    spriteID: bf66364c7b032b74b9b3f5f1c2f60747
     layerID: 12
     mosaicPosition: {x: 0, y: 0}
+    flatten: 0
+    isImported: 0
+    isVisible: 1
   - name: Live Paint
     spriteName: 
     isGroup: 1
     parentIndex: 20
-    spriteID: 00000000000000000000000000000000
+    spriteID: 610db9eb4d8a7494087c506ec7cfb200
     layerID: 10
     mosaicPosition: {x: 0, y: 0}
+    flatten: 0
+    isImported: 0
+    isVisible: 1
   - name: <Group>
     spriteName: <Group>
     isGroup: 0
@@ -3962,27 +4017,39 @@ ScriptedImporter:
     spriteID: 35ba0a88dca252748a43a1a4a1cf7baf
     layerID: 9
     mosaicPosition: {x: 917, y: 758}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
   - name: Layer 4
     spriteName: 
     isGroup: 1
     parentIndex: -1
-    spriteID: 00000000000000000000000000000000
+    spriteID: 5ab1b7d4a76ae8d44837a1d14a205b4e
     layerID: 7
     mosaicPosition: {x: 0, y: 0}
+    flatten: 0
+    isImported: 0
+    isVisible: 1
   - name: <Group>
     spriteName: 
     isGroup: 1
     parentIndex: 23
-    spriteID: 00000000000000000000000000000000
+    spriteID: 03666e0a95cc1c14999ba799056ab084
     layerID: 5
     mosaicPosition: {x: 0, y: 0}
+    flatten: 0
+    isImported: 0
+    isVisible: 1
   - name: Live Paint
     spriteName: 
     isGroup: 1
     parentIndex: 24
-    spriteID: 00000000000000000000000000000000
+    spriteID: ea13e0828af99d44a80bb266e230a705
     layerID: 3
     mosaicPosition: {x: 0, y: 0}
+    flatten: 0
+    isImported: 0
+    isVisible: 1
   - name: <Group>
     spriteName: <Group>
     isGroup: 0
@@ -3990,7 +4057,11 @@ ScriptedImporter:
     spriteID: c7d2270a5097e9444855952ec5f73d11
     layerID: 2
     mosaicPosition: {x: 4, y: 858}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
   sharedRigPSDLayers: []
+  pSDLayerImportSetting: []
   generateGOHierarchy: 0
   textureAssetName: FlyingScarab Texture
   prefabAssetName: FlyingScarab Prefab

@@ -5,15 +5,26 @@ using UnityEngine.UI;
 
 public class MapPanelManager : MonoBehaviour
 {
-    [SerializeField] Dictionary<PlayerInfo.EgyptRooms, Image> rooms;
-    [SerializeField] Dictionary<PlayerInfo.EgyptTransitions, LineRenderer> transitions;
+    Dictionary<PlayerInfo.EgyptRooms, Image> rooms;
+    Dictionary<PlayerInfo.EgyptTransitions, LineRenderer> transitions;
 
-    
+    [SerializeField] List<Image> roomsOrder;
+    [SerializeField] List<LineRenderer> linesOrder;
+
 
     // Start is called before the first frame update
     void Start()
     {
-        foreach(PlayerInfo.EgyptRooms room in PlayerInfo.Instance.travelledRooms)
+        for(int i = 0; i < roomsOrder.Count; i++)
+        {
+            rooms.Add((PlayerInfo.EgyptRooms)i, roomsOrder[i]);
+        }
+        for (int i = 0; i < linesOrder.Count; i++)
+        {
+            transitions.Add((PlayerInfo.EgyptTransitions) i, linesOrder[i]);
+        }
+
+        foreach (PlayerInfo.EgyptRooms room in PlayerInfo.Instance.travelledRooms)
         {
             rooms[room].gameObject.SetActive(true);
         }

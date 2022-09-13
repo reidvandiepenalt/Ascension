@@ -1,11 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Experimental.Rendering.Universal;
+
 
 public class LanternFlame : MonoBehaviour
 {
-    [SerializeField] Light2D light;
+    [SerializeField] UnityEngine.Rendering.Universal.Light2D light;
     [SerializeField] float minInnerRadius, maxInnerRadius, minOuterRadius, maxOuterRadius, minIntensity, maxIntensity;
     [SerializeField] Color color1, color2;
     float innerRadiusDif, outerRadiusDif, intensityDif;

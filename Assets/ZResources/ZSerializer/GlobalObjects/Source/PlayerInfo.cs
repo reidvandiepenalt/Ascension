@@ -6,6 +6,13 @@ using System.Collections.Generic;
 [Serializable, SerializeGlobalData(GlobalDataType.PerSaveFile)]
 public partial class PlayerInfo
 {
+    public enum RoomTransitionStates
+    {
+        unknown,
+        known,
+        travelled
+    }
+
     public enum EgyptRooms
     {
         egypt1,
