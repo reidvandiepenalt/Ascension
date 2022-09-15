@@ -5,33 +5,58 @@ using UnityEngine.UI;
 
 public class MapPanelManager : MonoBehaviour
 {
-    Dictionary<PlayerInfo.EgyptRooms, Image> rooms;
-    Dictionary<PlayerInfo.EgyptTransitions, LineRenderer> transitions;
+    Dictionary<PlayerInfo.EgyptRooms, Image> rooms = new Dictionary<PlayerInfo.EgyptRooms, Image>();
+    Dictionary<PlayerInfo.EgyptTransitions, LineRenderer> transitions = new Dictionary<PlayerInfo.EgyptTransitions, LineRenderer>();
 
     [SerializeField] List<Image> roomsOrder;
     [SerializeField] List<LineRenderer> linesOrder;
 
+    [SerializeField] Color knownColor;
+    [SerializeField] Color travelledColor;
+    [SerializeField] Material knownMaterial;
+    [SerializeField] Material travelledMaterial;
 
-    // Start is called before the first frame update
-    void Start()
+
+    void Awake()
     {
-        for(int i = 0; i < roomsOrder.Count; i++)
+        for (int i = 0; i < roomsOrder.Count; i++)
         {
             rooms.Add((PlayerInfo.EgyptRooms)i, roomsOrder[i]);
         }
         for (int i = 0; i < linesOrder.Count; i++)
         {
-            transitions.Add((PlayerInfo.EgyptTransitions) i, linesOrder[i]);
+            transitions.Add((PlayerInfo.EgyptTransitions)i, linesOrder[i]);
         }
+    }
 
-        foreach (PlayerInfo.EgyptRooms room in PlayerInfo.Instance.travelledRooms)
+    private void OnEnable()
+    {
+        foreach (PlayerInfo.EgyptRooms room in PlayerInfo.Instance.travelledRooms.Keys)
         {
             rooms[room].gameObject.SetActive(true);
+            switch (PlayerInfo.Instance.travelledRooms[room])
+            {
+                case PlayerInfo.RoomTransitionStates.known:
+                    rooms[room].color = knownColor;
+                    break;
+                case PlayerInfo.RoomTransitionStates.travelled:
+                    rooms[room].color = travelledColor;
+                    break;
+            }
         }
 
-        foreach(PlayerInfo.EgyptTransitions transition in PlayerInfo.Instance.travelledTransitions)
+        foreach (PlayerInfo.EgyptTransitions transition in PlayerInfo.Instance.travelledTransitions.Keys)
         {
             transitions[transition].gameObject.SetActive(true);
+            switch (PlayerInfo.Instance.travelledTransitions[transition])
+            {
+                case PlayerInfo.RoomTransitionStates.known:
+                    transitions[transition].sharedMaterial = knownMaterial;
+                    break;
+                case PlayerInfo.RoomTransitionStates.travelled:
+                    transitions[transition].sharedMaterial = travelledMaterial;
+                    break;
+            }
         }
     }
 }

@@ -16,8 +16,10 @@ public class ChangeScenes : MonoBehaviour
     {
         if (collision.CompareTag("Player") && !collision.isTrigger)
         {
-            if (!PlayerInfo.Instance.travelledTransitions.Contains(roomTransition)) { 
-                PlayerInfo.Instance.travelledTransitions.Add(roomTransition);
+            if (!PlayerInfo.Instance.travelledTransitions.ContainsKey(roomTransition)) { 
+                PlayerInfo.Instance.travelledTransitions.Add(roomTransition, PlayerInfo.RoomTransitionStates.travelled);
+            }else if (PlayerInfo.Instance.travelledTransitions[roomTransition] == PlayerInfo.RoomTransitionStates.known) {
+                PlayerInfo.Instance.travelledTransitions[roomTransition] = PlayerInfo.RoomTransitionStates.travelled;
             }
             fadeSceneOutSignal.RaiseSignal();
             LoadScene();

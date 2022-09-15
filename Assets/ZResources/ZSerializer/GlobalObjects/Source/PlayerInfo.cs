@@ -8,7 +8,6 @@ public partial class PlayerInfo
 {
     public enum RoomTransitionStates
     {
-        unknown,
         known,
         travelled
     }
@@ -59,6 +58,6 @@ public partial class PlayerInfo
     public bool dashUnlock = false;
     public bool dashUpgrade = false;
 
-    public List<EgyptRooms> travelledRooms;
-    public List<EgyptTransitions> travelledTransitions;
+    public Dictionary<EgyptRooms, RoomTransitionStates> travelledRooms = new Dictionary<EgyptRooms, RoomTransitionStates>();
+    public Dictionary<EgyptTransitions, RoomTransitionStates> travelledTransitions = new Dictionary<EgyptTransitions, RoomTransitionStates>();
 }

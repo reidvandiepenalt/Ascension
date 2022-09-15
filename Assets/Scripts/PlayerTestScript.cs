@@ -117,6 +117,7 @@ public class PlayerTestScript : MonoBehaviour
     [SerializeField] Transform camFollowTarget;
     public static Camera mainCam;
     public static GameObject vmCam;
+    [SerializeField] string uiSortingLayer = "UI";
 
     SkillsGridManager skillsGrid;
 
@@ -216,9 +217,13 @@ public class PlayerTestScript : MonoBehaviour
 
             //set cameras
             pauseCanvas.GetComponent<Canvas>().worldCamera = mainCam;
+            pauseCanvas.GetComponent<Canvas>().sortingLayerName = uiSortingLayer;
             inGameMenuCanvas.GetComponent<Canvas>().worldCamera = mainCam;
+            inGameMenuCanvas.GetComponent<Canvas>().sortingLayerName = uiSortingLayer;
             settingsCanvas.GetComponent<Canvas>().worldCamera = mainCam;
+            settingsCanvas.GetComponent<Canvas>().sortingLayerName = uiSortingLayer;
             UICanvas.GetComponent<Canvas>().worldCamera = mainCam;
+            UICanvas.GetComponent<Canvas>().sortingLayerName = uiSortingLayer;
 
             PauseMenu pauseUIScript = pauseCanvas.GetComponent<PauseMenu>();
             pauseUIScript.SkillsUI = UICanvas;
