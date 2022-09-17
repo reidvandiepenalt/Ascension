@@ -119,6 +119,9 @@ public class PlayerTestScript : MonoBehaviour
     public static GameObject vmCam;
     [SerializeField] string uiSortingLayer = "UI";
 
+    public static PlayerInfo.EgyptRooms curRoom;
+    public static Vector2 curRoomCenterPoint;
+
     SkillsGridManager skillsGrid;
 
     public delegate void FeatherShot();

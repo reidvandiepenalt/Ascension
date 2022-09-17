@@ -5,11 +5,15 @@ using UnityEngine;
 public class RoomLoad : MonoBehaviour
 {
     public PlayerInfo.EgyptRooms room;
+    public Vector2 centerPoint;
     public List<PlayerInfo.EgyptRooms> adjacentRooms;
     public List<PlayerInfo.EgyptTransitions> transitions;
 
     private void Awake()
     {
+        PlayerTestScript.curRoom = room;
+        PlayerTestScript.curRoomCenterPoint = centerPoint;
+
         if (!PlayerInfo.Instance.travelledRooms.ContainsKey(room))
         {
             PlayerInfo.Instance.travelledRooms.Add(room, PlayerInfo.RoomTransitionStates.travelled);

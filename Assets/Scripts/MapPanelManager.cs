@@ -16,9 +16,15 @@ public class MapPanelManager : MonoBehaviour
     [SerializeField] Material knownMaterial;
     [SerializeField] Material travelledMaterial;
 
+    [SerializeField] RectTransform playerIcon;
+
+    public Transform playerTransform;
+
 
     void Awake()
     {
+        playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+
         for (int i = 0; i < roomsOrder.Count; i++)
         {
             rooms.Add((PlayerInfo.EgyptRooms)i, roomsOrder[i]);
@@ -58,5 +64,11 @@ public class MapPanelManager : MonoBehaviour
                     break;
             }
         }
+
+        RectTransform curRoomRect = rooms[PlayerTestScript.curRoom].rectTransform;
+        Vector2 curRoomAnchorPos = curRoomRect.anchoredPosition;
+        float xPos = curRoomAnchorPos.x + (playerTransform.position.x - PlayerTestScript.curRoomCenterPoint.x);
+        float yPos = curRoomAnchorPos.y + (playerTransform.position.y - PlayerTestScript.curRoomCenterPoint.y);
+        playerIcon.anchoredPosition = new Vector2(xPos, yPos);
     }
 }
