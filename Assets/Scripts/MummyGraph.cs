@@ -161,6 +161,11 @@ public class MummyGraph : MonoBehaviour
         seeker.pathCallback -= OnPathComplete;
     }
 
+    public void OnEnable()
+    {
+        seeker.pathCallback += OnPathComplete;
+    }
+
     void FixedUpdate()
     {
         //do nothing if paused
