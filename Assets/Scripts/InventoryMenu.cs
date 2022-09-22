@@ -28,6 +28,7 @@ public class InventoryMenu : MonoBehaviour
         get { return selectedGameObject; }
         set
         {
+            EventSystem.current.firstSelectedGameObject = value;
             //fades ui elements when they are set?
             if (value != null)
             {
@@ -72,7 +73,10 @@ public class InventoryMenu : MonoBehaviour
 
     private void Start()
     {
-        EventSystem.current.firstSelectedGameObject = inventoryFirstSlot;
+        if (EventSystem.current.firstSelectedGameObject == null){ 
+            EventSystem.current.firstSelectedGameObject = inventoryFirstSlot;
+            print("setting first selected");
+        }
 
         //Load current canvas?
 
@@ -153,9 +157,6 @@ public class InventoryMenu : MonoBehaviour
         SkillsUICanvas.SetActive(false);
         Pause.isPaused = true;
         Time.timeScale = 0f;
-
-        EventSystem.current.SetSelectedGameObject(null);
-        EventSystem.current.SetSelectedGameObject(inventoryFirstSlot);
     }
 
     /// <summary>
