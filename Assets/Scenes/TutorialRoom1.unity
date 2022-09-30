@@ -289,26 +289,6 @@ PrefabInstance:
       propertyPath: transitionPosition.y
       value: -2.85
       objectReference: {fileID: 0}
-    - target: {fileID: 3587564966304999526, guid: 7d88ea6ba06b0ae4988bf44170e06605,
-        type: 3}
-      propertyPath: m_Size.x
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 3587564966304999526, guid: 7d88ea6ba06b0ae4988bf44170e06605,
-        type: 3}
-      propertyPath: m_Size.y
-      value: 23.97615
-      objectReference: {fileID: 0}
-    - target: {fileID: 3587564966304999526, guid: 7d88ea6ba06b0ae4988bf44170e06605,
-        type: 3}
-      propertyPath: m_Offset.x
-      value: 4.7769604
-      objectReference: {fileID: 0}
-    - target: {fileID: 3587564966304999526, guid: 7d88ea6ba06b0ae4988bf44170e06605,
-        type: 3}
-      propertyPath: m_Offset.y
-      value: 9.015667
-      objectReference: {fileID: 0}
     - target: {fileID: 5648731320160177713, guid: 7d88ea6ba06b0ae4988bf44170e06605,
         type: 3}
       propertyPath: m_RootOrder
@@ -317,17 +297,17 @@ PrefabInstance:
     - target: {fileID: 5648731320160177713, guid: 7d88ea6ba06b0ae4988bf44170e06605,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 39.75
+      value: 44.5
       objectReference: {fileID: 0}
     - target: {fileID: 5648731320160177713, guid: 7d88ea6ba06b0ae4988bf44170e06605,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 10.5
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5648731320160177713, guid: 7d88ea6ba06b0ae4988bf44170e06605,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 47.2345
+      value: -40
       objectReference: {fileID: 0}
     - target: {fileID: 5648731320160177713, guid: 7d88ea6ba06b0ae4988bf44170e06605,
         type: 3}
@@ -442,6 +422,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 8166878195290808731, guid: 91bcef663067c5f4f87eefb9f175102d,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 13.333355
+      objectReference: {fileID: 0}
     - target: {fileID: 8253274079303330829, guid: 91bcef663067c5f4f87eefb9f175102d,
         type: 3}
       propertyPath: usePlatformEdges
@@ -1424,6 +1409,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 723945}
   m_RootOrder: 18
@@ -1452,6 +1438,7 @@ MonoBehaviour:
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
+  m_AlphaBlendOnOverlap: 0
   m_OverlapOperation: 0
   m_NormalMapDistance: 3
   m_NormalMapQuality: 2
@@ -2077,6 +2064,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 723945}
   m_RootOrder: 3
@@ -2123,7 +2111,7 @@ Rigidbody2D:
   m_Constraints: 7
 --- !u!95 &1374211769
 Animator:
-  serializedVersion: 3
+  serializedVersion: 4
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -2136,6 +2124,7 @@ Animator:
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
@@ -2808,14 +2797,17 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 78662db19ca86c34c8628d636fc2b4ca, type: 3}
 --- !u!21 &1896239335
 Material:
-  serializedVersion: 6
+  serializedVersion: 8
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: BLKCHCRY SDF Material Instance
   m_Shader: {fileID: 4800000, guid: 68e6db2ebdc24f95958faec2be5558d6, type: 3}
-  m_ShaderKeywords: GLOW_ON MASK_HARD
+  m_ValidKeywords:
+  - GLOW_ON
+  m_InvalidKeywords:
+  - MASK_HARD
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
