@@ -4,13 +4,10 @@ using UnityEngine;
 
 public abstract class BossItem : MonoBehaviour
 {
-    [SerializeField] Signal signal;
 
     protected virtual void OnTriggerEnter2D(Collider2D collision)
     {
         SetFlags();
-
-        signal.RaiseSignal();
 
         //anim
         StartCoroutine("Anim");
