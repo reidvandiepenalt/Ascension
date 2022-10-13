@@ -10,11 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fb3ea02442c59f644a28b1ace3debd4c, type: 3}
-  m_Name: Test Bless 4
+  m_Name: TernaryAnimaBlessing
   m_EditorClassIdentifier: 
-  ItemName: Test 4
-  Icon: {fileID: 21300000, guid: 3c6ae189fc17b2a459b47c3472bad526, type: 3}
-  cost: 2
-  unlocked: 0
-  description: not unlocked
+  ItemName: Ternary Anima
+  Icon: {fileID: 21300000, guid: b341cc29c915108468f11121d92ed6c7, type: 3}
+  cost: 1
+  unlocked: 1
+  description: Summon 3 orbiting balls of energy that damage enemies on hit, then
+    recharge over time.
   equipped: 0
+  blessScript: {fileID: 0}

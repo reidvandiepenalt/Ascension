@@ -45,7 +45,7 @@ public class BlessingSlot : MonoBehaviour
     {
         inventory = GetComponentInParent<BlessingInventory>();
         //allow blessing to be equipped if unlocked
-        if (Blessing.unlocked)
+        if (Blessing && Blessing.unlocked)
         {
             image.sprite = Blessing.Icon;
             gameObject.GetComponent<Button>().enabled = true;
@@ -88,7 +88,9 @@ public class BlessingSlot : MonoBehaviour
             ChangeColor(Color.gray);
             return;
         }
-        animInst = Instantiate(animObj, transform);
+        animInst = Instantiate(animObj);
+        animInst.transform.parent = transform;
+        //animInst = Instantiate(animObj, transform);
         animInst.GetComponent<Image>().sprite = image.sprite;
         ChangeColor(Color.clear);
         animInst.LeanMoveLocalX(15f, 0.025f).setIgnoreTimeScale(true).setOnComplete(AnimLeft);

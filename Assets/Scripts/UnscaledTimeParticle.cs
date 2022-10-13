@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class UnscaledTimeParticle : MonoBehaviour
 {
-    new ParticleSystem particleSystem;
+    ParticleSystem particleSystem;
 
     private void Start()
     {

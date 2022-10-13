@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Assets.Scripts;
-
+using System;
 
 public class BlessingInventory : MonoBehaviour, ICanvas
 {
@@ -41,7 +41,7 @@ public class BlessingInventory : MonoBehaviour, ICanvas
         //create a marker for each bless notch
         for (int i = 0; i < PlayerTestScript.blessingTotal; i++)
         {
-                GameObject.Instantiate(activeBlessCounterPrefab, counterGrid);
+            Instantiate(activeBlessCounterPrefab, counterGrid);
         }
 
         //equip all equipped blessings
@@ -86,9 +86,9 @@ public class BlessingInventory : MonoBehaviour, ICanvas
         PlayerTestScript.blessingTotal -= blessing.cost;
 
         //Add blessing to equipped grid
-        ActiveBlessingSlots.Add(Instantiate(activeBlessSlotPrefab, activeBlessGrid).GetComponent<BlessingSlot>()); ;
-        ActiveBlessingSlots[ActiveBlessingSlots.Count - 1].Blessing = blessing;
-        ActiveBlessingSlots[ActiveBlessingSlots.Count - 1].Blessing.blessScript.Equip(player);
+        ActiveBlessingSlots.Add(Instantiate(activeBlessSlotPrefab, activeBlessGrid).GetComponent<BlessingSlot>());
+        ActiveBlessingSlots[^1].Blessing = blessing;
+        ActiveBlessingSlots[^1].Blessing.blessScript.Equip(player);
 
         return true;
     }
