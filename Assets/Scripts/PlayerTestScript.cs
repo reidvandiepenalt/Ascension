@@ -514,7 +514,7 @@ public class PlayerTestScript : MonoBehaviour
     void CalculateVelocity()
     {
         if (state == PlayerState.gliding || state == PlayerState.idle || 
-            state == PlayerState.walking || state == PlayerState.attacking)
+            state == PlayerState.walking || state == PlayerState.attacking || state == PlayerState.shooting)
         {
             float targetVelocityX = directionalInput.x * speed;
             velocity.x = Mathf.SmoothDamp(velocity.x, targetVelocityX, ref velocityXSmoothing, (controller.collisions.below) ? accelerationTimeGrounded : accelerationTimeAirborne);
