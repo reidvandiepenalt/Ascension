@@ -881,12 +881,15 @@ public class PlayerTestScript : MonoBehaviour
         switch (type)
         {
             case GuardSwapTypes.Default:
+                guardUIScript.maximum = guardTypeScripts.hitguardCD;
                 guard = guardTypeScripts.DefaultGuard;
                 break;
             case GuardSwapTypes.QuickCharge:
-                guard = guardTypeScripts.QuickCharge;
+                guardUIScript.maximum = guardTypeScripts.hitguardCD / 2;
+                guard = guardTypeScripts.DefaultGuard;
                 break;
             case GuardSwapTypes.Retaliation:
+                guardUIScript.maximum = guardTypeScripts.hitguardCD;
                 guard = guardTypeScripts.Retaliation;
                 break;
         }

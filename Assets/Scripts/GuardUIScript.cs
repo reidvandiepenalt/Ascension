@@ -27,9 +27,9 @@ public class GuardUIScript : MonoBehaviour
     {
         //update ui fill
         float fillAmount = current / maximum;
-        if (fillAmount >= 0)
-        {
+        //if (fillAmount >= 0)
+        //{
             mask.fillAmount = fillAmount;
-        }
+        //}
     }
 }

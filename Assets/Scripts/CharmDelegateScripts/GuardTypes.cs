@@ -11,7 +11,7 @@ public enum GuardSwapTypes
 
 public class GuardTypes : MonoBehaviour
 {
-    [SerializeField] public float hitguardCD = 1.00f;
+    [SerializeField] public float hitguardCD = 6.0f;
 
     public Animator anim;
     public PlayerTestScript playerScript;
@@ -43,13 +43,6 @@ public class GuardTypes : MonoBehaviour
         anim.SetBool("Guarding", false);
         playerScript.state = PlayerTestScript.PlayerState.idle;
     }
-
-
-    public void QuickCharge()
-    {
-
-    }
-
 
     public void Retaliation()
     {
