@@ -30,6 +30,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -90,10 +91,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   image: {fileID: 6342768331441912021}
-  defaultSprite: {fileID: 0}
-  inventory: {fileID: 0}
+  defaultSprite: {fileID: 21300000, guid: ce1a05c09b11a614c97f0c53467bbd29, type: 3}
   animObj: {fileID: 4597966165539890461, guid: 12eb9b810a2ee784d8c39f2bc120a189, type: 3}
-  _blessing: {fileID: 11400000, guid: 608d11e075a232148965d16ca094cfc3, type: 2}
+  _blessing: {fileID: 11400000, guid: 410a5ca987ea4be499a830829f39ff4c, type: 2}
 --- !u!114 &6342768331441912010
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -108,6 +108,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 3
+    m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}

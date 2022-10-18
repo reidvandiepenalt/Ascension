@@ -207,9 +207,9 @@ public class PlayerTestScript : MonoBehaviour
             //ui set up
             eventSystem = Instantiate(eventSystemPrefab, Vector3.zero, Quaternion.identity);
             pauseCanvas = Instantiate(PauseCanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
-            inGameMenuCanvas = Instantiate(InGameMenuCanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
             settingsCanvas = Instantiate(SettingsCanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
             UICanvas = Instantiate(UICanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
+            inGameMenuCanvas = Instantiate(InGameMenuCanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
 
             DontDestroyOnLoad(eventSystem);
             DontDestroyOnLoad(pauseCanvas);
@@ -283,7 +283,7 @@ public class PlayerTestScript : MonoBehaviour
                 UISkillScripts.Add(dashUIScript);
             }
 
-            InvokeRepeating("UpdateLastGround", 0f, 0.33f);
+            InvokeRepeating(nameof(UpdateLastGround), 0f, 0.33f);
         }
         else
         {

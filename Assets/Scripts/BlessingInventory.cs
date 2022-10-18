@@ -27,6 +27,8 @@ public class BlessingInventory : MonoBehaviour, ICanvas
 
     public PlayerTestScript player;
 
+    public static BlessingInventory BlessingInventorySingleton = null;
+
     private void OnValidate()
     {
         //in editor, get all storage slots and add to blessingStorageSlots
@@ -34,6 +36,11 @@ public class BlessingInventory : MonoBehaviour, ICanvas
         {
             blessingStorageSlots = blessingsStorage.GetComponentsInChildren<BlessingSlot>();
         }
+    }
+
+    private void Awake()
+    {
+        BlessingInventorySingleton = this;
     }
 
     private void Start()
@@ -44,17 +51,14 @@ public class BlessingInventory : MonoBehaviour, ICanvas
             Instantiate(activeBlessCounterPrefab, counterGrid);
         }
 
-        //equip all equipped blessings
-        for(int i = 0; i < blessingStorageSlots.Length; i++)
-        {
-            if (blessingStorageSlots[i].Blessing.equipped) { 
-                blessingStorageSlots[i].AddBlessing(true);
-            }
-        }
-
         //set selected
         EventSystem.current.SetSelectedGameObject(blessingStorageSlots[0].gameObject);
         superMenu.SelectedGameObject = EventSystem.current.currentSelectedGameObject;
+
+        if (blessingsStorage != null)
+        {
+            blessingStorageSlots = blessingsStorage.GetComponentsInChildren<BlessingSlot>();
+        }
     }
 
     /// <summary>

@@ -9,7 +9,6 @@ public class BlessingSlot : MonoBehaviour
 {
     [SerializeField] Image image;
     public Sprite defaultSprite;
-    public BlessingInventory inventory;
     public GameObject animObj;
     private GameObject animInst;
 
@@ -41,9 +40,20 @@ public class BlessingSlot : MonoBehaviour
         }
     }
 
+    public void Start()
+    {
+        if (Blessing)
+        {
+            if (Blessing.equipped)
+            {
+                print("start " + gameObject.GetInstanceID());
+                AddBlessing(true);
+            }
+        }
+    }
+
     private void OnEnable()
     {
-        inventory = GetComponentInParent<BlessingInventory>();
         //allow blessing to be equipped if unlocked
         if (Blessing && Blessing.unlocked)
         {
@@ -60,7 +70,7 @@ public class BlessingSlot : MonoBehaviour
         //remove and animate if equipped
         if (Blessing.equipped)
         {
-            inventory.RemoveBlessing(this);
+            BlessingInventory.BlessingInventorySingleton.RemoveBlessing(this);
             RemoveAnim();
             Blessing.equipped = false;
         }
@@ -75,13 +85,13 @@ public class BlessingSlot : MonoBehaviour
         if (!Blessing.unlocked) { return; }
         if (Blessing.equipped && !ignoreEquip) { return; }
         //equip and animate
-        if (inventory.AddBlessing(Blessing))
+        if (BlessingInventory.BlessingInventorySingleton.AddBlessing(Blessing))
         {
             if (!ignoreEquip)
             {
                 animInst = Instantiate(animObj, transform);
                 animInst.GetComponent<Image>().sprite = image.sprite;
-                Vector3 moveTo = inventory.ActiveBlessingSlots[inventory.ActiveBlessingSlots.Count - 1].transform.position;
+                Vector3 moveTo = BlessingInventory.BlessingInventorySingleton.ActiveBlessingSlots[BlessingInventory.BlessingInventorySingleton.ActiveBlessingSlots.Count - 1].transform.position;
                 animInst.LeanMove(moveTo, 0.25f).setIgnoreTimeScale(true).setDestroyOnComplete(true);
             }
             Blessing.equipped = true;
@@ -104,7 +114,7 @@ public class BlessingSlot : MonoBehaviour
     {
         Vector3 endpoint = new Vector3(0,0);
         //find the correct slot and set endpoint to its position
-        foreach (BlessingSlot slot in inventory.blessingStorageSlots)
+        foreach (BlessingSlot slot in BlessingInventory.BlessingInventorySingleton.blessingStorageSlots)
         {
             if (slot.Blessing == Blessing)
             {
