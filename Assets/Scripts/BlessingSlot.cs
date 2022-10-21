@@ -40,18 +40,6 @@ public class BlessingSlot : MonoBehaviour
         }
     }
 
-    public void Start()
-    {
-        if (Blessing)
-        {
-            if (Blessing.equipped)
-            {
-                print("start " + gameObject.GetInstanceID());
-                AddBlessing(true);
-            }
-        }
-    }
-
     private void OnEnable()
     {
         //allow blessing to be equipped if unlocked

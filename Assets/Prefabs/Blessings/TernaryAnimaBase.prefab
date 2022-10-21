@@ -100,6 +100,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   circleCollider: {fileID: 339045302893336705}
   sprite: {fileID: 339045302893336707}
+  damage: 5
 --- !u!58 &339045302893336705
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -216,6 +217,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   circleCollider: {fileID: 339045303015048427}
   sprite: {fileID: 339045303015048469}
+  damage: 5
 --- !u!58 &339045303015048427
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -241,7 +243,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 339045303473997415}
-  - component: {fileID: 339045303473997408}
+  - component: {fileID: 4364759251908381741}
   m_Layer: 0
   m_Name: TernaryAnimaBase
   m_TagString: Untagged
@@ -267,26 +269,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &339045303473997408
-Animator:
-  serializedVersion: 4
+--- !u!114 &4364759251908381741
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 339045303473997414}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 368ba7fc3d95ad041a78d6af314d58a8, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6dc1c5a4d96bad84095a1df21a0aed0b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 0}
 --- !u!1 &339045304302656984
 GameObject:
   m_ObjectHideFlags: 0
@@ -387,6 +382,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   circleCollider: {fileID: 339045304302656987}
   sprite: {fileID: 339045304302656965}
+  damage: 5
 --- !u!58 &339045304302656987
 CircleCollider2D:
   m_ObjectHideFlags: 0
