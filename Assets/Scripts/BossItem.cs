@@ -13,7 +13,7 @@ public abstract class BossItem : MonoBehaviour
         onPickup.RaiseSignal();
 
         //anim
-        StartCoroutine("Anim");
+        StartCoroutine(nameof(Anim));
     }
 
     protected abstract void SetFlags();
