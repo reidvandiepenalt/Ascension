@@ -8,10 +8,14 @@ public class BlessingPickup : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        blessing.unlocked = true;
+        if (collision.CompareTag("Player"))
+        {
+            blessing.unlocked = true;
 
-        //anim
-        StartCoroutine(nameof(Anim));
+            //anim
+            StartCoroutine(nameof(Anim));
+        }
+        
     }
 
     protected virtual IEnumerator Anim()

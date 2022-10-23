@@ -8,7 +8,7 @@ public class BreakableWallScript : MonoBehaviour
 
     public void OnStun(object param)
     {
-        float stunTime = (float)param;
+        //do nothing
     }
 
     public void OnHit(object param)
