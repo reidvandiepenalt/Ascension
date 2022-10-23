@@ -79,7 +79,7 @@ public class BlessingSlot : MonoBehaviour
             {
                 animInst = Instantiate(animObj, transform);
                 animInst.GetComponent<Image>().sprite = image.sprite;
-                Vector3 moveTo = BlessingInventory.BlessingInventorySingleton.ActiveBlessingSlots[BlessingInventory.BlessingInventorySingleton.ActiveBlessingSlots.Count - 1].transform.position;
+                Vector3 moveTo = BlessingInventory.BlessingInventorySingleton.ActiveBlessingSlots[^1].transform.position;
                 animInst.LeanMove(moveTo, 0.25f).setIgnoreTimeScale(true).setDestroyOnComplete(true);
             }
             Blessing.equipped = true;
@@ -100,7 +100,7 @@ public class BlessingSlot : MonoBehaviour
     /// </summary>
     public void RemoveAnim()
     {
-        Vector3 endpoint = new Vector3(0,0);
+        Vector3 endpoint = Vector2.zero;
         //find the correct slot and set endpoint to its position
         foreach (BlessingSlot slot in BlessingInventory.BlessingInventorySingleton.blessingStorageSlots)
         {
