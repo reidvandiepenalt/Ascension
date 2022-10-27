@@ -36,7 +36,8 @@ public class PlayerTestScript : MonoBehaviour
     private float accelerationTimeGrounded = 0f;
     
     float nextAttackTime = 0f;
-    [SerializeField] float attackRate = .66f;
+    bool followUpAttack = false;
+    [SerializeField] float attackRate = .23f;
     public Transform attackPoint;
     public float attackRange = 0.5f;
     public float attackDistance = 10f;
@@ -435,15 +436,12 @@ public class PlayerTestScript : MonoBehaviour
         CalculateVelocity();
 
         //Attack and skills
-        if (Time.time >= nextAttackTime)
+        if (state == PlayerState.attacking && Input.GetKeyDown("h")) followUpAttack = true;
+        if (Input.GetKeyDown("h") && (state == PlayerState.idle || state == PlayerState.gliding || state == PlayerState.walking))
         {
-            if(state == PlayerState.attacking) { state = PlayerState.idle; }
-            if (Input.GetKeyDown("h") && (state == PlayerState.idle || state == PlayerState.gliding || state == PlayerState.walking))
-            {
-                Attack();
-                nextAttackTime = Time.time + attackRate;
-            }
+            StartCoroutine(nameof(Attack));
         }
+
         if (PlayerInfo.Instance.chargeJumpUnlock)
         {
             ChargeJump();
@@ -555,9 +553,10 @@ public class PlayerTestScript : MonoBehaviour
     /// <summary>
     /// Basic attack
     /// </summary>
-    void Attack()
+    IEnumerator Attack()
     {
         state = PlayerState.attacking;
+        followUpAttack = false;
         float angle;
         //determine attack direction
         if (Input.GetAxisRaw("Horizontal") == 0) {
@@ -572,6 +571,8 @@ public class PlayerTestScript : MonoBehaviour
         //set anim
         anim.SetTrigger("Attack");
 
+        yield return new WaitForSeconds(attackRate/2);
+
         //instantiate attack object
         GameObject a = Instantiate(attack, transform.position, Quaternion.AngleAxis(angle, Vector3.forward), gameObject.transform);
         a.transform.localScale = new Vector3(8, 8, 8);
@@ -580,16 +581,83 @@ public class PlayerTestScript : MonoBehaviour
         //see if enemies are hit and do damage
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
         //find closest collider and damage
-        if (hitEnemies.Length == 0) { return; }
-        Collider2D closestEnemy = hitEnemies[0];
-        float dist = Vector2.Distance(hitEnemies[0].transform.position, transform.position);
-        foreach(Collider2D enemy in hitEnemies)
-        {
-            float tempDist = Vector2.Distance(enemy.transform.position, transform.position);
-            if(tempDist < dist) { closestEnemy = enemy; dist = tempDist; }
+        if (hitEnemies.Length > 0) {
+            Collider2D closestEnemy = hitEnemies[0];
+            float dist = Vector2.Distance(hitEnemies[0].transform.position, transform.position);
+            foreach (Collider2D enemy in hitEnemies)
+            {
+                float tempDist = Vector2.Distance(enemy.transform.position, transform.position);
+                if (tempDist < dist) { closestEnemy = enemy; dist = tempDist; }
+            }
+            ComboInc();
+            closestEnemy.GetComponent<EnemyCompositeHB>().TakeDamage(AttackDamage);
         }
-        ComboInc();
-        closestEnemy.GetComponent<EnemyCompositeHB>().TakeDamage(AttackDamage);
+
+        yield return new WaitForSeconds(attackRate / 2);
+
+        anim.SetTrigger("Attack");
+
+        if (followUpAttack) {
+            StartCoroutine(nameof(FollowUpAttack));
+        } else
+        {
+            state = PlayerState.idle;
+        }
+
+    }
+
+    IEnumerator FollowUpAttack()
+    {
+        anim.SetTrigger("FollowUp");
+
+        followUpAttack = false;
+        float angle;
+        //determine attack direction
+        if (Input.GetAxisRaw("Horizontal") == 0)
+        {
+            if (Input.GetAxisRaw("Vertical") == 0)
+            {
+                angle = (Mathf.Atan2(0, 1 * (facingLeft ? -1 : 1)) * Mathf.Rad2Deg - 90);
+            }
+            else { angle = (Mathf.Atan2(Input.GetAxisRaw("Vertical"), 0) * Mathf.Rad2Deg - 90); }
+        }
+        else { angle = Mathf.Atan2(Input.GetAxisRaw("Vertical"), Input.GetAxisRaw("Horizontal")) * Mathf.Rad2Deg - 90; }
+
+        yield return new WaitForSeconds(attackRate / 2);
+
+        //instantiate attack object
+        GameObject a = Instantiate(attack, transform.position, Quaternion.AngleAxis(angle, Vector3.forward), gameObject.transform);
+        a.transform.localScale = new Vector3(-8, 8, 8);
+        attackPoint.localPosition = new Vector3(attackDistance * Mathf.Cos((angle + 90 + (facingLeft ? 0 : 180)) * Mathf.Deg2Rad), attackDistance * Mathf.Sin((angle + 90) * Mathf.Deg2Rad), 0);
+
+        //see if enemies are hit and do damage
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
+        //find closest collider and damage
+        if (hitEnemies.Length > 0)
+        {
+            Collider2D closestEnemy = hitEnemies[0];
+            float dist = Vector2.Distance(hitEnemies[0].transform.position, transform.position);
+            foreach (Collider2D enemy in hitEnemies)
+            {
+                float tempDist = Vector2.Distance(enemy.transform.position, transform.position);
+                if (tempDist < dist) { closestEnemy = enemy; dist = tempDist; }
+            }
+            ComboInc();
+            closestEnemy.GetComponent<EnemyCompositeHB>().TakeDamage(AttackDamage);
+        }
+
+        yield return new WaitForSeconds(attackRate / 2);
+
+        anim.ResetTrigger("FollowUp");
+
+        if (followUpAttack)
+        {
+            StartCoroutine(nameof(Attack));
+        }
+        else
+        {
+            state = PlayerState.idle;
+        }
     }
 
     private void OnDrawGizmosSelected()
