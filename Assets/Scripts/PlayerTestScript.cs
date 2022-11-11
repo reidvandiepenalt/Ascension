@@ -436,8 +436,8 @@ public class PlayerTestScript : MonoBehaviour
         CalculateVelocity();
 
         //Attack and skills
-        if (state == PlayerState.attacking && Input.GetKeyDown("h")) followUpAttack = true;
-        if (Input.GetKeyDown("h") && (state == PlayerState.idle || state == PlayerState.gliding || state == PlayerState.walking))
+        if (state == PlayerState.attacking && Input.GetKeyDown(KeyCode.H)) followUpAttack = true;
+        if (Input.GetKeyDown(KeyCode.H) && (state == PlayerState.idle || state == PlayerState.gliding || state == PlayerState.walking))
         {
             StartCoroutine(nameof(Attack));
         }
@@ -569,9 +569,9 @@ public class PlayerTestScript : MonoBehaviour
         else { angle = Mathf.Atan2(Input.GetAxisRaw("Vertical"), Input.GetAxisRaw("Horizontal")) * Mathf.Rad2Deg - 90; }
 
         //set anim
-        anim.SetTrigger("Attack");
+        anim.SetBool("Attacking", true);
 
-        yield return new WaitForSeconds(attackRate/2);
+        yield return new WaitForSeconds(attackRate/4);
 
         //instantiate attack object
         GameObject a = Instantiate(attack, transform.position, Quaternion.AngleAxis(angle, Vector3.forward), gameObject.transform);
@@ -593,23 +593,21 @@ public class PlayerTestScript : MonoBehaviour
             closestEnemy.GetComponent<EnemyCompositeHB>().TakeDamage(AttackDamage);
         }
 
-        yield return new WaitForSeconds(attackRate / 2);
-
-        anim.SetTrigger("Attack");
+        yield return new WaitForSeconds(3 * attackRate / 4 - 0.15f);
 
         if (followUpAttack) {
+            yield return new WaitForSeconds(0.15f);
             StartCoroutine(nameof(FollowUpAttack));
         } else
         {
             state = PlayerState.idle;
+            anim.SetBool("Attacking", false);
         }
 
     }
 
     IEnumerator FollowUpAttack()
     {
-        anim.SetTrigger("FollowUp");
-
         followUpAttack = false;
         float angle;
         //determine attack direction
@@ -623,7 +621,7 @@ public class PlayerTestScript : MonoBehaviour
         }
         else { angle = Mathf.Atan2(Input.GetAxisRaw("Vertical"), Input.GetAxisRaw("Horizontal")) * Mathf.Rad2Deg - 90; }
 
-        yield return new WaitForSeconds(attackRate / 2);
+        yield return new WaitForSeconds(attackRate / 4);
 
         //instantiate attack object
         GameObject a = Instantiate(attack, transform.position, Quaternion.AngleAxis(angle, Vector3.forward), gameObject.transform);
@@ -646,17 +644,17 @@ public class PlayerTestScript : MonoBehaviour
             closestEnemy.GetComponent<EnemyCompositeHB>().TakeDamage(AttackDamage);
         }
 
-        yield return new WaitForSeconds(attackRate / 2);
-
-        anim.ResetTrigger("FollowUp");
+        yield return new WaitForSeconds(3 * attackRate / 4 - 0.15f);
 
         if (followUpAttack)
         {
+            yield return new WaitForSeconds(0.15f);
             StartCoroutine(nameof(Attack));
         }
         else
         {
             state = PlayerState.idle;
+            anim.SetBool("Attacking", false);
         }
     }
 

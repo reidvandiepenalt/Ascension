@@ -18,8 +18,6 @@ public class BlessingPickup : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            blessing.unlocked = true;
-
             switch (blessing.pickup)
             {
                 case BlessingPickups.TernaryAnima:
