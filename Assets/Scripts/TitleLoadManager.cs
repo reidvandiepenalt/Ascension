@@ -10,6 +10,7 @@ public class TitleLoadManager : MonoBehaviour
     public void LoadGame()
     {
         BossStatuses.Load();
+        BlessingPickupInfo.Load();
         PlayerInfo.Load();
 
         changeScenes.levelName = PlayerInfo.Instance.sceneName;

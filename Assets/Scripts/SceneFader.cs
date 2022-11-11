@@ -6,7 +6,7 @@ public class SceneFader : MonoBehaviour
 {
     public GameObject fadeInPanel;
     public GameObject fadeOutPanel;
-    public float fadeWait;
+    public static float fadeWait = 2f;
 
     
 
@@ -22,7 +22,7 @@ public class SceneFader : MonoBehaviour
 
     public void ChangeScene()
     {
-        StartCoroutine("FadeCo");
+        StartCoroutine(nameof(FadeCo));
     }
 
     public IEnumerator FadeCo()

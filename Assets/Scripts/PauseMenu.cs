@@ -73,6 +73,9 @@ public class PauseMenu : MonoBehaviour
     {
         //go to main menu
         PlayerInfo.Save();
+        BlessingPickupInfo.Save();
+        BossStatuses.Save();
+        Settings.Save();
 
         Destroy(PlayerTestScript.vmCam);
         Destroy(PlayerTestScript.mainCam);
@@ -85,7 +88,7 @@ public class PauseMenu : MonoBehaviour
 
         Time.timeScale = 1f;
         Pause.isPaused = false;
-        StartCoroutine("LoadMainMenu");
+        StartCoroutine(nameof(LoadMainMenu));
     }
 
     IEnumerator LoadMainMenu()

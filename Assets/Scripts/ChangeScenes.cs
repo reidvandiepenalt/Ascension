@@ -8,7 +8,6 @@ public class ChangeScenes : MonoBehaviour
     public string levelName;
     public Vector2 startPosition;
     public BoolValue loadFromTransition;
-    public float fadeWait;
     [SerializeField] Signal fadeSceneOutSignal;
     public PlayerInfo.EgyptTransitions roomTransition;
  
@@ -36,7 +35,7 @@ public class ChangeScenes : MonoBehaviour
     public IEnumerator FadeCo()
     {
         AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(levelName);
-        yield return new WaitForSeconds(fadeWait);
+        yield return new WaitForSeconds(SceneFader.fadeWait);
         while (!asyncOperation.isDone)
         {
             yield return null;
