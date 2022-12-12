@@ -115,6 +115,8 @@ public class PlayerTestScript : MonoBehaviour
     public GameObject MainCamPrefab;
     public GameObject vmCamPrefab;
 
+    [SerializeField] PlayerSFXManager playerSFXManager;
+
     [SerializeField] Transform camFollowTarget;
     public static Camera mainCam;
     public static GameObject vmCam;
@@ -571,6 +573,8 @@ public class PlayerTestScript : MonoBehaviour
         //set anim
         anim.SetBool("Attacking", true);
 
+        playerSFXManager.PlayMelee1();
+
         yield return new WaitForSeconds(attackRate/4);
 
         //instantiate attack object
@@ -620,6 +624,8 @@ public class PlayerTestScript : MonoBehaviour
             else { angle = (Mathf.Atan2(Input.GetAxisRaw("Vertical"), 0) * Mathf.Rad2Deg - 90); }
         }
         else { angle = Mathf.Atan2(Input.GetAxisRaw("Vertical"), Input.GetAxisRaw("Horizontal")) * Mathf.Rad2Deg - 90; }
+
+        playerSFXManager.PlayMelee2();
 
         yield return new WaitForSeconds(attackRate / 4);
 
