@@ -10,6 +10,7 @@ public class PlayerSFXManager : MonoBehaviour
     public AudioSource Jump;
     public AudioSource DoubleJump;
     public AudioSource Glide;
+    public AudioSource Land;
 
     public void PlayMelee1()
     {
@@ -26,6 +27,11 @@ public class PlayerSFXManager : MonoBehaviour
         Walk.Play();
     }
 
+    public void StopWalk()
+    {
+        Walk.Stop();
+    }
+
     public void PlayJump()
     {
         Jump.Play();
@@ -39,5 +45,10 @@ public class PlayerSFXManager : MonoBehaviour
     public void PlayGlide()
     {
         Glide.Play();
+    }
+
+    public void PlayLand()
+    {
+        Land.Play();
     }
 }

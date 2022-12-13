@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Cinemachine;
+using System.Drawing;
 
 public class PlayerTestScript : MonoBehaviour
 {
@@ -338,6 +339,7 @@ public class PlayerTestScript : MonoBehaviour
             velocity.y = maxJumpVelocity;
             controller.collisions.below = false;
             state = PlayerState.idle;
+            playerSFXManager.PlayJump();
         }
         else if (PlayerInfo.Instance.doubleJumpUnlock && !doubleJumpUsed && !controller.collisions.below && 
             (state == PlayerState.idle || state == PlayerState.gliding || state == PlayerState.walking))//doublejump
@@ -427,11 +429,17 @@ public class PlayerTestScript : MonoBehaviour
         if (directionalInput.x != 0 && controller.collisions.below)
         {
             anim.SetBool("Walking", true);
-            if (state == PlayerState.idle) { state = PlayerState.walking; }
+            if (state == PlayerState.idle) { 
+                state = PlayerState.walking;
+                playerSFXManager.PlayWalk();
+            }
         } else if (directionalInput.x == 0 && controller.collisions.below)
         {
             anim.SetBool("Walking", false);
-            if (state == PlayerState.walking) { state = PlayerState.idle; }
+            if (state == PlayerState.walking) { 
+                state = PlayerState.idle;
+                playerSFXManager.StopWalk();
+            }
         }
 
         //Calc velocity
@@ -488,10 +496,16 @@ public class PlayerTestScript : MonoBehaviour
         if (!controller.collisions.below && !anim.GetBool("InAir"))
         {
             anim.SetBool("InAir", true);
+            playerSFXManager.StopWalk();
         }
         else if(controller.collisions.below)
         {
-            anim.SetBool("InAir", false);
+            if (anim.GetBool("InAir"))
+            {
+                anim.SetBool("InAir", false);
+                playerSFXManager.PlayLand();
+            }
+            
             UpdateLastGround();
         }
     }
