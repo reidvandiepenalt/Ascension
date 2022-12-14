@@ -116,7 +116,7 @@ public class PlayerTestScript : MonoBehaviour
     public GameObject MainCamPrefab;
     public GameObject vmCamPrefab;
 
-    [SerializeField] PlayerSFXManager playerSFXManager;
+    public PlayerSFXManager playerSFXManager;
 
     [SerializeField] Transform camFollowTarget;
     public static Camera mainCam;
@@ -348,6 +348,7 @@ public class PlayerTestScript : MonoBehaviour
             doubleJumpUsed = true;
             state = PlayerState.gliding;
             anim.SetTrigger("DoubleJump");
+            playerSFXManager.PlayDoubleJump();
             //if upgraded, spawn stun objects
             if (PlayerInfo.Instance.doubleJumpUpgrade)
             {
@@ -378,6 +379,7 @@ public class PlayerTestScript : MonoBehaviour
             state = PlayerState.gliding;
             velocity.y = glideSpeed;
             anim.SetBool("Gliding", true);
+            playerSFXManager.PlayGlide();
         }
     }
 
@@ -393,6 +395,7 @@ public class PlayerTestScript : MonoBehaviour
         }
         state = PlayerState.idle;
         anim.SetBool("Gliding", false);
+        playerSFXManager.StopGlide();
         if (velocity.y > minJumpVelocity) //going up
         {
             velocity.y = minJumpVelocity;

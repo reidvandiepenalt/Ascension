@@ -30,6 +30,7 @@ public class FeatherShotTypes : MonoBehaviour
             || playerScript.state == PlayerTestScript.PlayerState.walking) && (shotUIScript.charge >= 1 || playerScript.debugSkills))
         {
             anim.SetTrigger("Shoot");
+            playerScript.playerSFXManager.PlayFeatherShot();
             playerScript.state = PlayerTestScript.PlayerState.shooting;
             shotUIScript.ResetCombo();
             GameObject feather = Instantiate(shotFeather, gameObject.transform.position, Quaternion.identity);
@@ -57,6 +58,7 @@ public class FeatherShotTypes : MonoBehaviour
             || playerScript.state == PlayerTestScript.PlayerState.walking) && (shotUIScript.charge >= 1 || playerScript.debugSkills))
         {
             anim.SetTrigger("Shoot");
+            playerScript.playerSFXManager.PlayFeatherShot();
             playerScript.state = PlayerTestScript.PlayerState.shooting;
             shotUIScript.ResetCombo();
             GameObject boomer = Instantiate(boomerang, gameObject.transform.position, Quaternion.identity);
@@ -84,6 +86,7 @@ public class FeatherShotTypes : MonoBehaviour
             || playerScript.state == PlayerTestScript.PlayerState.walking) && (shotUIScript.charge >= 1 || playerScript.debugSkills))
         {
             anim.SetTrigger("Shoot");
+            playerScript.playerSFXManager.PlayFeatherShot();
             playerScript.state = PlayerTestScript.PlayerState.shooting;
             shotUIScript.ResetCombo();
             GameObject fireBall = Instantiate(fireball, gameObject.transform.position, Quaternion.identity);
