@@ -7,6 +7,7 @@ public class FirePlume : MonoBehaviour
     [SerializeField] Animator anim;
     [SerializeField] FirePlumeFireball[] fireballs;
     [SerializeField] FloorFire[] floorFires;
+    [SerializeField] AudioSource sfx;
 
     public void Begin(Vector2 position, BennuAI.Phase phase)
     {
@@ -15,14 +16,15 @@ public class FirePlume : MonoBehaviour
         
         if(phase == BennuAI.Phase.two)
         {
-            Invoke("SpawnFireballs", 11f/20f);
+            Invoke(nameof(SpawnFireballs), 11f/20f);
         }
 
-        Invoke("End", 7f/12f);
+        Invoke(nameof(End), 7f/12f);
     }
 
     void SpawnFireballs()
     {
+        sfx.Play();
         for(int i = 0; i < fireballs.Length; i++)
         {
             fireballs[i].Launch(transform.position + Vector3.up * 1.5f, 45 + 30 * i);

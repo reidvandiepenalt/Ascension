@@ -9,6 +9,7 @@ public class HomingFireball : MonoBehaviour
     [SerializeField] float time_p1, time_p2;
     [SerializeField] ParticleSystem particleSystem;
     [SerializeField] Animator anim;
+    [SerializeField] AudioSource endSFX;
     float currentTime = 0f;
     Transform playerTransform;
     BennuAI.Phase curPhase = BennuAI.Phase.one;
@@ -25,8 +26,9 @@ public class HomingFireball : MonoBehaviour
         if(currentTime >= ((curPhase == BennuAI.Phase.one) ? time_p1 : time_p2))
         {
             anim.SetTrigger("Explode");
+            endSFX.Play();
             SpawnFBS();
-            Invoke("End", 0.33f);
+            Invoke(nameof(End), 0.33f);
         }
     }
 
