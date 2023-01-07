@@ -10,6 +10,7 @@ public class PatrolEnemyTest : EnemyAI
     public Patrolling initDirection;
     public LayerMask layerMask;
     [SerializeField] bool usePlatformEdges;
+    [SerializeField] EnemySFXManager SFXManager;
 
     Patrolling patrolling;
 
@@ -22,6 +23,8 @@ public class PatrolEnemyTest : EnemyAI
     override protected void Start()
     {
         base.Start();
+
+        SFXManager.PlayMove();
 
         if (usePlatformEdges)
         {
@@ -39,8 +42,14 @@ public class PatrolEnemyTest : EnemyAI
             target = rightPatrolPoint;
             patrolling = Patrolling.right;
         }
-        InvokeRepeating("CheckDist", 0f, 0.1f);
-        InvokeRepeating("UpdatePath", 0f, 0.2f);
+        InvokeRepeating(nameof(CheckDist), 0f, 0.1f);
+        InvokeRepeating(nameof(UpdatePath), 0f, 0.2f);
+    }
+
+    public override void OnHit(object param)
+    {
+        SFXManager.PlayHit();
+        base.OnHit(param);
     }
 
     /// <summary>
@@ -103,8 +112,8 @@ public class PatrolEnemyTest : EnemyAI
         }
 
         //move toward next waypoint
-        Vector2 direction = new Vector2((patrolling == Patrolling.left) ? -1 : 1, 0);
-        Vector3 toMove = direction * speed * Time.deltaTime;
+        Vector2 direction = new((patrolling == Patrolling.left) ? -1 : 1, 0);
+        Vector3 toMove = speed * Time.deltaTime * direction;
         transform.position += toMove;
 
         //see if close enough to waypoint to switch to next
