@@ -5,13 +5,23 @@ using Pathfinding;
 
 public class FlyerTest : EnemyAI
 {
+    [SerializeField] EnemySFXManager SFXManager;
+
     protected override void Start()
     {
+        SFXManager.PlayMove();
+
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
         target = GameObject.FindGameObjectWithTag("Player").transform;
 
-        InvokeRepeating("CheckDist", 0f, 1f);
+        InvokeRepeating(nameof(CheckDist), 0f, 1f);
+    }
+
+    public override void OnHit(object param)
+    {
+        SFXManager.PlayHit();
+        base.OnHit(param);
     }
 
     /// <summary>
@@ -24,7 +34,7 @@ public class FlyerTest : EnemyAI
         //aggro
         if (dist <= aggroDistance)
         {
-            InvokeRepeating("UpdatePath", 0f, 0.5f);
+            InvokeRepeating(nameof(UpdatePath), 0f, 0.5f);
         }
         //deaggro
         if (dist >= stopDistance)
