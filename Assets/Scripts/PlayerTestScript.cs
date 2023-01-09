@@ -731,13 +731,14 @@ public class PlayerTestScript : MonoBehaviour
                 return;
             }
             //not guarding
+            playerSFXManager.PlayHit();
             currentHealth.Value -= damage;
             playerHealthSignal.RaiseSignal();
             if (currentHealth.Value <= 0 && !dead)
             {
                 anim.SetTrigger("Dead");
                 dead = true;
-                Invoke("Respawn", 0.5f);
+                Invoke(nameof(Respawn), 0.5f);
             }
             else if (!dead)
             {
@@ -777,7 +778,7 @@ public class PlayerTestScript : MonoBehaviour
     private void StartInvinc()
     {
         hitInvincible = true;
-        Invoke("EndInvinc", invincLength);
+        Invoke(nameof(EndInvinc), invincLength);
         anim.SetBool("Invinc", true);
     }
 
@@ -809,7 +810,7 @@ public class PlayerTestScript : MonoBehaviour
                 RaycastHit2D hit = Physics2D.Raycast(gameObject.transform.position, Vector2.left, backstepStunRange, LayerMask.GetMask("Enemies"));
                 if (hit.collider != null)
                 {
-                    if (hit.collider.tag == "Enemy")
+                    if (hit.collider.CompareTag("Enemy"))
                     {
                         hit.collider.gameObject.GetComponent<EnemyHealth>().Stun(backstepStunTime);
                     }
@@ -820,7 +821,7 @@ public class PlayerTestScript : MonoBehaviour
                 RaycastHit2D hit = Physics2D.Raycast(gameObject.transform.position, Vector2.right, backstepStunRange, LayerMask.GetMask("Enemies"));
                 if (hit.transform != null)
                 {
-                    if (hit.transform.gameObject.tag == "Enemy")
+                    if (hit.transform.gameObject.CompareTag("Enemy"))
                     {
                         hit.collider.gameObject.GetComponent<EnemyHealth>().Stun(backstepStunTime);
                     }
@@ -891,7 +892,7 @@ public class PlayerTestScript : MonoBehaviour
                 velocity.y = dashBounceVelocity;
 
                 skillInvincible = true;
-                Invoke("StopSkillInvinc", 0.25f);
+                Invoke(nameof(StopSkillInvinc), 0.25f);
 
                 return;
             }

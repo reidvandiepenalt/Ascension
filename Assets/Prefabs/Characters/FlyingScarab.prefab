@@ -94,8 +94,8 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: dec989410fa938e4495c72da776fa13a, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.595
-  m_Pitch: 0.925
+  m_Volume: 0.05
+  m_Pitch: 1
   Loop: 1
   Mute: 0
   Spatialize: 0
@@ -103,7 +103,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 50
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -287,7 +287,7 @@ MonoBehaviour:
   aggroDistance: 40
   stopDistance: 60
   enemyGFX: {fileID: 2023613689293995424}
-  SFXManager: {fileID: 0}
+  SFXManager: {fileID: 1679267459154805235}
 --- !u!114 &9151839318872568390
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -478,7 +478,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 50
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0

@@ -12,6 +12,7 @@ public class PlayerSFXManager : MonoBehaviour
     public AudioSource Glide;
     public AudioSource Land;
     public AudioSource FeatherShot;
+    public AudioSource Hit;
 
     public void PlayMelee1()
     {
@@ -61,5 +62,10 @@ public class PlayerSFXManager : MonoBehaviour
     public void PlayFeatherShot()
     {
         FeatherShot.Play();
+    }
+
+    public void PlayHit()
+    {
+        Hit.Play();
     }
 }

@@ -156,7 +156,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: be667cbbe49af3c4983c9bc9b6689a26, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.496
+  m_Volume: 0.25
   m_Pitch: 2
   Loop: 1
   Mute: 0
@@ -165,7 +165,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 50
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -293,7 +293,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 50
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -483,7 +483,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   usePlatformEdges: 0
-  SFXManager: {fileID: 0}
+  SFXManager: {fileID: 1482714619658940298}
 --- !u!61 &1414429553764010505
 BoxCollider2D:
   m_ObjectHideFlags: 0
