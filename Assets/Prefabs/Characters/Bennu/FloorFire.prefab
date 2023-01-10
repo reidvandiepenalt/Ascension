@@ -611,7 +611,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 5a98be5bb31da784cb10df216acdfd53, type: 3}
+  m_audioClip: {fileID: 8300000, guid: adae43360004b654ea97a4ae9686e45f, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 0.325
   m_Pitch: 1
@@ -621,8 +621,8 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 1
-  MaxDistance: 500
+  MinDistance: 5
+  MaxDistance: 50
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -657,7 +657,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -672,7 +672,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 0.25
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -897,8 +897,8 @@ MonoBehaviour:
   - {fileID: 3347188542915156581}
   - {fileID: 9150056825508979350}
   m_Bounds:
-    m_Center: {x: -0.0011048317, y: 0.000007390976, z: 0}
-    m_Extent: {x: 0.92755497, y: 2.4649925, z: 0}
+    m_Center: {x: -0.0011010766, y: 0.00000166893, z: 0}
+    m_Extent: {x: 0.92755497, y: 2.465002, z: 0}
   m_UseBatching: 1
   m_AlwaysUpdate: 1
   m_AutoRebind: 0
@@ -1070,8 +1070,8 @@ MonoBehaviour:
   - {fileID: 3656563361390526496}
   - {fileID: 2510443149173396835}
   m_Bounds:
-    m_Center: {x: -0.0019100904, y: -0.000007390976, z: 0}
-    m_Extent: {x: 1.1080899, y: 2.1749926, z: 0}
+    m_Center: {x: -0.0019122362, y: 0.00000023841858, z: 0}
+    m_Extent: {x: 1.1080916, y: 2.1750002, z: 0}
   m_UseBatching: 1
   m_AlwaysUpdate: 1
   m_AutoRebind: 0
@@ -1243,8 +1243,8 @@ MonoBehaviour:
   - {fileID: 367574267951341532}
   - {fileID: 2325671418439027527}
   m_Bounds:
-    m_Center: {x: 0.00043916702, y: -0.0013520718, z: 0}
-    m_Extent: {x: 1.0245614, y: 2.3625636, z: 0}
+    m_Center: {x: 0.00044441223, y: -0.0013597012, z: 0}
+    m_Extent: {x: 1.0245562, y: 2.3625712, z: 0}
   m_UseBatching: 1
   m_AlwaysUpdate: 1
   m_AutoRebind: 0
@@ -1384,7 +1384,7 @@ MonoBehaviour:
   - {fileID: 1333538813208795870}
   - {fileID: 1314013520985785830}
   m_Bounds:
-    m_Center: {x: -0.00034445524, y: 0.002170086, z: 0}
+    m_Center: {x: -0.00034821033, y: 0.0021548271, z: 0}
     m_Extent: {x: 0.8456952, y: 2.1678452, z: 0}
   m_UseBatching: 1
   m_AlwaysUpdate: 1
@@ -1558,8 +1558,8 @@ MonoBehaviour:
   - {fileID: 636989423752686192}
   - {fileID: 7460605521329580514}
   m_Bounds:
-    m_Center: {x: -0.00049489737, y: 0.0020148754, z: 0}
-    m_Extent: {x: 0.7845052, y: 2.3679848, z: 0}
+    m_Center: {x: -0.00049489737, y: 0.002012968, z: 0}
+    m_Extent: {x: 0.7845052, y: 2.3679867, z: 0}
   m_UseBatching: 1
   m_AlwaysUpdate: 1
   m_AutoRebind: 0
