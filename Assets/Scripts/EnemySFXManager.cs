@@ -8,6 +8,7 @@ public class EnemySFXManager : MonoBehaviour
     public AudioSource Jump;
     public AudioSource Land;
     public AudioSource Hit;
+    public AudioSource Attack;
 
     public void PlayMove()
     {
@@ -32,5 +33,10 @@ public class EnemySFXManager : MonoBehaviour
     public void PlayHit()
     {
         Hit.Play();
+    }
+
+    public void PlayAttack()
+    {
+        Attack.Play();
     }
 }

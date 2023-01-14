@@ -374,12 +374,15 @@ public class PlayerTestScript : MonoBehaviour
         {
             return;
         }
-        if (velocity.y < 0 && (state == PlayerState.idle || state == PlayerState.gliding || state == PlayerState.walking) && !controller.collisions.below)
+        if (velocity.y < 0 && (state == PlayerState.idle  || state == PlayerState.walking) && !controller.collisions.below)
         {
             state = PlayerState.gliding;
             velocity.y = glideSpeed;
             anim.SetBool("Gliding", true);
             playerSFXManager.PlayGlide();
+        }else if (state == PlayerState.gliding)
+        {
+            velocity.y = glideSpeed;
         }
     }
 

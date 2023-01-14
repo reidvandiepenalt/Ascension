@@ -24,6 +24,8 @@ public class MummyGraph : MonoBehaviour
     public Transform player;
     float playerYOffset;
 
+    public EnemySFXManager sfxManager;
+
     public LayerMask groundLayer;
     private ContactFilter2D filter;
     private Collider2D collider;
@@ -51,17 +53,6 @@ public class MummyGraph : MonoBehaviour
     Queue<Vector2> jumpPath;
 
     public Animator anim;
-
-    int horizontalRayCount;
-    int verticalRayCount;
-
-    float maxClimbAngle = 60;
-    float maxDescendAngle = 60;
-
-    float horizontalRaySpacing;
-    float verticalRaySpacing;
-    const float skinWidth = 0.05f;
-    const float distBetweenRays = 0.2f;
 
 
     public void OnStun(object param)
@@ -103,7 +94,7 @@ public class MummyGraph : MonoBehaviour
         }*/
 
         //set checkdist to repeatedly invoke
-        InvokeRepeating("CheckDist", 0f, 0.5f);
+        InvokeRepeating(nameof(CheckDist), 0f, 0.5f);
     }
 
     /// <summary>
@@ -276,6 +267,7 @@ public class MummyGraph : MonoBehaviour
                             float dir = ((jumpFailedMoveTo.x - transform.position.x) > 0) ? 1 : -1;
                             velocity.x = dir * speed;
                             anim.SetBool("Walk", true);
+                            sfxManager.PlayMove();
                         }
                         else
                         {
@@ -283,6 +275,7 @@ public class MummyGraph : MonoBehaviour
                             float dir = ((path.vectorPath[currentWaypoint].x - transform.position.x) > 0) ? 1 : -1;
                             velocity.x = dir * speed;
                             anim.SetBool("Walk", true);
+                            sfxManager.PlayMove();
 
                             //dont walk if next node is air
                             /*try
@@ -295,11 +288,12 @@ public class MummyGraph : MonoBehaviour
                             }
                             catch 
                             {*/
-                                if (path.path[currentWaypoint].Tag == 1)
-                                {
-                                    velocity.x = 0;
-                                    anim.SetBool("Walk", false);
-                                }
+                            if (path.path[currentWaypoint].Tag == 1)
+                            {
+                                 velocity.x = 0;
+                                 anim.SetBool("Walk", false);
+                                 sfxManager.StopMove();
+                            }
                             //}
                             
                         }
@@ -386,6 +380,7 @@ public class MummyGraph : MonoBehaviour
             //outside aggro range; deaggro
             state = State.idle;
             anim.SetBool("Walk", false);
+            sfxManager.StopMove();
             return;
         }
         else if (state == State.idle && Vector2.Distance(player.transform.position, transform.position) < aggroRange)
@@ -420,6 +415,8 @@ public class MummyGraph : MonoBehaviour
     void JumpStartFinished()
     {
         state = State.jumping;
+        sfxManager.StopMove();
+        sfxManager.PlayJump();
     }
 
     /// <summary>
@@ -457,7 +454,7 @@ public class MummyGraph : MonoBehaviour
                     anim.SetBool("Grounded", false);
                     UpdateJumpFailMoveTo(landingPoint);
                     state = State.jumpStart;
-                    Invoke("JumpStartFinished", 0.1f);
+                    Invoke(nameof(JumpStartFinished), 0.1f);
                     return;
                 }
                 else //if ceiling; try shallower angle
@@ -483,7 +480,7 @@ public class MummyGraph : MonoBehaviour
                             anim.SetBool("Grounded", false);
                             UpdateJumpFailMoveTo(landingPoint);
                             state = State.jumpStart;
-                            Invoke("JumpStartOver", 2 * Time.fixedDeltaTime);
+                            //Invoke("JumpStartOver", 2 * Time.fixedDeltaTime);
                             return;
                         }
                     }
@@ -616,6 +613,8 @@ public class MummyGraph : MonoBehaviour
         anim.SetFloat("AttackY", attackDir.y);
         anim.SetTrigger("Attack");
         velocity.x = 0;
+        sfxManager.StopMove();
+        sfxManager.PlayAttack();
         while (anim.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
         {
             yield return null;
