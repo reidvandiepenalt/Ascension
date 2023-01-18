@@ -8,6 +8,7 @@ public class BennuAI : MonoBehaviour
     [SerializeField] EnemyHealth healthManager;
     [SerializeField] Animator anim;
     [SerializeField] LayerMask groundLayer;
+    [SerializeField] BennuSFXManager sfxManager;
 
     int phase2Anim, flyingBeamAnim, arcAnim, homingBombAnim, plumeAnim, diveAnim, xDiveAnim, yDiveAnim, landedBeamAnim;
 
