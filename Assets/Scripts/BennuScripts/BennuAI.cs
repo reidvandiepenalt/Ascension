@@ -91,17 +91,21 @@ public class BennuAI : MonoBehaviour
         {
             Die();
         }
-        else if (health < (healthManager.MaxHealth / 2f) && phase == Phase.one)
+        else
         {
-            phase = Phase.two;
-            anim.SetBool(phase2Anim, true);
-        }
-        else if (health < 15)
-        {
-            if(phase == Phase.two)
+            sfxManager.PlayHit();
+            if (health < (healthManager.MaxHealth / 2f) && phase == Phase.one)
             {
-                healthManager.SetHealth(15);
-                phase = Phase.three;
+                phase = Phase.two;
+                anim.SetBool(phase2Anim, true);
+            }
+            else if (health < 15)
+            {
+                if (phase == Phase.two)
+                {
+                    healthManager.SetHealth(15);
+                    phase = Phase.three;
+                }
             }
         }
     }
@@ -195,6 +199,7 @@ public class BennuAI : MonoBehaviour
     /// </summary>
     void MoveStraight()
     {
+        sfxManager.StartMovement();
         //reached destination
         if (Vector2.Distance(transform.position, moveTarget) < speed * Time.deltaTime)
         {
@@ -290,6 +295,7 @@ public class BennuAI : MonoBehaviour
         //plume anim
         anim.SetTrigger(plumeAnim);
         yield return new WaitForSeconds(1 / 6f);
+        sfxManager.PlayCall();
 
         firePlume.Begin(NearestPlatformPoint(playerTransform.position, false), phase);
 
@@ -332,6 +338,7 @@ public class BennuAI : MonoBehaviour
         //homing fireball anim
         anim.SetTrigger(homingBombAnim);
         yield return new WaitForSeconds(7 / 60f);
+        sfxManager.PlayFirebreath();
 
         homingFireball.Begin(playerTransform, transform.position + Vector3.up * centerOffset, phase);
 
@@ -358,6 +365,7 @@ public class BennuAI : MonoBehaviour
         //fire arc anim
         anim.SetTrigger(arcAnim);
         yield return new WaitForSeconds(1 / 6f);
+        sfxManager.PlayFirebreath();
 
         bool p1 = phase == Phase.one;
         float centerAngle = Mathf.Atan2(playerTransform.position.y - mouthTransform.position.y, playerTransform.position.x - mouthTransform.position.x);
@@ -408,6 +416,7 @@ public class BennuAI : MonoBehaviour
         //fire beam anim
         anim.SetTrigger(flyingBeamAnim);
         yield return new WaitForSeconds(1/6f);
+        sfxManager.StartFirebreath();
 
         float angle = Mathf.Atan2(playerTransform.position.y - mouthTransform.position.y, playerTransform.position.x - mouthTransform.position.x);
         bool p1 = phase == Phase.one;
@@ -431,6 +440,7 @@ public class BennuAI : MonoBehaviour
             RapidFireIndex++;
             yield return new WaitForSeconds(0.05f);
         }
+        sfxManager.EndFirebreath();
 
         //wait for anim to finish
         yield return new WaitForSeconds(p1 ? (5 / 12f) : 0.25f);
@@ -456,6 +466,7 @@ public class BennuAI : MonoBehaviour
         //fire rain anim
         anim.SetTrigger(plumeAnim);
         yield return new WaitForSeconds(1 / 6f);
+        sfxManager.PlayCall();
 
         bool p1 = phase == Phase.one;
         for (int i = 0; i < fireRainFireballs.Count / (p1 ? 2 : 1); i++)
@@ -496,6 +507,9 @@ public class BennuAI : MonoBehaviour
         speedMod = 2;
         isMoving = true;
         yield return new WaitWhile(() => isMoving);
+
+        sfxManager.EndMovement();
+
         speedMod = 1;
 
         if(phase == Phase.two)
@@ -533,6 +547,7 @@ public class BennuAI : MonoBehaviour
         //start landed beam anim
         anim.SetTrigger(landedBeamAnim);
         yield return new WaitForSeconds(0.25f);
+        sfxManager.StartFirebreath();
 
         bool p1 = phase == Phase.one;
         float angle = facingRight ? 0 : 180;
@@ -553,6 +568,7 @@ public class BennuAI : MonoBehaviour
                 yield return new WaitForSeconds(0.05f);
             }
         }
+        sfxManager.EndFirebreath();
 
         //wait for anim to finish
         yield return new WaitForSeconds(p1 ? 0.25f : 1 / 3f);
@@ -611,19 +627,14 @@ public class BennuAI : MonoBehaviour
     /// <returns>random position in the quadrant</returns>
     Vector2 RandomQuadrantPosition(Quadrant quad)
     {
-        switch (quad)
+        return quad switch
         {
-            case Quadrant.topRight:
-                return new Vector2(Random.Range(arenaCenterX, arenaMaxX), Random.Range(arenaCenterY, arenaMaxY));
-            case Quadrant.topLeft:
-                return new Vector2(Random.Range(arenaMinX, arenaCenterX), Random.Range(arenaCenterY, arenaMaxY));
-            case Quadrant.bottomLeft:
-                return new Vector2(Random.Range(arenaMinX, arenaCenterX), Random.Range(arenaMinY, arenaCenterY));
-            case Quadrant.bottomRight:
-                return new Vector2(Random.Range(arenaCenterX, arenaMaxX), Random.Range(arenaMinY, arenaCenterY));
-            default:
-                return Vector2.zero;
-        }
+            Quadrant.topRight => new Vector2(Random.Range(arenaCenterX, arenaMaxX), Random.Range(arenaCenterY, arenaMaxY)),
+            Quadrant.topLeft => new Vector2(Random.Range(arenaMinX, arenaCenterX), Random.Range(arenaCenterY, arenaMaxY)),
+            Quadrant.bottomLeft => new Vector2(Random.Range(arenaMinX, arenaCenterX), Random.Range(arenaMinY, arenaCenterY)),
+            Quadrant.bottomRight => new Vector2(Random.Range(arenaCenterX, arenaMaxX), Random.Range(arenaMinY, arenaCenterY)),
+            _ => Vector2.zero,
+        };
     }
 
     /// <summary>

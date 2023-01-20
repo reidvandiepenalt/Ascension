@@ -21,6 +21,7 @@ public class BennuSFXManager : MonoBehaviour
 
     public void StartMovement()
     {
+        if (Movement.isPlaying) return;
         Movement.Play();
     }
 
@@ -31,11 +32,18 @@ public class BennuSFXManager : MonoBehaviour
 
     public void StartFirebreath()
     {
+        Firebreath.loop = true;
         Firebreath.Play();
     }
 
     public void EndFirebreath()
     {
         Firebreath.Stop();
+    }
+
+    public void PlayFirebreath()
+    {
+        Firebreath.loop = false;
+        Firebreath.Play();
     }
 }
