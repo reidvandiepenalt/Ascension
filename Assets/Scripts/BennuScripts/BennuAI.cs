@@ -503,11 +503,14 @@ public class BennuAI : MonoBehaviour
         anim.SetFloat(yDiveAnim, Mathf.Sin(angle));
         //dive anim
         anim.SetTrigger(diveAnim);
+        sfxManager.PlayCall();
+        sfxManager.StartDive();
 
         speedMod = 2;
         isMoving = true;
         yield return new WaitWhile(() => isMoving);
 
+        sfxManager.EndDive();
         sfxManager.EndMovement();
 
         speedMod = 1;

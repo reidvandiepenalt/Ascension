@@ -8,6 +8,7 @@ public class BennuSFXManager : MonoBehaviour
     public AudioSource Movement;
     public AudioSource Call;
     public AudioSource Firebreath;
+    public AudioSource Dive;
 
     public void PlayHit()
     {
@@ -45,5 +46,15 @@ public class BennuSFXManager : MonoBehaviour
     {
         Firebreath.loop = false;
         Firebreath.Play();
+    }
+
+    public void StartDive()
+    {
+        Dive.Play();
+    }
+
+    public void EndDive()
+    {
+        Dive.Stop();
     }
 }
