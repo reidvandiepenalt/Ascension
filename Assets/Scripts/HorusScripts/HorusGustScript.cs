@@ -13,6 +13,8 @@ public class HorusGustScript : MonoBehaviour
     bool grounded = false;
     int dir = 0;
 
+    [SerializeField] AudioSource sfx;
+
     private void Start()
     {
         speed = initSpeed;
@@ -30,7 +32,7 @@ public class HorusGustScript : MonoBehaviour
             { 
                 transform.position = groundTarget; 
                 grounded = true; 
-                Invoke("StartDisable", timeToDespawn);
+                Invoke(nameof(StartDisable), timeToDespawn);
             }
             else
             {
@@ -53,10 +55,16 @@ public class HorusGustScript : MonoBehaviour
     private void OnDisable()
     {
         transform.position = new Vector3(-100, -100, 0);
+        sfx.Stop();
     }
 
     void StartDisable()
     {
         gameObject.SetActive(false);
+    }
+
+    private void OnEnable()
+    {
+        sfx.Play();
     }
 }
