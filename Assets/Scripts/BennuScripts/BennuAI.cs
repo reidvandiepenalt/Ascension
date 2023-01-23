@@ -86,26 +86,23 @@ public class BennuAI : MonoBehaviour
 
     public void OnHit(object parameter)
     {
+        sfxManager.PlayHit();
         int health = (int)parameter;
         if (health < 0 && phase == Phase.three)
         {
             Die();
         }
-        else
+        else if (health < (healthManager.MaxHealth / 2f) && phase == Phase.one)
         {
-            sfxManager.PlayHit();
-            if (health < (healthManager.MaxHealth / 2f) && phase == Phase.one)
+            phase = Phase.two;
+            anim.SetBool(phase2Anim, true);
+        }
+        else if (health < 15)
+        {
+            if (phase == Phase.two)
             {
-                phase = Phase.two;
-                anim.SetBool(phase2Anim, true);
-            }
-            else if (health < 15)
-            {
-                if (phase == Phase.two)
-                {
-                    healthManager.SetHealth(15);
-                    phase = Phase.three;
-                }
+                healthManager.SetHealth(15);
+                phase = Phase.three;
             }
         }
     }

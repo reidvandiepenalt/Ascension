@@ -12,6 +12,7 @@ public class HorusSFXManager : MonoBehaviour
 
     public void PlayDive()
     {
+        StopWings();
         dive.Play();
     }
 
@@ -27,6 +28,7 @@ public class HorusSFXManager : MonoBehaviour
 
     public void PlayWings()
     {
+        if (dive.isPlaying || swoop.isPlaying || wings.isPlaying) return;
         wings.Play();
     }
 
@@ -37,6 +39,7 @@ public class HorusSFXManager : MonoBehaviour
 
     public void PlaySwoop()
     {
+        StopWings();
         swoop.Play();
     }
 
