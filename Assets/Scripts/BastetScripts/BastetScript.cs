@@ -54,6 +54,8 @@ public class BastetScript : MonoBehaviour
     Collider2D playerCollider;
     float playerGroundOffset;
 
+    [SerializeField] BastetSFXManager sfxManager;
+
     bool isMoving = false;
     bool IsMoving { get => isMoving; set { anim.SetBool(runningAnim, value); isMoving = value; } }
     public Queue<Action> actionQ = new Queue<Action>();

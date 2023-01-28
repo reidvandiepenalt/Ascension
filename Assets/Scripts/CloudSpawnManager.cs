@@ -20,7 +20,7 @@ public class CloudSpawnManager : MonoBehaviour
             GameObject newCloud = Instantiate(cloud, transform);
             bool leftSpawn = Random.Range(0, 2) == 0;
             newCloud.transform.position = new Vector3(Random.Range(topLeft.x, bottomRight.x),
-                Random.Range(bottomRight.y, topLeft.y), 65);
+                Random.Range(bottomRight.y, topLeft.y), 0);
             CloudScript script = newCloud.GetComponent<CloudScript>();
             script.SetConditions(topLeft.x - 10, bottomRight.x + 10, Random.Range(0.6f, 0.8f) * (leftSpawn ? 1 : -1));
             newCloud.GetComponent<SpriteRenderer>().sprite = cloudSprites[Random.Range(0, cloudSprites.Length)];
