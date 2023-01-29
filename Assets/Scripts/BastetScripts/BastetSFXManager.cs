@@ -6,11 +6,19 @@ public class BastetSFXManager : MonoBehaviour
 {
     public AudioSource Movement;
     public AudioSource Hurt;
-    public AudioSource Call;
+    public AudioSource Call1;
+    public AudioSource Call2;
     public AudioSource TailWhip;
     public AudioSource Jump;
     public AudioSource Swipe;
     public AudioSource EyeFlash;
+
+    System.Random rng;
+
+    public void Start()
+    {
+        rng = new System.Random();
+    }
 
     public void PlayMovement()
     {
@@ -30,7 +38,14 @@ public class BastetSFXManager : MonoBehaviour
 
     public void PlayCall()
     {
-        Call.Play();
+        if(rng.NextDouble() > 0.5f)
+        {
+            Call1.Play();
+        }
+        else
+        {
+            Call2.Play();
+        }
     }
 
     public void PlayTailWhip()
