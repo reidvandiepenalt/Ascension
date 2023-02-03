@@ -12,6 +12,7 @@ public class BastetSFXManager : MonoBehaviour
     public AudioSource Jump;
     public AudioSource Swipe;
     public AudioSource EyeFlash;
+    public AudioSource Stomp;
 
     System.Random rng;
 
@@ -66,5 +67,10 @@ public class BastetSFXManager : MonoBehaviour
     public void PlayEyeFlash()
     {
         EyeFlash.Play();
+    }
+
+    public void PlayStomp()
+    {
+        Stomp.Play();
     }
 }

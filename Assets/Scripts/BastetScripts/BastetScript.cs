@@ -138,6 +138,7 @@ public class BastetScript : MonoBehaviour
 
     public void OnHit(object parameter)
     {
+        sfxManager.PlayHurt();
         int health = (int)parameter;
         if (health < 0)
         {
@@ -230,7 +231,7 @@ public class BastetScript : MonoBehaviour
                     }
                 }
                 
-                Debug.DrawLine(transform.position, path.Peek(), Color.magenta, 5f);
+                //Debug.DrawLine(transform.position, path.Peek(), Color.magenta, 5f);
                 transform.position = path.Dequeue();
                 if (!reachedEndOfPath)
                 {
@@ -268,6 +269,7 @@ public class BastetScript : MonoBehaviour
 
         if (CheckXDistToMoveTarget()) { return; }
         movement.Move(Time.fixedDeltaTime * velocity);
+        if (movement.collisions.below) sfxManager.PlayMovement();
     }
 
 
@@ -276,8 +278,6 @@ public class BastetScript : MonoBehaviour
     /// </summary>
     IEnumerator ClawPlatform()
     {
-        Debug.Log("clawPlatform");
-
         attacking = true;
 
         bool clawRight = navTarget.x > transform.position.x;
@@ -326,11 +326,13 @@ public class BastetScript : MonoBehaviour
             clawRight = navTarget.x > transform.position.x;
 
             yield return null;
-        } 
+        }
 
         //claw down anim
+        sfxManager.PlayCall();
         anim.SetBool(stompAnim, true);
         yield return new WaitForSeconds(0.25f);
+        sfxManager.PlayStomp();
 
         Bounds platform = Physics2D.Raycast(transform.position + Vector3.up, Vector2.down, Mathf.Infinity, groundLayer).collider.bounds;
         //3 or 1 seperate claw spawns (adjust to spawn at paw?)
@@ -394,8 +396,6 @@ public class BastetScript : MonoBehaviour
     /// </summary>
     IEnumerator Backflip()
     {
-        Debug.Log("backflip");
-
         attacking = true;
 
         anim.SetTrigger(backflipAnim);
@@ -407,15 +407,19 @@ public class BastetScript : MonoBehaviour
         GeneratePath(new Vector2(Mathf.Clamp(transform.position.x + (facingRight ? -8 : 8),
             platform.min.x + 2, platform.max.x - 2), transform.position.y), 0.25f);
 
+        sfxManager.PlayJump();
         yield return new WaitForEndOfFrame();
         yield return new WaitUntil(() => reachedEndOfPath);
         
         if(phase == Phase.two)
         {
+            sfxManager.PlayCall();
+            yield return new WaitForSeconds(0.15f);
             //claw down anim
             anim.SetTrigger(stompAnim);
             yield return new WaitForEndOfFrame();
             yield return new WaitForSeconds(0.5f);
+            sfxManager.PlayStomp();
 
             int directionMod = facingRight ? 1 : -1;
             for (int i = 0; i < 4; i++)
@@ -456,8 +460,6 @@ public class BastetScript : MonoBehaviour
     /// </summary>
     IEnumerator TailSwipe()
     {
-        Debug.Log("tail");
-
         attacking = true;
 
         speedMod = 1f;
@@ -518,6 +520,7 @@ public class BastetScript : MonoBehaviour
                 {
                     ts.direction = -1;
                 }
+                sfxManager.PlayTailWhip();
                 break;
             case Phase.two:
                 anim.SetTrigger(doubleTailAnim);
@@ -527,12 +530,14 @@ public class BastetScript : MonoBehaviour
                 {
                     ts1.direction = -1;
                 }
+                sfxManager.PlayTailWhip();
                 yield return new WaitForSeconds(1f / 3f);
                 TailSwipeScript ts2 = Instantiate(tailSwipePrefab, tailEnd.position, Quaternion.identity).GetComponent<TailSwipeScript>();
                 if (!facingRight)
                 {
                     ts2.direction = -1;
                 }
+                sfxManager.PlayTailWhip();
                 break;
         }
         
@@ -552,8 +557,6 @@ public class BastetScript : MonoBehaviour
     /// </summary>
     IEnumerator ClawSwipe()
     {
-        Debug.Log("claw swipe");
-
         attacking = true;
 
         speedMod = 1f;
@@ -595,6 +598,7 @@ public class BastetScript : MonoBehaviour
         {
             case Phase.one:
                 anim.SetTrigger(clawAnim);
+                sfxManager.PlaySwipe();
 
                 //wait until(Anim is done)
                 yield return new WaitForFixedUpdate();
@@ -605,6 +609,7 @@ public class BastetScript : MonoBehaviour
                 break;
             case Phase.two:
                 anim.SetTrigger(eyeFlashAnim);
+                sfxManager.PlayEyeFlash();
 
                 //wait until first anim is done
                 yield return new WaitForEndOfFrame();
@@ -636,6 +641,7 @@ public class BastetScript : MonoBehaviour
                 anim.SetBool(animBool, false);
 
                 anim.SetTrigger(clawAnim);
+                sfxManager.PlaySwipe();
                 //wait until claw anim is done
                 yield return new WaitForFixedUpdate();
                 yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length - anim.GetCurrentAnimatorStateInfo(0).normalizedTime);
@@ -655,8 +661,6 @@ public class BastetScript : MonoBehaviour
     /// </summary>
     IEnumerator Charge()
     {
-        Debug.Log("charge");
-
         attacking = true;
 
         speedMod = 1f;
@@ -731,6 +735,7 @@ public class BastetScript : MonoBehaviour
 
         int animBool = (playerTransform.position.x > transform.position.x) ? blurRightAnim : blurLeftAnim;
         anim.SetBool(animBool, true);
+        sfxManager.PlayCall();
 
         //store start point
         Vector2 start = transform.position;
@@ -764,6 +769,7 @@ public class BastetScript : MonoBehaviour
 
             int animBoolP2 = (playerTransform.position.x > transform.position.x) ? blurRightAnim : blurLeftAnim;
             anim.SetBool(animBoolP2, true);
+            sfxManager.PlayCall();
 
             //go back
             moveTarget = start;
@@ -889,6 +895,7 @@ public class BastetScript : MonoBehaviour
 
             //jump anim start
             yield return new WaitForSeconds(0.25f);
+            sfxManager.PlayJump();
 
             if (jumpStart != jumpEnd)
             {
@@ -941,6 +948,7 @@ public class BastetScript : MonoBehaviour
                 transform.position = new Vector3(moveTarget.x, transform.position.y, transform.position.z);
                 velocity.x = 0;
                 IsMoving = false;
+                sfxManager.StopMovement();
                 return true;
             }
         }
@@ -1031,7 +1039,7 @@ public class BastetScript : MonoBehaviour
     void GeneratePath(Vector2 startPoint, Vector2 endPoint, float timeToMove)
     {
         endPoint.y += 0.1f;
-        Debug.DrawLine(startPoint, endPoint, Color.red, 5f);
+        //Debug.DrawLine(startPoint, endPoint, Color.red, 5f);
 
         reachedEndOfPath = false;
         int numSteps = (int)((1/Time.fixedDeltaTime) * timeToMove);
