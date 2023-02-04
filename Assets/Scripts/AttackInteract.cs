@@ -8,7 +8,7 @@ public class AttackInteract : MonoBehaviour
     public GameObject player;
     public List<int> instanceIDs;
 
-    void OnTriggerEnter2D(Collider2D target)
+    protected virtual void OnTriggerEnter2D(Collider2D target)
     {
         //deal damage if target collision is an enemy and increase combo
         if (target.gameObject.CompareTag("Enemy"))

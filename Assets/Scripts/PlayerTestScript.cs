@@ -9,6 +9,8 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Cinemachine;
 using System.Drawing;
+using UnityEngine.Rendering.Universal;
+using UnityEngine.UIElements;
 
 public class PlayerTestScript : MonoBehaviour
 {
@@ -39,9 +41,6 @@ public class PlayerTestScript : MonoBehaviour
     float nextAttackTime = 0f;
     bool followUpAttack = false;
     [SerializeField] float attackRate = .23f;
-    public Transform attackPoint;
-    public float attackRange = 0.5f;
-    public float attackDistance = 10f;
     public int baseAttackDamage = 10;
     public int AttackDamage { get => (int)(baseAttackDamage * (rtsrEnabled ? rtsrDamageMod : 1) * (polarityEnabled ? polarityDamageMod : 1)); }
     public float rtsrDamageMod = 1.5f;
@@ -97,7 +96,8 @@ public class PlayerTestScript : MonoBehaviour
     public LayerMask groundMask;
 
     Animator anim;
-    public GameObject attack;
+    public GameObject attackParent;
+    public AttackInteract attackInteract;
     public GameObject gustStun;
     public GameObject sprayFeather; 
     public GameObject shotUI;
@@ -579,16 +579,6 @@ public class PlayerTestScript : MonoBehaviour
     {
         state = PlayerState.attacking;
         followUpAttack = false;
-        float angle;
-        //determine attack direction
-        if (Input.GetAxisRaw("Horizontal") == 0) {
-            if (Input.GetAxisRaw("Vertical") == 0)
-            {
-                angle = (Mathf.Atan2(0, 1 * (facingLeft ? -1 : 1)) * Mathf.Rad2Deg - 90);
-            } 
-            else { angle = (Mathf.Atan2(Input.GetAxisRaw("Vertical"), 0) * Mathf.Rad2Deg - 90); }
-        } 
-        else { angle = Mathf.Atan2(Input.GetAxisRaw("Vertical"), Input.GetAxisRaw("Horizontal")) * Mathf.Rad2Deg - 90; }
 
         //set anim
         anim.SetBool("Attacking", true);
@@ -597,27 +587,10 @@ public class PlayerTestScript : MonoBehaviour
 
         yield return new WaitForSeconds(attackRate/4);
 
-        //instantiate attack object
-        GameObject a = Instantiate(attack, transform.position, Quaternion.AngleAxis(angle, Vector3.forward), gameObject.transform);
-        a.transform.localScale = new Vector3(8, 8, 8);
-        attackPoint.localPosition = new Vector3(attackDistance * Mathf.Cos((angle + 90 + (facingLeft?0:180)) * Mathf.Deg2Rad), attackDistance * Mathf.Sin((angle + 90) * Mathf.Deg2Rad), 0);
-
-        //see if enemies are hit and do damage
-        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
-        //find closest collider and damage
-        if (hitEnemies.Length > 0) {
-            Collider2D closestEnemy = hitEnemies[0];
-            float dist = Vector2.Distance(hitEnemies[0].transform.position, transform.position);
-            foreach (Collider2D enemy in hitEnemies)
-            {
-                float tempDist = Vector2.Distance(enemy.transform.position, transform.position);
-                if (tempDist < dist) { closestEnemy = enemy; dist = tempDist; }
-            }
-            ComboInc();
-            closestEnemy.GetComponent<EnemyCompositeHB>().TakeDamage(AttackDamage);
-        }
+        BaseAttack();
 
         yield return new WaitForSeconds(3 * attackRate / 4 - 0.15f);
+        attackParent.SetActive(false);
 
         if (followUpAttack) {
             yield return new WaitForSeconds(0.15f);
@@ -633,44 +606,15 @@ public class PlayerTestScript : MonoBehaviour
     IEnumerator FollowUpAttack()
     {
         followUpAttack = false;
-        float angle;
-        //determine attack direction
-        if (Input.GetAxisRaw("Horizontal") == 0)
-        {
-            if (Input.GetAxisRaw("Vertical") == 0)
-            {
-                angle = (Mathf.Atan2(0, 1 * (facingLeft ? -1 : 1)) * Mathf.Rad2Deg - 90);
-            }
-            else { angle = (Mathf.Atan2(Input.GetAxisRaw("Vertical"), 0) * Mathf.Rad2Deg - 90); }
-        }
-        else { angle = Mathf.Atan2(Input.GetAxisRaw("Vertical"), Input.GetAxisRaw("Horizontal")) * Mathf.Rad2Deg - 90; }
 
         playerSFXManager.PlayMelee2();
 
         yield return new WaitForSeconds(attackRate / 4);
 
-        //instantiate attack object
-        GameObject a = Instantiate(attack, transform.position, Quaternion.AngleAxis(angle, Vector3.forward), gameObject.transform);
-        a.transform.localScale = new Vector3(-8, 8, 8);
-        attackPoint.localPosition = new Vector3(attackDistance * Mathf.Cos((angle + 90 + (facingLeft ? 0 : 180)) * Mathf.Deg2Rad), attackDistance * Mathf.Sin((angle + 90) * Mathf.Deg2Rad), 0);
-
-        //see if enemies are hit and do damage
-        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
-        //find closest collider and damage
-        if (hitEnemies.Length > 0)
-        {
-            Collider2D closestEnemy = hitEnemies[0];
-            float dist = Vector2.Distance(hitEnemies[0].transform.position, transform.position);
-            foreach (Collider2D enemy in hitEnemies)
-            {
-                float tempDist = Vector2.Distance(enemy.transform.position, transform.position);
-                if (tempDist < dist) { closestEnemy = enemy; dist = tempDist; }
-            }
-            ComboInc();
-            closestEnemy.GetComponent<EnemyCompositeHB>().TakeDamage(AttackDamage);
-        }
+        BaseAttack(true);
 
         yield return new WaitForSeconds(3 * attackRate / 4 - 0.15f);
+        attackParent.SetActive(false);
 
         if (followUpAttack)
         {
@@ -684,11 +628,32 @@ public class PlayerTestScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Used to not repeat code between start and follow up attacks
+    /// </summary>
+    private void BaseAttack(bool followUp = false)
+    {
+        float angle;
+        //determine attack direction
+        if (Input.GetAxisRaw("Horizontal") == 0)
+        {
+            if (Input.GetAxisRaw("Vertical") == 0)
+            {
+                angle = (Mathf.Atan2(0, 1 * (facingLeft ? -1 : 1)) * Mathf.Rad2Deg - 90);
+            }
+            else { angle = (Mathf.Atan2(Input.GetAxisRaw("Vertical"), 0) * Mathf.Rad2Deg - 90); }
+        }
+        else { angle = Mathf.Atan2(Input.GetAxisRaw("Vertical"), Input.GetAxisRaw("Horizontal")) * Mathf.Rad2Deg - 90; }
+
+        //wake attack object
+        attackParent.SetActive(true);
+        if ((attackParent.transform.localScale.x > 0 && followUp) || (attackParent.transform.localScale.x < 0 && !followUp)) attackParent.transform.localScale = new Vector3(-attackParent.transform.localScale.x, attackParent.transform.localScale.y, attackParent.transform.localScale.z);
+        attackParent.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        attackInteract.attackDamage = AttackDamage;
+    }
+
     private void OnDrawGizmosSelected()
     {
-        //debug gizmos
-        if (attackPoint == null) { return; }
-        Gizmos.DrawWireSphere(attackPoint.position, attackRange);
         if(dashHitbox == null) { return; }
         Gizmos.DrawWireSphere(dashHitbox.position, dashHBRange);
     }

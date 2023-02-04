@@ -1118,68 +1118,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!1 &633380719637127750
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 9136653257418229229}
-  - component: {fileID: 5168245972339492543}
-  - component: {fileID: 8927386914188349445}
-  m_Layer: 11
-  m_Name: HitBox
-  m_TagString: Enemy
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &9136653257418229229
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 633380719637127750}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8806920545047155133}
-  m_RootOrder: 6
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!70 &5168245972339492543
-CapsuleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 633380719637127750}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 3.9, y: -1.29}
-  m_Size: {x: 11.43, y: 6.2}
-  m_Direction: 1
---- !u!114 &8927386914188349445
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 633380719637127750}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 73e23ba329a29cd409c7e83fb1e95ff8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  healthManager: {fileID: 2036496289249553037}
 --- !u!1 &1013340992156622043
 GameObject:
   m_ObjectHideFlags: 0
@@ -1310,7 +1248,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2036496287934058673}
-  m_LocalRotation: {x: -0, y: -0, z: 0.9722565, w: -0.23391749}
+  m_LocalRotation: {x: -0, y: -0, z: 0.9722569, w: -0.2339158}
   m_LocalPosition: {x: 1.12, y: 0.02, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -11988,8 +11926,8 @@ MonoBehaviour:
   m_BoneTransforms:
   - {fileID: 3660245839562828576}
   m_Bounds:
-    m_Center: {x: -0.8779272, y: -1.5584524, z: 0}
-    m_Extent: {x: 0.8214885, y: 0.55803275, z: 0}
+    m_Center: {x: -0.8779347, y: -1.5584524, z: 0}
+    m_Extent: {x: 0.82148933, y: 0.55803084, z: 0}
   m_UseBatching: 1
   m_AlwaysUpdate: 1
   m_AutoRebind: 0
@@ -12009,7 +11947,8 @@ GameObject:
   - component: {fileID: 2036496289249553032}
   - component: {fileID: 2036496289249553034}
   - component: {fileID: 2036496289249553037}
-  m_Layer: 15
+  - component: {fileID: 8072473120212391312}
+  m_Layer: 11
   m_Name: Bast
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -12091,7 +12030,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.5800581, y: 3.5931764}
+  m_Offset: {x: 1.1877236, y: 4.0928116}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -12102,7 +12041,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 9.027843, y: 7.1268206}
+  m_Size: {x: 10.243175, y: 8.126091}
   m_EdgeRadius: 0
 --- !u!95 &2036496289249553068
 Animator:
@@ -12235,6 +12174,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 150
+--- !u!114 &8072473120212391312
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3335044119469563554}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e23ba329a29cd409c7e83fb1e95ff8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthManager: {fileID: 2036496289249553037}
 --- !u!1 &3531092782766062290
 GameObject:
   m_ObjectHideFlags: 0
@@ -13028,7 +12980,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5422952335827553729}
-  m_LocalRotation: {x: 0, y: 0, z: 0.0016147126, w: 0.9999987}
+  m_LocalRotation: {x: 0, y: 0, z: 0.0016153783, w: 0.99999875}
   m_LocalPosition: {x: 1.138, y: 0.003, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -13105,7 +13057,6 @@ Transform:
   - {fileID: 2417690960699624458}
   - {fileID: 4162041281602602941}
   - {fileID: 7646966753990375585}
-  - {fileID: 9136653257418229229}
   m_Father: {fileID: 4748195978231183061}
   m_RootOrder: 16
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 5.439}
@@ -13376,7 +13327,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6919352054053555636}
-  m_LocalRotation: {x: 0, y: 0, z: 0.000363948, w: 0.99999994}
+  m_LocalRotation: {x: 0, y: 0, z: 0.0003626045, w: 1}
   m_LocalPosition: {x: 1.2720063, y: 0.00000045002028, z: 0}
   m_LocalScale: {x: 1.0000001, y: 1.0000001, z: 1}
   m_ConstrainProportionsScale: 0
@@ -13440,7 +13391,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7585044134589822107}
-  m_LocalRotation: {x: 0, y: 0, z: -0.008641574, w: 0.9999627}
+  m_LocalRotation: {x: 0, y: 0, z: -0.008639148, w: 0.9999627}
   m_LocalPosition: {x: 1.3290187, y: 0.00000050877793, z: 0}
   m_LocalScale: {x: 0.9999999, y: 0.9999999, z: 1}
   m_ConstrainProportionsScale: 0
@@ -13551,8 +13502,8 @@ MonoBehaviour:
   m_BoneTransforms:
   - {fileID: 3758596615269854010}
   m_Bounds:
-    m_Center: {x: -0.45693898, y: -0.9343493, z: 0}
-    m_Extent: {x: 0.8149748, y: 0.5738478, z: 0}
+    m_Center: {x: -0.4569428, y: -0.9343494, z: 0}
+    m_Extent: {x: 0.814975, y: 0.57384706, z: 0}
   m_UseBatching: 1
   m_AlwaysUpdate: 1
   m_AutoRebind: 0
@@ -13849,8 +13800,8 @@ MonoBehaviour:
   m_BoneTransforms:
   - {fileID: 6104677733269739200}
   m_Bounds:
-    m_Center: {x: -0.6616628, y: -1.2366605, z: 0}
-    m_Extent: {x: 0.8206308, y: 0.56017846, z: 0}
+    m_Center: {x: -0.6616705, y: -1.2366605, z: 0}
+    m_Extent: {x: 0.8206305, y: 0.5601792, z: 0}
   m_UseBatching: 1
   m_AlwaysUpdate: 1
   m_AutoRebind: 0
