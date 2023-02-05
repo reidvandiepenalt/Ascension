@@ -2,11 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BennuAI : MonoBehaviour
+public class BennuAI : BossAI
 {
-    [SerializeField] GameObject item;
-    [SerializeField] EnemyHealth healthManager;
-    [SerializeField] Animator anim;
     [SerializeField] LayerMask groundLayer;
     [SerializeField] BennuSFXManager sfxManager;
 
@@ -77,14 +74,14 @@ public class BennuAI : MonoBehaviour
         bottomRight
     }
 
-    public void OnStun(object param)
+    public override void OnStun(object param)
     {
         float time = (float)param;
         //stun for a given time
 
     }
 
-    public void OnHit(object parameter)
+    public override void OnHit(object parameter)
     {
         sfxManager.PlayHit();
         int health = (int)parameter;
@@ -107,7 +104,7 @@ public class BennuAI : MonoBehaviour
         }
     }
 
-    void Die()
+    protected override void Die()
     {
         //implement
 
@@ -152,7 +149,7 @@ public class BennuAI : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (Pause.isPaused) { return; }
+        if (Pause.isPaused || !AIisActive) { return; }
 
         if(actionQ.Count == 0) { PickAttack(); }
 

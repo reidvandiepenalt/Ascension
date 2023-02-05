@@ -2,15 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BastetScript : MonoBehaviour
+public class BastetScript : BossAI
 {
-    [SerializeField] GameObject item;
     [SerializeField] Dictionary<JumpPoint, Vector2> jumpPoints;
     [SerializeField] GameObject jumpParent;
     [SerializeField] EnemyCollisionMovementHandler movement;
-    [SerializeField] EnemyHealth healthManager;
     [SerializeField] LayerMask groundLayer;
-    [SerializeField] Animator anim;
 
     [SerializeField] GameObject swipePrefab, clawFacingRight, clawFacingLeft, clawUp, tailSwipePrefab;
     [SerializeField] Transform tailEnd;
@@ -129,14 +126,14 @@ public class BastetScript : MonoBehaviour
     }
 
 
-    public void OnStun(object param)
+    public override void OnStun(object param)
     {
         float time = (float)param;
         //stun for a given time
 
     }
 
-    public void OnHit(object parameter)
+    public override void OnHit(object parameter)
     {
         sfxManager.PlayHurt();
         int health = (int)parameter;
@@ -150,7 +147,7 @@ public class BastetScript : MonoBehaviour
         }
     }
 
-    void Die()
+    protected override void Die()
     {
         //implement
 
@@ -187,7 +184,7 @@ public class BastetScript : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (Pause.isPaused) { return; }
+        if (Pause.isPaused || !AIisActive) { return; }
 
         if (movement.collisions.below) { velocity.y = 0; } else
         {
@@ -212,7 +209,7 @@ public class BastetScript : MonoBehaviour
             {
                 if(actionQ.Peek() != Action.backflip)
                 {
-                    //flip on inflction point
+                    //flip on inflection point
                     if (transform.position.x > path.Peek().x && facingRight)
                     {
                         facingRight = false;

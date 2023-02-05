@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HorusAI : MonoBehaviour
+public class HorusAI : BossAI
 {
     enum Attack
     {
@@ -11,7 +11,6 @@ public class HorusAI : MonoBehaviour
         rain,
         shotgun,
         gusts,
-        //peck,?
         xAttack,
         swoop
     }
@@ -50,8 +49,6 @@ public class HorusAI : MonoBehaviour
 
     [SerializeField] HorusWingAttackScript wingAttack;
 
-    [SerializeField] GameObject item;
-
     public Vector2 topLeft;
     public Vector2 bottomRight;
     public LayerMask groundMask;
@@ -66,8 +63,6 @@ public class HorusAI : MonoBehaviour
     public List<HorusFeatherScript> disabledFeathers;
     public List<HorusFeatherScript> enabledFeathers;
 
-    public Animator anim;
-
     Vector2 moveTarget = Vector2.zero;
     bool isMoving = false;
 
@@ -81,24 +76,23 @@ public class HorusAI : MonoBehaviour
     public Transform playerTransform;
     float playerGroundOffset;
 
-    [SerializeField] EnemyHealth healthManager;
-    [SerializeField] HorusSFXManager sfx;
+    [SerializeField] HorusSFXManager sfxManager;
 
     System.Random rng;
 
     bool facingRight = true;
     bool spiraling = false;
 
-    public void OnStun(object param)
+    public override void OnStun(object param)
     {
         float time = (float)param;
         //stun for a given time
 
     }
 
-    public void OnHit(object parameter)
+    public override void OnHit(object parameter)
     {
-        sfx.PlayHurt();
+        sfxManager.PlayHurt();
         int health = (int)parameter;
         if(health < 0)
         {
@@ -112,7 +106,7 @@ public class HorusAI : MonoBehaviour
         }
     }
 
-    void Die()
+    protected override void Die()
     {
         //implement
 
@@ -135,7 +129,7 @@ public class HorusAI : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (Pause.isPaused) { return; }
+        if (Pause.isPaused || !AIisActive) { return; }
 
         //Entry point
         if(CurrentAttack == Attack.idle)
@@ -154,7 +148,7 @@ public class HorusAI : MonoBehaviour
     /// </summary>
     void MoveStraight()
     {
-        sfx.PlayWings();
+        sfxManager.PlayWings();
 
         //reached destination
         if (Vector2.Distance(transform.position, moveTarget) < speed * speedMod * Time.deltaTime)
@@ -271,10 +265,10 @@ public class HorusAI : MonoBehaviour
                 {
                     anim.SetBool("UpDiveLeft", true);
                 }
-                sfx.PlayDive();
+                sfxManager.PlayDive();
 
                 yield return new WaitForSeconds(0.1f);
-                sfx.StopDive();
+                sfxManager.StopDive();
 
                 isMoving = true;
                 moveTarget = new Vector2(transform.position.x, topLeft.y);
@@ -290,10 +284,10 @@ public class HorusAI : MonoBehaviour
                 {
                     anim.SetBool("UpDiveLeft", false);
                 }
-                sfx.PlayDive();
+                sfxManager.PlayDive();
 
                 yield return new WaitForSeconds(0.1f);
-                sfx.StopDive();
+                sfxManager.StopDive();
 
                 break;
             case Phase.three:
@@ -320,7 +314,7 @@ public class HorusAI : MonoBehaviour
                 {
                     anim.SetBool("DiveLeft", true);
                 }
-                sfx.PlayDive();
+                sfxManager.PlayDive();
                 for (int i = 0; i < 5; i++)
                 {
                     yield return StartCoroutine(AOEDive());
@@ -334,7 +328,7 @@ public class HorusAI : MonoBehaviour
                 {
                     anim.SetBool("DiveLeft", false);
                 }
-                sfx.StopDive();
+                sfxManager.StopDive();
 
                 break;
         }
@@ -407,7 +401,7 @@ public class HorusAI : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
 
         //dive
-        sfx.PlayDive();
+        sfxManager.PlayDive();
         isMoving = true;
         moveTarget = new Vector2(transform.position.x, bottomRight.y);
         speedMod = 3;
@@ -422,7 +416,7 @@ public class HorusAI : MonoBehaviour
         {
             anim.SetBool("DiveLeft", false);
         }
-        sfx.StopDive();
+        sfxManager.StopDive();
     }
 
     IEnumerator Gust()
@@ -455,7 +449,7 @@ public class HorusAI : MonoBehaviour
                     Left = false;
                 }
                 
-                sfx.PlayDive();
+                sfxManager.PlayDive();
                 moveTarget.x = playerTransform.position.x + ((ToRightOfPlayer) ? -6 : 6);
                 isMoving = true;
                 speedMod = 2.5f;
@@ -468,7 +462,7 @@ public class HorusAI : MonoBehaviour
                 {
                     anim.SetBool("DashRight", false);
                 }
-                sfx.StopDive();
+                sfxManager.StopDive();
 
 
                 break;
@@ -482,7 +476,7 @@ public class HorusAI : MonoBehaviour
                 while (isMoving) { yield return null; }
 
                 //spawn tornado
-                sfx.PlayCall();
+                sfxManager.PlayCall();
                 tornado.SetActive(true);
                 tornado.transform.position = new Vector2(CenterX, bottomRight.y);
 
@@ -539,7 +533,7 @@ public class HorusAI : MonoBehaviour
         facingRight = dir != 1;
 
         //gust anim
-        sfx.PlayCall();
+        sfxManager.PlayCall();
         anim.SetTrigger("Gust");
         yield return new WaitForSeconds(0.15f);
 
@@ -619,7 +613,7 @@ public class HorusAI : MonoBehaviour
         moveTarget.x = (dir == -1) ? bottomRight.x - 4 : topLeft.x + 4;
         speedMod = 2f;
         isMoving = true;
-        sfx.PlayDive();
+        sfxManager.PlayDive();
         if(dir == -1) { anim.SetBool("DashRight", true); } else
         {
             anim.SetBool("DashLeft", true);
@@ -639,7 +633,7 @@ public class HorusAI : MonoBehaviour
         {
             anim.SetBool("DashLeft", false);
         }
-        sfx.StopDive();
+        sfxManager.StopDive();
     }
 
     IEnumerator Shotgun()
@@ -938,7 +932,7 @@ public class HorusAI : MonoBehaviour
                 moveTarget.y = CenterY;
                 speedMod = 0.2f;
                 isMoving = true;
-                sfx.PlaySwoop();
+                sfxManager.PlaySwoop();
                 while (isMoving)
                 {
                     if(Vector2.Distance(transform.position, moveTarget) < 1)
@@ -957,7 +951,7 @@ public class HorusAI : MonoBehaviour
                 anim.SetBool("Spiral", false);
                 anim.SetBool("Rotate", false);
                 spiraling = false;
-                sfx.StopSwoop();
+                sfxManager.StopSwoop();
                 
                 break;
         }
@@ -988,8 +982,8 @@ public class HorusAI : MonoBehaviour
         }
 
         anim.SetBool("Swoop", true);
-        sfx.PlaySwoop();
-        sfx.PlayCall();
+        sfxManager.PlaySwoop();
+        sfxManager.PlayCall();
         //first segment
         moveTarget.x = playerTransform.position.x + dir;
         moveTarget.y = playerTransform.position.y - (3 * playerGroundOffset / 4);
@@ -1002,6 +996,6 @@ public class HorusAI : MonoBehaviour
         speedMod = 1.5f;
         while (isMoving) { yield return null; }
         anim.SetBool("Swoop", false);
-        sfx.StopSwoop();
+        sfxManager.StopSwoop();
     }
 }
