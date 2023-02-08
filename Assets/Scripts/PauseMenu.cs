@@ -10,12 +10,6 @@ public class PauseMenu : MonoBehaviour
 
     public GameObject pauseFirstButton, optionsFirstButton, optionsClosedButton;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -35,6 +29,7 @@ public class PauseMenu : MonoBehaviour
         SkillsUI.SetActive(true);
         Time.timeScale = 1f;
         Pause.isPaused = false;
+        AudioListener.pause = false;
     }
 
     void SetPause()
@@ -43,6 +38,7 @@ public class PauseMenu : MonoBehaviour
         SkillsUI.SetActive(false);
         Time.timeScale = 0f;
         Pause.isPaused = true;
+        AudioListener.pause = true;
 
         //clear selected object
         EventSystem.current.SetSelectedGameObject(null);
