@@ -694,6 +694,7 @@ public class PlayerTestScript : MonoBehaviour
             //guarding
             if (state == PlayerState.guarding)
             {
+                playerSFXManager.PlayGuardHit();
                 guardTypeScripts.Unguard(true);
                 StartInvinc();
                 return;
@@ -908,10 +909,10 @@ public class PlayerTestScript : MonoBehaviour
     /// Function for switching the feather shot skill from blessings
     /// </summary>
     /// <param name="type">Type to switch to</param>
-    public void ChangeFeather(FeatherTypes type, Sprite icon)
+    public void ChangeFeather(FeatherTypes type, AudioClip useSFX, Sprite icon)
     {
         shotUIScript.UpdateImage(icon);
-
+        playerSFXManager.SetFeatherShotSFX(useSFX);
         switch (type)
         {
             case FeatherTypes.Default:
@@ -929,13 +930,14 @@ public class PlayerTestScript : MonoBehaviour
         }
     }
 
-    public void ChangeFeather(FeatherTypes type)
+    public void ChangeFeather(FeatherTypes type, AudioClip useSFX)
     {
-        ChangeFeather(type, defaultShotUIIcon);
+        ChangeFeather(type, useSFX, defaultShotUIIcon);
     }
 
-    public void ChangeGuard(GuardSwapTypes type)
+    public void ChangeGuard(GuardSwapTypes type, AudioClip hitSFX)
     {
+        playerSFXManager.SetGuardHitSFX(hitSFX);
         switch (type)
         {
             case GuardSwapTypes.Default:

@@ -12,22 +12,17 @@ public class Blessing : ScriptableObject
     public string ItemName;
     public Sprite Icon;
     public int cost;
-    public bool unlocked {
+    public bool Unlocked {
         get
         {
-            switch (pickup)
+            return pickup switch
             {
-                case BlessingPickup.BlessingPickups.TernaryAnima:
-                    return BlessingPickupInfo.Instance.TernaryAnimaPickedUp;
-                case BlessingPickup.BlessingPickups.IronAegis:
-                    return BlessingPickupInfo.Instance.IronAegisPickedUp;
-                case BlessingPickup.BlessingPickups.DesertSun:
-                    return BlessingPickupInfo.Instance.DesertSunPickedUp;
-                case BlessingPickup.BlessingPickups.LethalRecompense:
-                    return BlessingPickupInfo.Instance.LethalRecompensePickedUp;
-                default:
-                    return false;
-            }
+                BlessingPickup.BlessingPickups.TernaryAnima => BlessingPickupInfo.Instance.TernaryAnimaPickedUp,
+                BlessingPickup.BlessingPickups.IronAegis => BlessingPickupInfo.Instance.IronAegisPickedUp,
+                BlessingPickup.BlessingPickups.DesertSun => BlessingPickupInfo.Instance.DesertSunPickedUp,
+                BlessingPickup.BlessingPickups.LethalRecompense => BlessingPickupInfo.Instance.LethalRecompensePickedUp,
+                _ => false,
+            };
         }
     }
     public string description;

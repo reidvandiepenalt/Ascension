@@ -29,6 +29,7 @@ public class FeatherShotTypes : MonoBehaviour
         if ((playerScript.state == PlayerTestScript.PlayerState.gliding || playerScript.state == PlayerTestScript.PlayerState.idle
             || playerScript.state == PlayerTestScript.PlayerState.walking) && (shotUIScript.charge >= 1 || playerScript.debugSkills))
         {
+            playerScript.playerSFXManager.PlayFeatherShot();
             anim.SetTrigger("Shoot");
             playerScript.playerSFXManager.PlayFeatherShot();
             playerScript.state = PlayerTestScript.PlayerState.shooting;
@@ -57,6 +58,7 @@ public class FeatherShotTypes : MonoBehaviour
         if ((playerScript.state == PlayerTestScript.PlayerState.gliding || playerScript.state == PlayerTestScript.PlayerState.idle 
             || playerScript.state == PlayerTestScript.PlayerState.walking) && (shotUIScript.charge >= 1 || playerScript.debugSkills))
         {
+            playerScript.playerSFXManager.PlayFeatherShot();
             anim.SetTrigger("Shoot");
             playerScript.playerSFXManager.PlayFeatherShot();
             playerScript.state = PlayerTestScript.PlayerState.shooting;
@@ -85,6 +87,7 @@ public class FeatherShotTypes : MonoBehaviour
         if ((playerScript.state == PlayerTestScript.PlayerState.gliding || playerScript.state == PlayerTestScript.PlayerState.idle
             || playerScript.state == PlayerTestScript.PlayerState.walking) && (shotUIScript.charge >= 1 || playerScript.debugSkills))
         {
+            playerScript.playerSFXManager.PlayFeatherShot();
             anim.SetTrigger("Shoot");
             playerScript.playerSFXManager.PlayFeatherShot();
             playerScript.state = PlayerTestScript.PlayerState.shooting;

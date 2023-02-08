@@ -43,7 +43,7 @@ public class BlessingSlot : MonoBehaviour
     private void OnEnable()
     {
         //allow blessing to be equipped if unlocked
-        if (Blessing && Blessing.unlocked)
+        if (Blessing && Blessing.Unlocked)
         {
             image.sprite = Blessing.Icon;
             gameObject.GetComponent<Button>().enabled = true;
@@ -70,7 +70,7 @@ public class BlessingSlot : MonoBehaviour
     /// <param name="ignoreEquip">Ignore animation and only do setup</param>
     public void AddBlessing(bool ignoreEquip)
     {
-        if (!Blessing.unlocked) { return; }
+        if (!Blessing.Unlocked) { return; }
         if (Blessing.equipped && !ignoreEquip) { return; }
         //equip and animate
         if (BlessingInventory.BlessingInventorySingleton.AddBlessing(Blessing))

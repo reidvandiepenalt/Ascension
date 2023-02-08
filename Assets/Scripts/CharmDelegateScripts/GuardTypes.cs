@@ -11,7 +11,7 @@ public enum GuardSwapTypes
 
 public class GuardTypes : MonoBehaviour
 {
-    [SerializeField] public float hitguardCD = 6.0f;
+    public float hitguardCD = 6.0f;
 
     public Animator anim;
     public PlayerTestScript playerScript;
@@ -23,6 +23,7 @@ public class GuardTypes : MonoBehaviour
             playerScript.state == PlayerTestScript.PlayerState.walking) && (guardUIScript.mask.fillAmount <= 0) 
             && playerScript.controller.collisions.below)
         {
+            playerScript.playerSFXManager.PlayGuard();
             anim.SetBool("Guarding", true);
             playerScript.state = PlayerTestScript.PlayerState.guarding;
             playerScript.velocity = new Vector2(0, 0);

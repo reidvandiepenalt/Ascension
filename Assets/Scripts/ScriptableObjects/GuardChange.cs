@@ -6,14 +6,15 @@ using UnityEngine;
 public class GuardChange : BlessEffect
 {
     public GuardSwapTypes guardType;
+    public AudioClip hitSFX;
 
     public override void Equip(PlayerTestScript player)
     {
-        player.ChangeGuard(guardType);
+        player.ChangeGuard(guardType, hitSFX);
     }
 
     public override void Unequip(PlayerTestScript player)
     {
-        player.ChangeGuard(GuardSwapTypes.Default);
+        player.ChangeGuard(GuardSwapTypes.Default, null);
     }
 }

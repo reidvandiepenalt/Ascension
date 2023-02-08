@@ -61,7 +61,7 @@ public class InventoryMenu : MonoBehaviour
                 {
                     highlightInst = Instantiate(highlight, selectedGameObject.transform);
 
-                    if (!selectedGameObject.GetComponent<BlessingSlot>().Blessing.unlocked)
+                    if (!selectedGameObject.GetComponent<BlessingSlot>().Blessing.Unlocked)
                     {
                         highlightInst.GetComponent<Image>().sprite = unfoundHighlight;
                     }

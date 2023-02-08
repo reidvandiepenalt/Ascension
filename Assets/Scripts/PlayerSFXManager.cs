@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class PlayerSFXManager : MonoBehaviour
 {
@@ -13,6 +14,26 @@ public class PlayerSFXManager : MonoBehaviour
     public AudioSource Land;
     public AudioSource FeatherShot;
     public AudioSource Hit;
+    public AudioSource Guard;
+    public AudioSource GuardHit;
+
+    [Space(10)]
+    [Header("Defaults")]
+    public AudioClip defaultFsSfx;
+    public AudioClip defaultGuardHitSfx;
+
+
+    public void SetFeatherShotSFX(AudioClip sfx)
+    {
+        if(sfx == null) FeatherShot.clip = defaultFsSfx;
+        else FeatherShot.clip = sfx;
+    }
+
+    public void SetGuardHitSFX(AudioClip sfx)
+    {
+        if (sfx == null) GuardHit.clip = defaultGuardHitSfx;
+        else Guard.clip = sfx;
+    }
 
     public void PlayMelee1()
     {
@@ -67,5 +88,15 @@ public class PlayerSFXManager : MonoBehaviour
     public void PlayHit()
     {
         Hit.Play();
+    }
+
+    public void PlayGuard()
+    {
+        Guard.Play();
+    }
+
+    public void PlayGuardHit()
+    {
+        GuardHit.Play();
     }
 }

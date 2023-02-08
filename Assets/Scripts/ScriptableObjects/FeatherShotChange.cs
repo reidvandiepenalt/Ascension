@@ -7,15 +7,16 @@ public class FeatherShotChange : BlessEffect
 {
     public FeatherTypes featherType;
     [SerializeField] Sprite UIicon;
+    [SerializeField] AudioClip useSFX;
 
     public override void Equip(PlayerTestScript player)
     {
-        player.ChangeFeather(featherType, UIicon);
+        player.ChangeFeather(featherType, useSFX, UIicon);
     }
 
     public override void Unequip(PlayerTestScript player)
     {
-        player.ChangeFeather(FeatherTypes.Default);
+        player.ChangeFeather(FeatherTypes.Default, null);
     }
 
 }
