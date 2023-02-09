@@ -8,12 +8,15 @@ public abstract class BossItem : MonoBehaviour
 
     protected virtual void OnTriggerEnter2D(Collider2D collision)
     {
-        SetFlags();
+        if (collision.CompareTag("Player"))
+        {
+            SetFlags();
 
-        onPickup.RaiseSignal();
+            onPickup.RaiseSignal();
 
-        //anim
-        StartCoroutine(nameof(Anim));
+            //anim
+            StartCoroutine(nameof(Anim));
+        }
     }
 
     protected abstract void SetFlags();

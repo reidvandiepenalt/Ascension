@@ -32,7 +32,7 @@ public class PlayerSFXManager : MonoBehaviour
     public void SetGuardHitSFX(AudioClip sfx)
     {
         if (sfx == null) GuardHit.clip = defaultGuardHitSfx;
-        else Guard.clip = sfx;
+        else GuardHit.clip = sfx;
     }
 
     public void PlayMelee1()
