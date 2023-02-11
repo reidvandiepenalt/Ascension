@@ -129,7 +129,7 @@ public class HorusAI : BossAI
 
     void FixedUpdate()
     {
-        if (Pause.isPaused || !AIisActive) { return; }
+        if (Pause.IsPaused || !AIisActive) { return; }
 
         //Entry point
         if(CurrentAttack == Attack.idle)

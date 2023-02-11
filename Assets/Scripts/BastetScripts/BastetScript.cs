@@ -184,7 +184,7 @@ public class BastetScript : BossAI
 
     void FixedUpdate()
     {
-        if (Pause.isPaused || !AIisActive) { return; }
+        if (Pause.IsPaused || !AIisActive) { return; }
 
         if (movement.collisions.below) { velocity.y = 0; } else
         {

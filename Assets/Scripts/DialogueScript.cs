@@ -12,7 +12,7 @@ public class DialogueScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Pause.isPaused = true;
+        Pause.pauseState = Pause.PauseState.Dialogue;
     }
 
     void Update()
@@ -23,7 +23,7 @@ public class DialogueScript : MonoBehaviour
             {
                 //end dialogue by disabling the canvas and resetting timescale
                 gameObject.SetActive(false);
-                Pause.isPaused = false;
+                Pause.pauseState = Pause.PauseState.Playing;
             }
             else
             {

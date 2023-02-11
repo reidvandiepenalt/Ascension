@@ -160,7 +160,7 @@ public class MummyGraph : MonoBehaviour
     void FixedUpdate()
     {
         //do nothing if paused
-        if (Pause.isPaused) { return; }
+        if (Pause.IsPaused) { return; }
 
         /*
         RaycastHit2D leftHit;

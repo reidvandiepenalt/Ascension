@@ -329,7 +329,7 @@ public class PlayerTestScript : MonoBehaviour
     public void OnJumpDown()
     {
         //don't do anything if in a pause menu
-        if (Pause.isPaused)
+        if (Pause.IsPaused)
         {
             return;
         }
@@ -370,7 +370,7 @@ public class PlayerTestScript : MonoBehaviour
     public void OnJumpHeld()
     {
         //don't do anything if in a pause menu
-        if (Pause.isPaused)
+        if (Pause.IsPaused)
         {
             return;
         }
@@ -392,7 +392,7 @@ public class PlayerTestScript : MonoBehaviour
     public void OnJumpUp()
     {
         //don't do anything if in a pause menu
-        if (Pause.isPaused)
+        if (Pause.IsPaused)
         {
             return;
         }
@@ -409,7 +409,7 @@ public class PlayerTestScript : MonoBehaviour
     void Update()
     {
         //don't do anything if in a pause menu
-        if (Pause.isPaused)
+        if (Pause.IsPaused)
         {
             return;
         }

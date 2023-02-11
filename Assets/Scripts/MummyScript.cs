@@ -94,7 +94,7 @@ public class MummyScript : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (Pause.isPaused) { return; }
+        if (Pause.IsPaused) { return; }
 
         switch (state)
         {

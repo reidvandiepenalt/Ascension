@@ -407,7 +407,7 @@ public class NovaTutorialAI : MonoBehaviour
     protected void FixedUpdate()
     {
         //if paused, do nothing
-        if (Pause.isPaused) { return; }
+        if (Pause.IsPaused) { return; }
 
         //catch case
         if (path == null)

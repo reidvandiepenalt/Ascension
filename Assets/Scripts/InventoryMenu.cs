@@ -12,7 +12,7 @@ public class InventoryMenu : MonoBehaviour
     public GameObject SkillsUICanvas;
     [SerializeField] GameObject[] Canvases;
     [SerializeField] GameObject[] Arrows;
-    [SerializeField] const int CanvasIndex = 1;
+    const int CanvasIndex = 1;
 
     public PlayerTestScript player;
 
@@ -95,17 +95,23 @@ public class InventoryMenu : MonoBehaviour
         //pause/unpause
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            if (Pause.isPaused)
+            if (Pause.pauseState == Pause.PauseState.Inventory)
             {
                 Resume();
-            } else
+            } else if(Pause.pauseState == Pause.PauseState.Playing)
             {
                 SetPause();
+            }
+        }else if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (Pause.pauseState == Pause.PauseState.Inventory)
+            {
+                Resume();
             }
         }
 
         //do nothing if not in pause menu
-        if (!Pause.isPaused) { return; }
+        if (!Pause.IsPaused) { return; }
 
         //selection handling
         if (EventSystem.current.currentSelectedGameObject == null)
@@ -139,7 +145,7 @@ public class InventoryMenu : MonoBehaviour
             arrow.SetActive(false);
         }
         SkillsUICanvas.SetActive(true);
-        Pause.isPaused = false;
+        Pause.pauseState = Pause.PauseState.Playing;
         Time.timeScale = 1f;
     }
 
@@ -155,7 +161,7 @@ public class InventoryMenu : MonoBehaviour
             arrow.SetActive(true);
         }
         SkillsUICanvas.SetActive(false);
-        Pause.isPaused = true;
+        Pause.pauseState = Pause.PauseState.Inventory;
         Time.timeScale = 0f;
     }
 

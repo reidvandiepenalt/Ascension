@@ -13,13 +13,13 @@ public class PauseMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && !Pause.isPaused)
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (Pause.isPaused)
+            if (Pause.pauseState == Pause.PauseState.Escape)
             {
                 Resume();
             }
-            else { SetPause(); }
+            else if(Pause.pauseState == Pause.PauseState.Playing){ SetPause(); }
         }
     }
 
@@ -28,7 +28,7 @@ public class PauseMenu : MonoBehaviour
         pauseMenuUI.SetActive(false);
         SkillsUI.SetActive(true);
         Time.timeScale = 1f;
-        Pause.isPaused = false;
+        Pause.pauseState = Pause.PauseState.Playing;
         AudioListener.pause = false;
     }
 
@@ -37,7 +37,7 @@ public class PauseMenu : MonoBehaviour
         pauseMenuUI.SetActive(true);
         SkillsUI.SetActive(false);
         Time.timeScale = 0f;
-        Pause.isPaused = true;
+        Pause.pauseState = Pause.PauseState.Escape;
         AudioListener.pause = true;
 
         //clear selected object
@@ -83,7 +83,7 @@ public class PauseMenu : MonoBehaviour
         Destroy(PlayerTestScript.playerInstance);
 
         Time.timeScale = 1f;
-        Pause.isPaused = false;
+        Pause.pauseState = Pause.PauseState.Playing;
         StartCoroutine(nameof(LoadMainMenu));
     }
 

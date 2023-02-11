@@ -149,7 +149,7 @@ public class BennuAI : BossAI
 
     void FixedUpdate()
     {
-        if (Pause.isPaused || !AIisActive) { return; }
+        if (Pause.IsPaused || !AIisActive) { return; }
 
         if(actionQ.Count == 0) { PickAttack(); }
 
