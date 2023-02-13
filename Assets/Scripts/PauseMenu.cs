@@ -74,7 +74,7 @@ public class PauseMenu : MonoBehaviour
         Settings.Save();
 
         Destroy(PlayerTestScript.vmCam);
-        Destroy(PlayerTestScript.mainCam);
+        Destroy(PlayerTestScript.mainCam.gameObject);
         Destroy(PlayerTestScript.eventSystem);
         Destroy(PlayerTestScript.pauseCanvas);
         Destroy(PlayerTestScript.inGameMenuCanvas);

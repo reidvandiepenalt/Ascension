@@ -205,8 +205,8 @@ public class PlayerTestScript : MonoBehaviour
 
             //camera set up
             mainCam = Instantiate(MainCamPrefab, Vector3.zero, Quaternion.identity).GetComponent<Camera>();
-            CinemachineVirtualCamera vmCam = Instantiate(vmCamPrefab, Vector3.zero, Quaternion.identity).GetComponent<CinemachineVirtualCamera>();
-            vmCam.Follow = camFollowTarget;
+            vmCam = Instantiate(vmCamPrefab, Vector3.zero, Quaternion.identity);
+            vmCam.GetComponent<CinemachineVirtualCamera>().Follow = camFollowTarget;
 
             //ui set up
             eventSystem = Instantiate(eventSystemPrefab, Vector3.zero, Quaternion.identity);
