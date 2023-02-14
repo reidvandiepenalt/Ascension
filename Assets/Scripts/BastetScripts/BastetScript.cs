@@ -24,7 +24,7 @@ public class BastetScript : BossAI
 
     int clawAnim, tailAnim, doubleTailAnim, runningAnim, landAnim, stompAnim, backflipAnim, noTailAnim, eyeFlashAnim, blurLeftAnim, blurRightAnim, upJumpAnim, downJumpAnim;
 
-    float playerLevelY { get {
+    float PlayerLevelY { get {
             if (playerTransform.position.y < jumpPoints[JumpPoint.leftMid].y - 2)
             {
                 return jumpPoints[JumpPoint.leftFloor].y;
@@ -40,9 +40,9 @@ public class BastetScript : BossAI
         }
      }
 
-    float centerX { get => jumpPoints[JumpPoint.rightMid].x - jumpPoints[JumpPoint.leftMid].x; }
+    float CenterX { get => jumpPoints[JumpPoint.rightMid].x - jumpPoints[JumpPoint.leftMid].x; }
 
-    Queue<Vector2> path = new Queue<Vector2>();
+    Queue<Vector2> path = new();
     bool reachedEndOfPath = true;
 
     float gravity = -80;//same as player
@@ -55,7 +55,7 @@ public class BastetScript : BossAI
 
     bool isMoving = false;
     bool IsMoving { get => isMoving; set { anim.SetBool(runningAnim, value); isMoving = value; } }
-    public Queue<Action> actionQ = new Queue<Action>();
+    public Queue<Action> actionQ = new();
     Phase phase = Phase.one;
     bool attacking = false;
 
@@ -128,7 +128,7 @@ public class BastetScript : BossAI
 
     public override void OnStun(object param)
     {
-        float time = (float)param;
+        //float time = (float)param;
         //stun for a given time
 
     }
@@ -201,40 +201,36 @@ public class BastetScript : BossAI
 
         if (!reachedEndOfPath)
         {
+            if(actionQ.Peek() != Action.backflip)
+            {
+                //flip on inflection point
+                if (transform.position.x > path.Peek().x && facingRight)
+                {
+                    facingRight = false;
+                    transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, 1);
+
+                }
+                else if (transform.position.x < path.Peek().x && !facingRight)
+                {
+                    facingRight = true;
+                    transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, 1);
+                }
+
+                if (path.Count == 8)
+                {
+                    anim.SetBool(landAnim, true);
+                }
+            }
+            
+            //Debug.DrawLine(transform.position, path.Peek(), Color.magenta, 5f);
+            transform.position = path.Dequeue();
+
             if (path.Count == 0)
             {
                 reachedEndOfPath = true;
             }
-            else
-            {
-                if(actionQ.Peek() != Action.backflip)
-                {
-                    //flip on inflection point
-                    if (transform.position.x > path.Peek().x && facingRight)
-                    {
-                        facingRight = false;
-                        transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, 1);
 
-                    }
-                    else if (transform.position.x < path.Peek().x && !facingRight)
-                    {
-                        facingRight = true;
-                        transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, 1);
-                    }
-
-                    if (path.Count == 8)
-                    {
-                        anim.SetBool(landAnim, true);
-                    }
-                }
-                
-                //Debug.DrawLine(transform.position, path.Peek(), Color.magenta, 5f);
-                transform.position = path.Dequeue();
-                if (!reachedEndOfPath)
-                {
-                    return;
-                }
-            }
+            return;
         }
 
         if (isNavigating)
@@ -279,11 +275,11 @@ public class BastetScript : BossAI
 
         bool clawRight = navTarget.x > transform.position.x;
 
-        if (playerLevelY == jumpPoints[JumpPoint.leftMid].y)
+        if (PlayerLevelY == jumpPoints[JumpPoint.leftMid].y)
         {
             navTarget.y = jumpPoints[JumpPoint.leftTop].y;
         }
-        else if (playerLevelY == jumpPoints[JumpPoint.leftFloor].y)
+        else if (PlayerLevelY == jumpPoints[JumpPoint.leftFloor].y)
         {
             navTarget.y = jumpPoints[JumpPoint.leftMid].y;
         }
@@ -302,11 +298,11 @@ public class BastetScript : BossAI
 
         while (isNavigating)
         {
-            if (playerLevelY == jumpPoints[JumpPoint.leftMid].y)
+            if (PlayerLevelY == jumpPoints[JumpPoint.leftMid].y)
             {
                 navTarget.y = jumpPoints[JumpPoint.leftTop].y;
             }
-            else if (playerLevelY == jumpPoints[JumpPoint.leftFloor].y)
+            else if (PlayerLevelY == jumpPoints[JumpPoint.leftFloor].y)
             {
                 navTarget.y = jumpPoints[JumpPoint.leftMid].y;
             }
@@ -463,13 +459,13 @@ public class BastetScript : BossAI
 
         if (transform.position.x > playerTransform.position.x)
         {
-            navTarget.y = playerLevelY;
+            navTarget.y = PlayerLevelY;
             navTarget.x = Mathf.Clamp(playerTransform.position.x + 5f,
                 jumpPoints[JumpPoint.leftMid].x, jumpPoints[JumpPoint.rightMid].x);
         }
         else
         {
-            navTarget.y = playerLevelY;
+            navTarget.y = PlayerLevelY;
             navTarget.x = Mathf.Clamp(playerTransform.position.x - 5f,
                 jumpPoints[JumpPoint.leftMid].x, jumpPoints[JumpPoint.rightMid].x);
         }
@@ -480,13 +476,13 @@ public class BastetScript : BossAI
         while (isNavigating) {
             if (transform.position.x > playerTransform.position.x)
             {
-                navTarget.y = playerLevelY;
+                navTarget.y = PlayerLevelY;
                 navTarget.x = Mathf.Clamp(playerTransform.position.x + 5f,
                     jumpPoints[JumpPoint.leftMid].x, jumpPoints[JumpPoint.rightMid].x);
             }
             else
             {
-                navTarget.y = playerLevelY;
+                navTarget.y = PlayerLevelY;
                 navTarget.x = Mathf.Clamp(playerTransform.position.x - 5f,
                     jumpPoints[JumpPoint.leftMid].x, jumpPoints[JumpPoint.rightMid].x);
             }
@@ -560,13 +556,13 @@ public class BastetScript : BossAI
 
         if (transform.position.x > playerTransform.position.x)
         {
-            navTarget.y = playerLevelY;
+            navTarget.y = PlayerLevelY;
             navTarget.x = Mathf.Clamp(playerTransform.position.x + 5.25f,
                 jumpPoints[JumpPoint.leftMid].x, jumpPoints[JumpPoint.rightMid].x);
         }
         else
         {
-            navTarget.y = playerLevelY;
+            navTarget.y = PlayerLevelY;
             navTarget.x = Mathf.Clamp(playerTransform.position.x - 5.25f,
                 jumpPoints[JumpPoint.leftMid].x, jumpPoints[JumpPoint.rightMid].x);
         }
@@ -578,13 +574,13 @@ public class BastetScript : BossAI
         {
             if (transform.position.x > playerTransform.position.x)
             {
-                navTarget.y = playerLevelY;
+                navTarget.y = PlayerLevelY;
                 navTarget.x = Mathf.Clamp(playerTransform.position.x + 5.25f,
                     jumpPoints[JumpPoint.leftMid].x, jumpPoints[JumpPoint.rightMid].x);
             }
             else
             {
-                navTarget.y = playerLevelY;
+                navTarget.y = PlayerLevelY;
                 navTarget.x = Mathf.Clamp(playerTransform.position.x - 5.25f,
                     jumpPoints[JumpPoint.leftMid].x, jumpPoints[JumpPoint.rightMid].x);
             }
@@ -661,13 +657,13 @@ public class BastetScript : BossAI
         attacking = true;
 
         speedMod = 1f;
-        if (transform.position.x < centerX) //left side
+        if (transform.position.x < CenterX) //left side
         {
-            if (playerLevelY == jumpPoints[JumpPoint.leftFloor].y)// player on floor
+            if (PlayerLevelY == jumpPoints[JumpPoint.leftFloor].y)// player on floor
             {
                 navTarget = jumpPoints[JumpPoint.leftFloor];
             }
-            else if (playerLevelY == jumpPoints[JumpPoint.leftMid].y)//player on mid
+            else if (PlayerLevelY == jumpPoints[JumpPoint.leftMid].y)//player on mid
             {
                 navTarget = jumpPoints[JumpPoint.leftMid];
             }
@@ -678,11 +674,11 @@ public class BastetScript : BossAI
         }
         else //right side
         {
-            if (playerLevelY == jumpPoints[JumpPoint.leftFloor].y)//on floor
+            if (PlayerLevelY == jumpPoints[JumpPoint.leftFloor].y)//on floor
             {
                 navTarget = jumpPoints[JumpPoint.rightFloor];
             }
-            else if (playerLevelY == jumpPoints[JumpPoint.leftMid].y)//on mid
+            else if (PlayerLevelY == jumpPoints[JumpPoint.leftMid].y)//on mid
             {
                 navTarget = jumpPoints[JumpPoint.rightMid];
             }
@@ -697,13 +693,13 @@ public class BastetScript : BossAI
 
         while (isNavigating)
         {
-            if (transform.position.x < centerX) //left side
+            if (transform.position.x < CenterX) //left side
             {
-                if (playerLevelY == jumpPoints[JumpPoint.leftFloor].y)// player on floor
+                if (PlayerLevelY == jumpPoints[JumpPoint.leftFloor].y)// player on floor
                 {
                     navTarget = jumpPoints[JumpPoint.leftFloor];
                 }
-                else if (playerLevelY == jumpPoints[JumpPoint.leftMid].y)//player on mid
+                else if (PlayerLevelY == jumpPoints[JumpPoint.leftMid].y)//player on mid
                 {
                     navTarget = jumpPoints[JumpPoint.leftMid];
                 }
@@ -714,11 +710,11 @@ public class BastetScript : BossAI
             }
             else //right side
             {
-                if (playerLevelY == jumpPoints[JumpPoint.leftFloor].y)//on floor
+                if (PlayerLevelY == jumpPoints[JumpPoint.leftFloor].y)//on floor
                 {
                     navTarget = jumpPoints[JumpPoint.rightFloor];
                 }
-                else if (playerLevelY == jumpPoints[JumpPoint.leftMid].y)//on mid
+                else if (PlayerLevelY == jumpPoints[JumpPoint.leftMid].y)//on mid
                 {
                     navTarget = jumpPoints[JumpPoint.rightMid];
                 }
@@ -793,7 +789,7 @@ public class BastetScript : BossAI
 
         JumpPoint jumpStart;
         JumpPoint jumpEnd;
-        bool leftOfCenter = transform.position.x < centerX;
+        bool leftOfCenter = transform.position.x < CenterX;
 
         //same level
         if (Mathf.Abs(navTarget.y - transform.position.y) < 1.5f)
