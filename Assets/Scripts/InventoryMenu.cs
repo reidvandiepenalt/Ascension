@@ -15,6 +15,9 @@ public class InventoryMenu : MonoBehaviour
     const int CanvasIndex = 1;
 
     public PlayerTestScript player;
+    public AudioSource open;
+    public AudioSource close;
+    public AudioSource scroll;
 
     [SerializeField] ICanvas[] canvasScripts = new ICanvas[3];
 
@@ -129,6 +132,8 @@ public class InventoryMenu : MonoBehaviour
     /// </summary>
     void Resume()
     {
+        close.Play();
+
         //close each canvas
         foreach(ICanvas canvas in canvasScripts)
         {
@@ -147,6 +152,7 @@ public class InventoryMenu : MonoBehaviour
         SkillsUICanvas.SetActive(true);
         Pause.pauseState = Pause.PauseState.Playing;
         Time.timeScale = 1f;
+        AudioListener.pause = false;
     }
 
     /// <summary>
@@ -154,6 +160,8 @@ public class InventoryMenu : MonoBehaviour
     /// </summary>
     void SetPause()
     {
+        open.Play();
+
         //activate ui elements and canvases
         Canvases[1].SetActive(true);
         foreach (GameObject arrow in Arrows)
@@ -163,6 +171,7 @@ public class InventoryMenu : MonoBehaviour
         SkillsUICanvas.SetActive(false);
         Pause.pauseState = Pause.PauseState.Inventory;
         Time.timeScale = 0f;
+        AudioListener.pause = true;
     }
 
     /// <summary>
@@ -171,6 +180,8 @@ public class InventoryMenu : MonoBehaviour
     /// <param name="direction">1 for right, -1 for left</param>
     public void Scroll(int direction)
     {
+        scroll.Play();
+
         //animate canvas movements and bring new canvas to center
         Vector3[] positions = new Vector3[] { Canvases[0].transform.position, Canvases[1].transform.position, Canvases[2].transform.position };
         if (direction >= 0) //right

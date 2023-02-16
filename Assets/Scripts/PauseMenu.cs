@@ -10,6 +10,8 @@ public class PauseMenu : MonoBehaviour
 
     public GameObject pauseFirstButton, optionsFirstButton, optionsClosedButton;
 
+    public AudioSource open, close;
+
     // Update is called once per frame
     void Update()
     {
@@ -25,6 +27,8 @@ public class PauseMenu : MonoBehaviour
 
     public void Resume()
     {
+        close.Play();
+
         pauseMenuUI.SetActive(false);
         SkillsUI.SetActive(true);
         Time.timeScale = 1f;
@@ -34,6 +38,7 @@ public class PauseMenu : MonoBehaviour
 
     void SetPause()
     {
+
         pauseMenuUI.SetActive(true);
         SkillsUI.SetActive(false);
         Time.timeScale = 0f;
@@ -43,6 +48,8 @@ public class PauseMenu : MonoBehaviour
         //clear selected object
         EventSystem.current.SetSelectedGameObject(null);
         EventSystem.current.SetSelectedGameObject(pauseFirstButton);
+
+        open.Play();
     }
 
     public void OpenSettings()
