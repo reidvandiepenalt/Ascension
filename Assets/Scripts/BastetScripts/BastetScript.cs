@@ -87,7 +87,7 @@ public class BastetScript : BossAI
 
     private void OnValidate()
     {
-        Transform[] ts = jumpParent.GetComponentsInChildren<Transform>();
+        Transform[] ts = jumpParent?.GetComponentsInChildren<Transform>() ?? null;
         if(ts != null)
         {
             jumpPoints = new Dictionary<JumpPoint, Vector2>(ts.Length);

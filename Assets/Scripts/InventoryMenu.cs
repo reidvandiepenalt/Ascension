@@ -25,13 +25,14 @@ public class InventoryMenu : MonoBehaviour
     GameObject lastHighlight;
     GameObject highlightInst = null;
     public Sprite unfoundHighlight;
+
+    public GameObject firstSelected;
     private GameObject selectedGameObject;
     public GameObject SelectedGameObject
     {
         get { return selectedGameObject; }
         set
         {
-            EventSystem.current.firstSelectedGameObject = value;
             //fades ui elements when they are set?
             if (value != null)
             {
@@ -76,9 +77,13 @@ public class InventoryMenu : MonoBehaviour
 
     private void Start()
     {
-        if (EventSystem.current.firstSelectedGameObject == null){ 
-            EventSystem.current.firstSelectedGameObject = inventoryFirstSlot;
-            print("setting first selected");
+        if (inventoryFirstSlot.GetComponent<BlessingSlot>().Blessing.Unlocked)
+        {
+            firstSelected = inventoryFirstSlot;
+        }
+        else
+        {
+            firstSelected = Arrows[0];
         }
 
         //Load current canvas?
@@ -114,7 +119,7 @@ public class InventoryMenu : MonoBehaviour
         }
 
         //do nothing if not in pause menu
-        if (!Pause.IsPaused) { return; }
+        if (Pause.pauseState != Pause.PauseState.Inventory) { return; }
 
         //selection handling
         if (EventSystem.current.currentSelectedGameObject == null)
@@ -133,6 +138,8 @@ public class InventoryMenu : MonoBehaviour
     void Resume()
     {
         close.Play();
+
+        firstSelected = SelectedGameObject;
 
         //close each canvas
         foreach(ICanvas canvas in canvasScripts)
@@ -163,15 +170,18 @@ public class InventoryMenu : MonoBehaviour
         open.Play();
 
         //activate ui elements and canvases
-        Canvases[1].SetActive(true);
         foreach (GameObject arrow in Arrows)
         {
             arrow.SetActive(true);
         }
+        Canvases[1].SetActive(true);
         SkillsUICanvas.SetActive(false);
         Pause.pauseState = Pause.PauseState.Inventory;
         Time.timeScale = 0f;
         AudioListener.pause = true;
+
+        EventSystem.current.firstSelectedGameObject = firstSelected;
+        EventSystem.current.SetSelectedGameObject(firstSelected);
     }
 
     /// <summary>
