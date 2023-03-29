@@ -19,6 +19,8 @@ public class InventoryMenu : MonoBehaviour
     public AudioSource close;
     public AudioSource scroll;
 
+    bool scrolling = false;
+
     [SerializeField] ICanvas[] canvasScripts = new ICanvas[3];
 
     public GameObject highlight;
@@ -47,14 +49,12 @@ public class InventoryMenu : MonoBehaviour
                 {
                     if (selectedGameObject.CompareTag("Arrow"))
                     {
-                        print("previous arrow");
                         GameObject lastArrow = selectedGameObject;
                         StartCoroutine(lastArrow.GetComponentInChildren<HighlightScript>().Fade(0.5f, 0f, 0.2f, false));
                     }
                 }
                 if (value.CompareTag("Arrow"))
                 {
-                    print("current arrow");
                     StartCoroutine(value.GetComponentInChildren<HighlightScript>().Fade(0f, 0.5f, 0.2f, false));
                 }
 
@@ -190,6 +190,9 @@ public class InventoryMenu : MonoBehaviour
     /// <param name="direction">1 for right, -1 for left</param>
     public void Scroll(int direction)
     {
+        if (scrolling) return;
+        scrolling = true;
+
         scroll.Play();
 
         //animate canvas movements and bring new canvas to center
@@ -219,5 +222,6 @@ public class InventoryMenu : MonoBehaviour
     void DeactivateCanvas(GameObject canvas)
     {
         canvas.SetActive(false);
+        scrolling = false;
     }
 }
