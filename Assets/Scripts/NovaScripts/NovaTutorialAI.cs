@@ -23,6 +23,8 @@ public class NovaTutorialAI : MonoBehaviour
     public float laserDelay, laserExistTime;
     public float vertLaserSpawnHeight, vertLaserSpawnInterval;
 
+    public TutorialCutscene cutscene;
+
     Queue<Vector2> path;
     int currentWaypoint;
     bool reachedEndOfPath;
@@ -464,6 +466,8 @@ public class NovaTutorialAI : MonoBehaviour
     /// </summary>
     private void Cutscene()
     {
+        cutscene.gameObject.SetActive(true);
+        cutscene.PlayCutscene();
         throw new NotImplementedException();
     }
 
