@@ -61,7 +61,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6588551387742335101}
-  m_RootOrder: 33
+  m_RootOrder: 34
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &405231221
 MonoBehaviour:
@@ -462,7 +462,7 @@ Transform:
   m_Children:
   - {fileID: 4751115283948513918}
   m_Father: {fileID: 6588551387742335101}
-  m_RootOrder: 29
+  m_RootOrder: 30
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8021102027905133092
 MonoBehaviour:
@@ -525,7 +525,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6588551387742335101}
-  m_RootOrder: 27
+  m_RootOrder: 28
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1703074955470337608
 GameObject:
@@ -843,7 +843,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6588551387742335101}
-  m_RootOrder: 32
+  m_RootOrder: 33
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4101978870184538326
 GameObject:
@@ -1132,7 +1132,7 @@ Transform:
   m_Children:
   - {fileID: 3740439168655372451}
   m_Father: {fileID: 6588551387742335101}
-  m_RootOrder: 30
+  m_RootOrder: 31
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7472695548255471259
 MonoBehaviour:
@@ -1612,7 +1612,7 @@ Transform:
   m_Children:
   - {fileID: 4194348284584343698}
   m_Father: {fileID: 6588551387742335101}
-  m_RootOrder: 28
+  m_RootOrder: 29
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7779901573845386378
 MonoBehaviour:
@@ -1708,7 +1708,7 @@ Transform:
   m_Children:
   - {fileID: 3598770192240320500}
   m_Father: {fileID: 6588551387742335101}
-  m_RootOrder: 31
+  m_RootOrder: 32
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3195047983804799118
 MonoBehaviour:
@@ -3050,7 +3050,7 @@ PrefabInstance:
     - target: {fileID: -3066636330556765539, guid: 54402d116b9f02843812c72545f4ed1a,
         type: 3}
       propertyPath: m_RootOrder
-      value: 34
+      value: 27
       objectReference: {fileID: 0}
     - target: {fileID: -2855443850067892159, guid: 54402d116b9f02843812c72545f4ed1a,
         type: 3}
@@ -4943,6 +4943,7 @@ MonoBehaviour:
   maxHealth: {fileID: 11400000, guid: 08d97de2a0b444e4e9811da7584f2f4e, type: 2}
   playerHealthSignal: {fileID: 11400000, guid: c956f54217b739446b73d02dcb0e0c39, type: 2}
   invincLength: 0.75
+  tutorialSignal: {fileID: 11400000, guid: 6c14682e5be55594984d91bc3c98d6d5, type: 2}
   facingLeft: 0
   backstepCD: 0.4
   backstepJump: 5

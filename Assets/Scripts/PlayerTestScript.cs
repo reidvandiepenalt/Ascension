@@ -53,6 +53,8 @@ public class PlayerTestScript : MonoBehaviour
     public Signal playerHealthSignal;
     public float invincLength = 0.75f;
 
+    [SerializeField] Signal tutorialSignal;
+
     private bool hitInvincible = false;
     private bool skillInvincible = false;
 
@@ -689,7 +691,7 @@ public class PlayerTestScript : MonoBehaviour
         if (debugInvinc) { return; }
 
         //Only take damage if not invincible
-        if (!hitInvincible && !skillInvincible)
+        if (!hitInvincible && !skillInvincible && !dead)
         {
             //guarding
             if (state == PlayerState.guarding)
@@ -703,13 +705,20 @@ public class PlayerTestScript : MonoBehaviour
             playerSFXManager.PlayHit();
             currentHealth.Value -= damage;
             playerHealthSignal.RaiseSignal();
-            if (currentHealth.Value <= 0 && !dead)
+            if (currentHealth.Value <= 0)
             {
                 anim.SetTrigger("Dead");
                 dead = true;
-                Invoke(nameof(Respawn), 0.5f);
+                if(SceneManager.GetActiveScene().name == "TutorialBoss")
+                {
+                    tutorialSignal.RaiseSignal();
+                }
+                else
+                {
+                    Invoke(nameof(Respawn), 0.5f);
+                }
             }
-            else if (!dead)
+            else
             {
                 ComboReset();
                 if (setToGround)

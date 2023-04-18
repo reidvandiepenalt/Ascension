@@ -468,7 +468,6 @@ public class NovaTutorialAI : MonoBehaviour
     {
         cutscene.gameObject.SetActive(true);
         cutscene.PlayCutscene();
-        throw new NotImplementedException();
     }
 
     /// <summary>
