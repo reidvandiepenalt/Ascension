@@ -23,6 +23,7 @@ public class NovaTutorialAI : MonoBehaviour
     public float laserDelay, laserExistTime;
     public float vertLaserSpawnHeight, vertLaserSpawnInterval;
 
+    [SerializeField] NovaSFXManager sfxManager;
     public TutorialCutscene cutscene;
 
     Queue<Vector2> path;
@@ -122,8 +123,9 @@ public class NovaTutorialAI : MonoBehaviour
         target.position = new Vector3(roomBounds[0].x + (RoomWidth / 2), roomBounds[0].y);
 
         GeneratePath();
-
+        sfxManager.PlayMove();
         yield return new WaitWhile(() => !reachedEndOfPath);
+        sfxManager.StopMove();
 
         //spawn attack and animate
         afterImage.SetActive(false);
@@ -189,8 +191,9 @@ public class NovaTutorialAI : MonoBehaviour
 
         //create path
         GeneratePath();
-
+        sfxManager.PlayMove();
         yield return new WaitWhile(() => !reachedEndOfPath);
+        sfxManager.StopMove();
 
         //animate
         afterImage.SetActive(false);
@@ -255,8 +258,9 @@ public class NovaTutorialAI : MonoBehaviour
 
         //create path
         GeneratePath();
-
+        sfxManager.PlayMove();
         yield return new WaitWhile(() => !reachedEndOfPath);
+        sfxManager.StopMove();
 
         //spawn attack and animate
         //spawn projectiles in a cone evenly spaced
@@ -303,9 +307,10 @@ public class NovaTutorialAI : MonoBehaviour
 
         //create path
         GeneratePath();
-
+        sfxManager.PlayMove();
         //traverse path (in update)
         yield return new WaitWhile(() => !reachedEndOfPath);
+        sfxManager.StopMove();
 
         //spawn attack and animate
         afterImage.SetActive(false);
