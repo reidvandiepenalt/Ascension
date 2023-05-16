@@ -22,6 +22,8 @@ public class BastetScript : BossAI
     Vector2 storedJumpPoint;
     Vector2 storedJumpPointSecondHalf;
 
+    Vector2 lastSavedPosition;
+
     int clawAnim, tailAnim, doubleTailAnim, runningAnim, landAnim, stompAnim, backflipAnim, noTailAnim, eyeFlashAnim, blurLeftAnim, blurRightAnim, upJumpAnim, downJumpAnim;
 
     float PlayerLevelY { get {
@@ -179,6 +181,9 @@ public class BastetScript : BossAI
         playerGroundOffset = playerCollider.bounds.extents.y;
 
         phase = Phase.one;
+
+        lastSavedPosition = (Vector2)transform.position;
+        InvokeRepeating(nameof(PreventStuck), 2f, 2f);
     }
 
 
@@ -794,7 +799,6 @@ public class BastetScript : BossAI
         //same level
         if (Mathf.Abs(navTarget.y - transform.position.y) < 1.5f)
         {
-            
             speedMod = 1f;
             moveTarget = navTarget;
         }
@@ -926,6 +930,17 @@ public class BastetScript : BossAI
         } while (isMoving);
 
         isNavigating = false;
+    }
+
+    void PreventStuck()
+    {
+        if (!isNavigating) { return; }
+        if(lastSavedPosition == (Vector2)transform.position)
+        {
+            StopCoroutine(nameof(NavigateTo));
+            StartCoroutine(nameof(NavigateTo));
+        }
+        lastSavedPosition = (Vector2)transform.position;
     }
 
     /// <summary>
