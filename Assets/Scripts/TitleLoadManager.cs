@@ -11,6 +11,9 @@ public class TitleLoadManager : MonoBehaviour
     [SerializeField] GameObject titleItems;
     [SerializeField] GameObject creditsBackButton;
     [SerializeField] GameObject titleCreditsButton;
+    [SerializeField] GameObject settingsPage;
+    [SerializeField] GameObject settingsBackButton;
+    [SerializeField] GameObject titleSettingsButton;
     public void LoadGame()
     {
         BossStatuses.Load();
@@ -43,5 +46,19 @@ public class TitleLoadManager : MonoBehaviour
         creditsPage.SetActive(false);
         titleItems.SetActive(true);
         EventSystem.current.SetSelectedGameObject(titleCreditsButton);
+    }
+
+    public void OpenSettings()
+    {
+        settingsPage.SetActive(true);
+        titleItems.SetActive(false);
+        EventSystem.current.SetSelectedGameObject(settingsBackButton);
+    }
+
+    public void CloseSettings()
+    {
+        settingsPage.SetActive(false);
+        titleItems.SetActive(true);
+        EventSystem.current.SetSelectedGameObject(titleSettingsButton);
     }
 }
