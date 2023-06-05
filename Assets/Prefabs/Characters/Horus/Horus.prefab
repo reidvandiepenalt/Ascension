@@ -189,7 +189,8 @@ AudioSource:
   m_GameObject: {fileID: 1248742485535581925}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: bc36d73b4f0894144812e52f39073489,
+    type: 2}
   m_audioClip: {fileID: 8300000, guid: bca5d0ab1be73b04f991e5085ad59368, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.6
@@ -371,7 +372,8 @@ AudioSource:
   m_GameObject: {fileID: 4625294168472912272}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: bc36d73b4f0894144812e52f39073489,
+    type: 2}
   m_audioClip: {fileID: 8300000, guid: a4757d5669f225644944358f0d61e252, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.75
@@ -499,7 +501,8 @@ AudioSource:
   m_GameObject: {fileID: 5672990144739283405}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: bc36d73b4f0894144812e52f39073489,
+    type: 2}
   m_audioClip: {fileID: 8300000, guid: 9e986ead5d0a87842a860c732becb1f3, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -627,7 +630,8 @@ AudioSource:
   m_GameObject: {fileID: 5813027288422855547}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: bc36d73b4f0894144812e52f39073489,
+    type: 2}
   m_audioClip: {fileID: 8300000, guid: 5e0385cf1cd81e943bcfe75ae9386b4c, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.7
@@ -755,7 +759,8 @@ AudioSource:
   m_GameObject: {fileID: 6347299110251371315}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: bc36d73b4f0894144812e52f39073489,
+    type: 2}
   m_audioClip: {fileID: 8300000, guid: b17abb704fb1a0f41a5f1a5693901b50, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.75
@@ -996,6 +1001,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 412dbf4c70b43054988f793976f98c2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  item: {fileID: 0}
+  healthManager: {fileID: 4363983812227401717}
+  anim: {fileID: 679672980495940251}
   gfx: {fileID: 3215992543261360125}
   contactHB: {fileID: 1297928044}
   diveFX: {fileID: 0}
@@ -1009,7 +1017,6 @@ MonoBehaviour:
   tornadoFeatherSpacing: 1
   tornadoColumnSpacing: 5
   wingAttack: {fileID: 0}
-  item: {fileID: 0}
   topLeft: {x: 0.5, y: 34}
   bottomRight: {x: 71, y: 0.5}
   groundMask:
@@ -1058,14 +1065,12 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   enabledFeathers: []
-  anim: {fileID: 679672980495940251}
   rainShotDelay: 0.09
   shotgunCount: 5
   shotgunConeDeg: 15
   speed: 30
   playerTransform: {fileID: 0}
-  healthManager: {fileID: 4363983812227401717}
-  sfx: {fileID: 0}
+  sfxManager: {fileID: 0}
 --- !u!50 &4721462901173063535
 Rigidbody2D:
   serializedVersion: 4
