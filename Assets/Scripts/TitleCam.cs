@@ -11,7 +11,7 @@ public class TitleCam : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.Translate(0, speed * Time.fixedDeltaTime, 0);
+        transform.Translate(0, speed * Time.deltaTime, 0);
         if(transform.position.y > maxY)
         {
             transform.position = new Vector3(0, minY, transform.position.z);

@@ -111,7 +111,6 @@ public class PlayerTestScript : MonoBehaviour
     public GameObject PauseCanvasPrefab;
     public GameObject UICanvasPrefab;
     public GameObject InGameMenuCanvasPrefab;
-    public GameObject SettingsCanvasPrefab;
     public GameObject SkillGridPrefab;
     public GameObject eventSystemPrefab;
     public GameObject HBGribPrefab;
@@ -182,7 +181,6 @@ public class PlayerTestScript : MonoBehaviour
     public static GameObject eventSystem;
     public static GameObject pauseCanvas;
     public static GameObject inGameMenuCanvas;
-    public static GameObject settingsCanvas;
     public static GameObject UICanvas;
 
     // Start is called before the first frame update
@@ -213,14 +211,12 @@ public class PlayerTestScript : MonoBehaviour
             //ui set up
             eventSystem = Instantiate(eventSystemPrefab, Vector3.zero, Quaternion.identity);
             pauseCanvas = Instantiate(PauseCanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
-            settingsCanvas = Instantiate(SettingsCanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
             UICanvas = Instantiate(UICanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
             inGameMenuCanvas = Instantiate(InGameMenuCanvasPrefab, Vector3.zero, new Quaternion(0, 0, 0, 0));
 
             DontDestroyOnLoad(eventSystem);
             DontDestroyOnLoad(pauseCanvas);
             DontDestroyOnLoad(inGameMenuCanvas);
-            DontDestroyOnLoad(settingsCanvas);
             DontDestroyOnLoad(UICanvas);
 
 
@@ -229,14 +225,11 @@ public class PlayerTestScript : MonoBehaviour
             pauseCanvas.GetComponent<Canvas>().sortingLayerName = uiSortingLayer;
             inGameMenuCanvas.GetComponent<Canvas>().worldCamera = mainCam;
             inGameMenuCanvas.GetComponent<Canvas>().sortingLayerName = uiSortingLayer;
-            settingsCanvas.GetComponent<Canvas>().worldCamera = mainCam;
-            settingsCanvas.GetComponent<Canvas>().sortingLayerName = uiSortingLayer;
             UICanvas.GetComponent<Canvas>().worldCamera = mainCam;
             UICanvas.GetComponent<Canvas>().sortingLayerName = uiSortingLayer;
 
             PauseMenu pauseUIScript = pauseCanvas.GetComponent<PauseMenu>();
             pauseUIScript.SkillsUI = UICanvas;
-            pauseUIScript.settingMenuUI = settingsCanvas;
             inGameMenuCanvas.GetComponent<InventoryMenu>().SkillsUICanvas = UICanvas;
             inGameMenuCanvas.GetComponent<InventoryMenu>().player = this;
             skillsGrid = UICanvas.GetComponentInChildren<SkillsGridManager>();

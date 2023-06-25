@@ -12,14 +12,18 @@ public class PauseMenu : MonoBehaviour
 
     public AudioSource open, close;
 
+    bool settingsOpen = false;
+
     // Update is called once per frame
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
+
             if (Pause.pauseState == Pause.PauseState.Escape)
             {
-                Resume();
+                if (settingsOpen) CloseSettings();
+                else Resume();
             }
             else if(Pause.pauseState == Pause.PauseState.Playing){ SetPause(); }
         }
@@ -54,6 +58,7 @@ public class PauseMenu : MonoBehaviour
 
     public void OpenSettings()
     {
+        settingsOpen = true;
         settingMenuUI.SetActive(true);
         pauseMenuUI.SetActive(false);
 
@@ -64,6 +69,7 @@ public class PauseMenu : MonoBehaviour
 
     public void CloseSettings()
     {
+        settingsOpen = false;
         settingMenuUI.SetActive(false);
         pauseMenuUI.SetActive(true);
 
@@ -85,7 +91,6 @@ public class PauseMenu : MonoBehaviour
         Destroy(PlayerTestScript.eventSystem);
         Destroy(PlayerTestScript.pauseCanvas);
         Destroy(PlayerTestScript.inGameMenuCanvas);
-        Destroy(PlayerTestScript.settingsCanvas);
         Destroy(PlayerTestScript.UICanvas);
         Destroy(PlayerTestScript.playerInstance);
 
