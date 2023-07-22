@@ -14,7 +14,11 @@ public class TitleLoadManager : MonoBehaviour
     [SerializeField] GameObject settingsPage;
     [SerializeField] GameObject settingsBackButton;
     [SerializeField] GameObject titleSettingsButton;
-    public void LoadGame()
+    [SerializeField] GameObject startGameButton;
+    [SerializeField] GameObject gameSlotsBackButton;
+    [SerializeField] GameObject gameSlotsPage;
+
+    public void LoadGame(int slot)
     {
         BossStatuses.Load();
         BlessingPickupInfo.Load();
@@ -27,6 +31,25 @@ public class TitleLoadManager : MonoBehaviour
         Instantiate(playerPrefab);
 
         //load in player settings (here or in player?)
+    }
+
+    public void DeleteSave(int slot)
+    {
+        //clear player save info
+    }
+
+    public void OpenGameSlots()
+    {
+        gameSlotsPage.SetActive(true);
+        titleItems.SetActive(false);
+        EventSystem.current.SetSelectedGameObject(gameSlotsBackButton);
+    }
+
+    public void CloseGameSlots()
+    {
+        gameSlotsPage.SetActive(false);
+        titleItems.SetActive(true);
+        EventSystem.current.SetSelectedGameObject(startGameButton);
     }
 
     public void QuitGame()
