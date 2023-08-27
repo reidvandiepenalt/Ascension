@@ -12,6 +12,7 @@ public class Pause
         Escape,
         Inventory,
         Playing,
-        Dialogue
+        Dialogue,
+        Pickup
     }
 }
