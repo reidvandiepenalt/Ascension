@@ -22,6 +22,7 @@ public class InventoryMenu : MonoBehaviour
     bool scrolling = false;
 
     [SerializeField] ICanvas[] canvasScripts = new ICanvas[3];
+    MapMenu mapMenu;
 
     public GameObject highlight;
     GameObject lastHighlight;
@@ -89,7 +90,7 @@ public class InventoryMenu : MonoBehaviour
         //Load current canvas?
 
         //get all three canvases scripts
-        canvasScripts[0] = null; //Canvases[0].GetComponent<MapCanvasScript>();
+        canvasScripts[0] = mapMenu = Canvases[0].GetComponent<MapMenu>();
         canvasScripts[1] = Canvases[1].GetComponent<BlessingInventory>();
         canvasScripts[2] = null; //Canvases[2].GetComponent<SwordInvetoryScript>();
 
@@ -101,7 +102,7 @@ public class InventoryMenu : MonoBehaviour
     void Update()
     {
         //pause/unpause
-        if (Input.GetKeyDown(KeyCode.Tab))
+        if (Input.GetButtonDown("Inventory"))
         {
             if (Pause.pauseState == Pause.PauseState.Inventory)
             {
@@ -110,7 +111,7 @@ public class InventoryMenu : MonoBehaviour
             {
                 SetPause();
             }
-        }else if(Input.GetKeyDown(KeyCode.Escape))
+        }else if(Input.GetButtonDown("Cancel"))
         {
             if (Pause.pauseState == Pause.PauseState.Inventory)
             {
@@ -176,6 +177,7 @@ public class InventoryMenu : MonoBehaviour
         }
         Canvases[1].SetActive(true);
         SkillsUICanvas.SetActive(false);
+        mapMenu.UpdatePanels();
         Pause.pauseState = Pause.PauseState.Inventory;
         Time.timeScale = 0f;
         AudioListener.pause = true;

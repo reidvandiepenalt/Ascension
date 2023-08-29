@@ -57,6 +57,7 @@ public partial class PlayerInfo
     public bool guardUnlock = false;
     public bool dashUnlock = false;
     public bool dashUpgrade = false;
+    public bool mapUnlocked = false;
 
     public Dictionary<EgyptRooms, RoomTransitionStates> travelledRooms = new Dictionary<EgyptRooms, RoomTransitionStates>();
     public Dictionary<EgyptTransitions, RoomTransitionStates> travelledTransitions = new Dictionary<EgyptTransitions, RoomTransitionStates>();

@@ -410,8 +410,8 @@ public class PlayerTestScript : MonoBehaviour
         }
 
         //toggle debugs
-        if (Input.GetKeyDown(KeyCode.F1)) { debugInvinc = !debugInvinc; }
-        if(Input.GetKeyDown(KeyCode.F2)) { debugSkills = !debugSkills; }
+        //if (Input.GetKeyDown(KeyCode.F1)) { debugInvinc = !debugInvinc; }
+        //if(Input.GetKeyDown(KeyCode.F2)) { debugSkills = !debugSkills; }
 
         //If moving left, set direction to left
         if (directionalInput.x < 0 && !facingLeft && (state != PlayerState.backstepping && state != PlayerState.dashing && state != PlayerState.slamming))
@@ -447,12 +447,13 @@ public class PlayerTestScript : MonoBehaviour
         CalculateVelocity();
 
         //Attack and skills
-        if (state == PlayerState.attacking && Input.GetKeyDown(KeyCode.H)) followUpAttack = true;
-        if (Input.GetKeyDown(KeyCode.H) && (state == PlayerState.idle || state == PlayerState.gliding || state == PlayerState.walking))
+        if (state == PlayerState.attacking && Input.GetButtonDown("Attack")) followUpAttack = true;
+        if (Input.GetButtonDown("Attack") && (state == PlayerState.idle || state == PlayerState.gliding || state == PlayerState.walking))
         {
             StartCoroutine(nameof(Attack));
         }
 
+        /*
         if (PlayerInfo.Instance.chargeJumpUnlock)
         {
             ChargeJump();
@@ -461,18 +462,18 @@ public class PlayerTestScript : MonoBehaviour
         {
             slam();
         }
-        if (PlayerInfo.Instance.sprayUnlock && (state == PlayerState.spraying || Input.GetKeyDown("j")))
+        if (PlayerInfo.Instance.sprayUnlock && (state == PlayerState.spraying || Input.GetKeyDown("l")))
         {
             spray();
-        }
-        if (PlayerInfo.Instance.shootUnlock && (state == PlayerState.shooting || Input.GetKeyDown("l")))
+        }*/
+        if (PlayerInfo.Instance.shootUnlock && (state == PlayerState.shooting || Input.GetButtonDown("Shoot")))
         {
             fs();
         }
-        if (PlayerInfo.Instance.guardUnlock && (state == PlayerState.guarding || Input.GetKeyDown("y")))
+        if (PlayerInfo.Instance.guardUnlock && (state == PlayerState.guarding || Input.GetButtonDown("Guard")))
         {
             guard();
-        }
+        }/*
         if (PlayerInfo.Instance.backstepUnlock)
         {
             Backstep();
@@ -480,7 +481,7 @@ public class PlayerTestScript : MonoBehaviour
         if (PlayerInfo.Instance.dashUnlock)
         {
             Dash();
-        }
+        }*/
 
         //terminal velocity
         if(velocity.y < terminalVelocity) { velocity.y = terminalVelocity; }
