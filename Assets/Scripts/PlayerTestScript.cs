@@ -40,7 +40,7 @@ public class PlayerTestScript : MonoBehaviour
     
     float nextAttackTime = 0f;
     bool followUpAttack = false;
-    [SerializeField] float attackRate = .23f;
+    [SerializeField] float attackRate = .5f;
     public int baseAttackDamage = 10;
     public int AttackDamage { get => (int)(baseAttackDamage * (rtsrEnabled ? rtsrDamageMod : 1) * (polarityEnabled ? polarityDamageMod : 1)); }
     public float rtsrDamageMod = 1.5f;
@@ -409,6 +409,8 @@ public class PlayerTestScript : MonoBehaviour
             return;
         }
 
+        if (nextAttackTime > 0) nextAttackTime -= Time.deltaTime;
+
         //toggle debugs
         //if (Input.GetKeyDown(KeyCode.F1)) { debugInvinc = !debugInvinc; }
         //if(Input.GetKeyDown(KeyCode.F2)) { debugSkills = !debugSkills; }
@@ -448,7 +450,7 @@ public class PlayerTestScript : MonoBehaviour
 
         //Attack and skills
         if (state == PlayerState.attacking && Input.GetButtonDown("Attack")) followUpAttack = true;
-        if (Input.GetButtonDown("Attack") && (state == PlayerState.idle || state == PlayerState.gliding || state == PlayerState.walking))
+        if (Input.GetButtonDown("Attack") && nextAttackTime <= 0 && (state == PlayerState.idle || state == PlayerState.gliding || state == PlayerState.walking))
         {
             StartCoroutine(nameof(Attack));
         }
@@ -585,7 +587,7 @@ public class PlayerTestScript : MonoBehaviour
 
         BaseAttack();
 
-        yield return new WaitForSeconds(3 * attackRate / 4 - 0.15f);
+        yield return new WaitForSeconds(attackRate - 0.15f);
         attackParent.SetActive(false);
 
         if (followUpAttack) {
@@ -595,8 +597,8 @@ public class PlayerTestScript : MonoBehaviour
         {
             state = PlayerState.idle;
             anim.SetBool("Attacking", false);
+            nextAttackTime = attackRate / 2;
         }
-
     }
 
     IEnumerator FollowUpAttack()
@@ -621,6 +623,7 @@ public class PlayerTestScript : MonoBehaviour
         {
             state = PlayerState.idle;
             anim.SetBool("Attacking", false);
+            nextAttackTime = attackRate / 2;
         }
     }
 

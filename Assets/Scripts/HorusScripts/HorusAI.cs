@@ -33,7 +33,6 @@ public class HorusAI : BossAI
     Phase phase = Phase.one;
 
     [SerializeField] GameObject gfx;
-    [SerializeField] GameObject contactHB;
 
     [SerializeField] Animator diveFX;
     [SerializeField] GameObject tornado;
@@ -239,8 +238,6 @@ public class HorusAI : BossAI
         {
             case Phase.one:
                 yield return StartCoroutine(BasicDive());
-
-                yield return new WaitForSeconds(0.1f);
                 break;
             case Phase.two:
 
@@ -249,7 +246,7 @@ public class HorusAI : BossAI
                 //pick location (below player, keep updating)
                 moveTarget.y = playerTransform.position.y - 14;
                 isMoving = true;
-                speedMod = 1.5f;
+                speedMod = 1.2f;
                 while (isMoving)
                 {
                     moveTarget.x = playerTransform.position.x;
@@ -272,7 +269,7 @@ public class HorusAI : BossAI
 
                 isMoving = true;
                 moveTarget = new Vector2(transform.position.x, topLeft.y);
-                speedMod = 3;
+                speedMod = 1.75f;
                 while (isMoving) { yield return null; }
 
 
@@ -297,7 +294,7 @@ public class HorusAI : BossAI
                 //move above player
                 moveTarget.y = topLeft.y;
                 isMoving = true;
-                speedMod = 3;
+                speedMod = 1.75f;
                 while (isMoving)
                 {
                     moveTarget.x = playerTransform.position.x;
@@ -332,6 +329,7 @@ public class HorusAI : BossAI
 
                 break;
         }
+        yield return new WaitForSeconds(1f);
         //move into next attack
         CurrentAttack = Attack.idle;
         yield break;
@@ -343,13 +341,13 @@ public class HorusAI : BossAI
         //dive
         isMoving = true;
         moveTarget = new Vector2(transform.position.x, bottomRight.y);
-        speedMod = 3;
+        speedMod = 1.75f;
         while (isMoving) { yield return null; }
 
         //aoe attack; continue moving down
         isMoving = true;
         moveTarget = new Vector2(transform.position.x, bottomRight.y-20);
-        speedMod = 3;
+        speedMod = 1.75f;
 
         diveFX.transform.position = (Vector2)transform.position + (Vector2.up * diveOffset);
         diveFX.gameObject.SetActive(true);
@@ -404,7 +402,7 @@ public class HorusAI : BossAI
         sfxManager.PlayDive();
         isMoving = true;
         moveTarget = new Vector2(transform.position.x, bottomRight.y);
-        speedMod = 3;
+        speedMod = 1.75f;
         while (isMoving) { yield return null; }
 
         //unflip
@@ -427,8 +425,6 @@ public class HorusAI : BossAI
         {
             case Phase.one:
                 yield return StartCoroutine(BasicGust());
-
-                yield return new WaitForSeconds(0.3f);
                 break;
             case Phase.two:
                 //gust then horizontal flying attack
@@ -452,7 +448,7 @@ public class HorusAI : BossAI
                 sfxManager.PlayDive();
                 moveTarget.x = playerTransform.position.x + ((ToRightOfPlayer) ? -6 : 6);
                 isMoving = true;
-                speedMod = 2.5f;
+                speedMod = 1.5f;
                 while (isMoving) { yield return null; }
                 if (Left)
                 {
@@ -512,7 +508,7 @@ public class HorusAI : BossAI
 
                 break;
         }
-
+        yield return new WaitForSeconds(1f);
         CurrentAttack = Attack.idle;
         yield break;
     }
@@ -555,20 +551,19 @@ public class HorusAI : BossAI
                 int dir = (transform.position.x > CenterX) ? 1 : -1;
                 moveTarget = new Vector2((dir == 1) ? bottomRight.x - 4 : moveTarget.x = topLeft.x + 4, topLeft.y);
                 isMoving = true;
-                speedMod = 2.5f;
+                speedMod = 1.5f;
                 while (isMoving) { yield return null; }
 
                 //start passes
                 yield return StartCoroutine(RainAttack(dir, false));
 
-                yield return new WaitForSeconds(0.1f);
                 break;
             case Phase.two:
                 //go across twice
                 dir = (transform.position.x > CenterX) ? 1 : -1;
                 moveTarget = new Vector2((dir == 1) ? bottomRight.x - 4 : moveTarget.x = topLeft.x + 4, topLeft.y);
                 isMoving = true;
-                speedMod = 2.5f;
+                speedMod = 1.5f;
                 while (isMoving) { yield return null; }
 
                 //start passes
@@ -579,7 +574,6 @@ public class HorusAI : BossAI
                 //stecond pass
                 yield return StartCoroutine(RainAttack(dir, false));
 
-                yield return new WaitForSeconds(0.1f);
                 break;
             case Phase.three:
                 //replace rain with shotguns? homing shots? shots coming from floor?
@@ -588,7 +582,7 @@ public class HorusAI : BossAI
                 dir = (transform.position.x > CenterX) ? 1 : -1;
                 moveTarget = new Vector2((dir == 1) ? bottomRight.x - 4 : moveTarget.x = topLeft.x + 4, topLeft.y);
                 isMoving = true;
-                speedMod = 2.5f;
+                speedMod = 1.5f;
                 while(isMoving) { yield return null; }
 
                 //go across twice
@@ -598,11 +592,9 @@ public class HorusAI : BossAI
                 dir = -dir;
                 yield return StartCoroutine(RainAttack(dir, true));
 
-                yield return new WaitForSeconds(0.1f);
-
                 break;
         }
-
+        yield return new WaitForSeconds(1f);
         CurrentAttack = Attack.idle;
         yield break;
     }
@@ -611,7 +603,7 @@ public class HorusAI : BossAI
     {
         //move target = opposite top corner
         moveTarget.x = (dir == -1) ? bottomRight.x - 4 : topLeft.x + 4;
-        speedMod = 2f;
+        speedMod = 1.25f;
         isMoving = true;
         sfxManager.PlayDive();
         if(dir == -1) { anim.SetBool("DashRight", true); } else
@@ -644,7 +636,7 @@ public class HorusAI : BossAI
                 //go somewhere just above player
                 float xSpacing = rng.Next(-10, 9) + (float)rng.NextDouble();
                 isMoving = true;
-                speedMod = 1.5f;
+                speedMod = 1.1f;
                 while (isMoving)
                 {
                     moveTarget.x = playerTransform.position.x + xSpacing;
@@ -657,15 +649,13 @@ public class HorusAI : BossAI
 
                 ShotgunAttack(0, false);
 
-                yield return new WaitForSeconds(0.2f);
-
                 break;
             case Phase.two:
                 //shoot 1 then 2 in a v
                 //go somewhere just above player
                 xSpacing = rng.Next(-10, 9) + (float)rng.NextDouble();
                 isMoving = true;
-                speedMod = 1.5f;
+                speedMod = 1.1f;
                 while (isMoving)
                 {
                     moveTarget.x = playerTransform.position.x + xSpacing;
@@ -686,8 +676,6 @@ public class HorusAI : BossAI
                 ShotgunAttack(30, false);
                 ShotgunAttack(-30, false);
 
-                yield return new WaitForSeconds(0.2f);
-
                 break;
             case Phase.three:
                 //1 bounce shotguns? homing shots?
@@ -695,7 +683,7 @@ public class HorusAI : BossAI
                 //go somewhere just above player
                 xSpacing = rng.Next(-10, 9) + (float)rng.NextDouble();
                 isMoving = true;
-                speedMod = 1.5f;
+                speedMod = 1.1f;
                 while (isMoving)
                 {
                     moveTarget.x = playerTransform.position.x + xSpacing;
@@ -723,11 +711,12 @@ public class HorusAI : BossAI
                 ShotgunAttack(0, true);
                 ShotgunAttack(-30, true);
 
-                yield return new WaitForSeconds(0.5f);
+                yield return new WaitForSeconds(0.2f);
 
                 break;
         }
 
+        yield return new WaitForSeconds(1f);
         CurrentAttack = Attack.idle;
         yield break;
     }
@@ -779,7 +768,7 @@ public class HorusAI : BossAI
                     yield return null;
                 }
 
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(0.25f);
 
                 //wing attack (blend tree anim)
                 Vector2 targetDir = ((Vector2)(playerTransform.position - transform.position)).normalized;
@@ -790,8 +779,6 @@ public class HorusAI : BossAI
                 //spawn attack
                 Vector2 attackDir = ((Vector2)(playerTransform.position - transform.position)).normalized;
                 wingAttack.Reset(transform.position, attackDir);
-
-                yield return new WaitForSeconds(0.2f);
 
                 break;
             case Phase.two:
@@ -812,7 +799,7 @@ public class HorusAI : BossAI
                     moveTarget = new Vector2(playerTransform.position.x + (6.5f * -dir), playerTransform.position.y + 6.5f);
                     yield return null;
                 }
-
+                yield return new WaitForSeconds(0.2f);
                 //3 attacks in a row
                 for (int i = 0; i < 3; i++)
                 {
@@ -830,11 +817,9 @@ public class HorusAI : BossAI
                     moveTarget.x = playerTransform.position.x;
                     moveTarget.y = playerTransform.position.y + 6.5f;
                     isMoving = true;
-                    speedMod = 2f;
+                    speedMod = 1.3f;
                     while(isMoving) { yield return null; }
                 }
-
-                yield return new WaitForSeconds(2f);
 
                 break;
             case Phase.three:
@@ -849,8 +834,6 @@ public class HorusAI : BossAI
 
                 //scale down
                 transform.localScale = new Vector3(0.7f, 0.7f, 1);
-                //disable hb
-                contactHB.SetActive(false);
 
                 //fly down to center
                 transform.position = new Vector3(CenterX, transform.position.y, transform.position.z);
@@ -874,11 +857,11 @@ public class HorusAI : BossAI
 
                 //scale up
                 transform.localScale = new Vector3(1, 1, 1);
-                contactHB.SetActive(true);
 
                 break;
         }
 
+        yield return new WaitForSeconds(1f);
         CurrentAttack = Attack.idle;
         yield break;
     }
@@ -890,8 +873,6 @@ public class HorusAI : BossAI
             case Phase.one:
                 yield return StartCoroutine(BasicSwoop(false));
 
-                yield return new WaitForSeconds(0.1f);
-
                 break;
             case Phase.two:
                 //add shotgun after swoop
@@ -899,7 +880,7 @@ public class HorusAI : BossAI
                 yield return StartCoroutine(BasicSwoop(true));
 
                 anim.SetTrigger("Gust");
-                yield return new WaitForSeconds(0.15f);
+                yield return new WaitForSeconds(0.2f);
 
                 //shotgun after
                 ShotgunAttack(0, false);
@@ -910,7 +891,7 @@ public class HorusAI : BossAI
                 //room spiraling attack
                 //move to top center at radius
                 isMoving = true;
-                speedMod = 2f;
+                speedMod = 1.3f;
                 moveTarget.y = topLeft.y;
                 moveTarget.x = CenterX;
                 while (isMoving)
@@ -956,6 +937,7 @@ public class HorusAI : BossAI
                 break;
         }
 
+        yield return new WaitForSeconds(1f);
         CurrentAttack = Attack.idle;
         yield break;
     }
@@ -980,6 +962,7 @@ public class HorusAI : BossAI
             moveTarget = new Vector2(playerTransform.position.x + (3 * -dir), playerTransform.position.y + 3);
             yield return null;
         }
+        yield return new WaitForSeconds(0.15f);
 
         anim.SetBool("Swoop", true);
         sfxManager.PlaySwoop();
@@ -987,13 +970,13 @@ public class HorusAI : BossAI
         //first segment
         moveTarget.x = playerTransform.position.x + dir;
         moveTarget.y = playerTransform.position.y - (3 * playerGroundOffset / 4);
-        speedMod = 1.25f;
+        speedMod = 1f;
         isMoving = true;
         while (isMoving) { yield return null; }
         //second segment
         moveTarget += new Vector2((3 * dir * ((extendedEnd) ? 2 : 1)), 3);
         isMoving = true;
-        speedMod = 1.5f;
+        speedMod = 1.1f;
         while (isMoving) { yield return null; }
         anim.SetBool("Swoop", false);
         sfxManager.StopSwoop();
