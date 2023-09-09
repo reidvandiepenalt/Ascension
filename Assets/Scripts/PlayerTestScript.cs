@@ -38,7 +38,6 @@ public class PlayerTestScript : MonoBehaviour
     private float accelerationTimeAirborne = 0f;
     private float accelerationTimeGrounded = 0f;
     
-    float nextAttackTime = 0f;
     bool followUpAttack = false;
     [SerializeField] float attackRate = .5f;
     public int baseAttackDamage = 10;
@@ -409,8 +408,6 @@ public class PlayerTestScript : MonoBehaviour
             return;
         }
 
-        if (nextAttackTime > 0) nextAttackTime -= Time.deltaTime;
-
         //toggle debugs
         //if (Input.GetKeyDown(KeyCode.F1)) { debugInvinc = !debugInvinc; }
         //if(Input.GetKeyDown(KeyCode.F2)) { debugSkills = !debugSkills; }
@@ -450,7 +447,7 @@ public class PlayerTestScript : MonoBehaviour
 
         //Attack and skills
         if (state == PlayerState.attacking && Input.GetButtonDown("Attack")) followUpAttack = true;
-        if (Input.GetButtonDown("Attack") && nextAttackTime <= 0 && (state == PlayerState.idle || state == PlayerState.gliding || state == PlayerState.walking))
+        if (Input.GetButtonDown("Attack") && (state == PlayerState.idle || state == PlayerState.gliding || state == PlayerState.walking))
         {
             StartCoroutine(nameof(Attack));
         }
@@ -583,21 +580,19 @@ public class PlayerTestScript : MonoBehaviour
 
         playerSFXManager.PlayMelee1();
 
-        yield return new WaitForSeconds(attackRate/4);
+        yield return new WaitForSeconds(attackRate / 4);
 
         BaseAttack();
 
-        yield return new WaitForSeconds(attackRate - 0.15f);
+        yield return new WaitForSeconds(3 * attackRate / 4);
         attackParent.SetActive(false);
 
         if (followUpAttack) {
-            yield return new WaitForSeconds(0.15f);
             StartCoroutine(nameof(FollowUpAttack));
         } else
         {
             state = PlayerState.idle;
             anim.SetBool("Attacking", false);
-            nextAttackTime = attackRate / 2;
         }
     }
 
@@ -611,19 +606,17 @@ public class PlayerTestScript : MonoBehaviour
 
         BaseAttack(true);
 
-        yield return new WaitForSeconds(3 * attackRate / 4 - 0.15f);
+        yield return new WaitForSeconds(3 * attackRate / 4);
         attackParent.SetActive(false);
 
         if (followUpAttack)
         {
-            yield return new WaitForSeconds(0.15f);
             StartCoroutine(nameof(Attack));
         }
         else
         {
             state = PlayerState.idle;
             anim.SetBool("Attacking", false);
-            nextAttackTime = attackRate / 2;
         }
     }
 
