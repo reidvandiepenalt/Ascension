@@ -33,6 +33,7 @@ public class HorusAI : BossAI
     Phase phase = Phase.one;
 
     [SerializeField] GameObject gfx;
+    [SerializeField] GameObject contactHB;
 
     [SerializeField] Animator diveFX;
     [SerializeField] GameObject tornado;
@@ -692,24 +693,24 @@ public class HorusAI : BossAI
                 }
 
                 anim.SetTrigger("Gust");
-                yield return new WaitForSeconds(0.15f);//pause so player can dodge
+                yield return new WaitForSeconds(0.2f);//pause so player can dodge
 
-                ShotgunAttack(0, true);
-
-                yield return new WaitForSeconds(0.25f);
-                anim.SetTrigger("Gust");
-                yield return new WaitForSeconds(0.15f);
-
-                ShotgunAttack(30, true);
-                ShotgunAttack(-30, true);
+                ShotgunAttack(0, false);
 
                 yield return new WaitForSeconds(0.25f);
                 anim.SetTrigger("Gust");
-                yield return new WaitForSeconds(0.15f);
+                yield return new WaitForSeconds(0.2f);
 
-                ShotgunAttack(30, true);
-                ShotgunAttack(0, true);
-                ShotgunAttack(-30, true);
+                ShotgunAttack(30, false);
+                ShotgunAttack(-30, false);
+
+                yield return new WaitForSeconds(0.25f);
+                anim.SetTrigger("Gust");
+                yield return new WaitForSeconds(0.2f);
+
+                ShotgunAttack(30, false);
+                ShotgunAttack(0, false);
+                ShotgunAttack(-30, false);
 
                 yield return new WaitForSeconds(0.2f);
 
@@ -834,6 +835,7 @@ public class HorusAI : BossAI
 
                 //scale down
                 transform.localScale = new Vector3(0.7f, 0.7f, 1);
+                contactHB.SetActive(false);
 
                 //fly down to center
                 transform.position = new Vector3(CenterX, transform.position.y, transform.position.z);
@@ -857,6 +859,7 @@ public class HorusAI : BossAI
 
                 //scale up
                 transform.localScale = new Vector3(1, 1, 1);
+                contactHB.SetActive(true);
 
                 break;
         }

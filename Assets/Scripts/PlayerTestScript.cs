@@ -409,7 +409,7 @@ public class PlayerTestScript : MonoBehaviour
         }
 
         //toggle debugs
-        //if (Input.GetKeyDown(KeyCode.F1)) { debugInvinc = !debugInvinc; }
+        if (Input.GetKeyDown(KeyCode.F1)) { debugInvinc = !debugInvinc; }
         //if(Input.GetKeyDown(KeyCode.F2)) { debugSkills = !debugSkills; }
 
         //If moving left, set direction to left
