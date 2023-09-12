@@ -139,6 +139,7 @@ public class BastetScript : BossAI
     {
         sfxManager.PlayHurt();
         int health = (int)parameter;
+        Debug.Log(health);
         if (health < 0)
         {
             Die();
@@ -744,11 +745,11 @@ public class BastetScript : BossAI
         {
             if (playerTransform.position.x < transform.position.x)
             {
-                moveTarget = new Vector2(Mathf.Max(hit.collider.bounds.min.x + 2, playerTransform.position.x - 4), start.y);
+                moveTarget = new Vector2(Mathf.Max(hit.collider.bounds.min.x + 1, playerTransform.position.x - 4), start.y);
             }
             else
             {
-                moveTarget = new Vector2(Mathf.Min(hit.collider.bounds.max.x - 2, playerTransform.position.x + 4), start.y);
+                moveTarget = new Vector2(Mathf.Min(hit.collider.bounds.max.x - 1, playerTransform.position.x + 4), start.y);
             }
 
         }

@@ -19,6 +19,7 @@ public class MeleeAttackInteract : AttackInteract
         if (target.gameObject.CompareTag("Enemy"))
         {
             EnemyCompositeHB hb = target.gameObject.GetComponent<EnemyCompositeHB>();
+            if (hb == null) return;
             int instanceID = hb.ParentID;
             if (instanceIDs.Contains(instanceID)) { return; }
 

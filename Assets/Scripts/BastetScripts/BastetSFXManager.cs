@@ -14,13 +14,6 @@ public class BastetSFXManager : MonoBehaviour
     public AudioSource EyeFlash;
     public AudioSource Stomp;
 
-    System.Random rng;
-
-    public void Start()
-    {
-        rng = new System.Random();
-    }
-
     public void PlayMovement()
     {
         if (Movement.isPlaying) return;
@@ -39,7 +32,7 @@ public class BastetSFXManager : MonoBehaviour
 
     public void PlayCall()
     {
-        if(rng.NextDouble() > 0.5f)
+        if(Random.value > 0.5f)
         {
             Call1.Play();
         }
