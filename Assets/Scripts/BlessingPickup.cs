@@ -5,6 +5,7 @@ using UnityEngine;
 public class BlessingPickup : MonoBehaviour
 {
     [SerializeField] Blessing blessing;
+    [SerializeField] GameObject pickupScreen;
     
     public enum BlessingPickups
     {
