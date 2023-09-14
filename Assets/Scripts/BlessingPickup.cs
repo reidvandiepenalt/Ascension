@@ -38,6 +38,8 @@ public class BlessingPickup : MonoBehaviour
                     break;
             }
 
+            Instantiate(pickupScreen);
+
             //anim
             StartCoroutine(nameof(Anim));
         }
