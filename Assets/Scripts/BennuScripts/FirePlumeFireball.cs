@@ -9,6 +9,7 @@ public class FirePlumeFireball : MonoBehaviour
     [SerializeField] FloorFire fire;
     [SerializeField] float launchVel;
     bool isSpawned = false;
+    [SerializeField] AudioSource spawnSFX;
 
     private void FixedUpdate()
     {
@@ -29,6 +30,7 @@ public class FirePlumeFireball : MonoBehaviour
         transform.position = new Vector3(position.x, position.y, transform.position.z);
         rb.velocity = new Vector2(Mathf.Cos(degAng * Mathf.Deg2Rad), Mathf.Sin(degAng * Mathf.Deg2Rad)) * launchVel;
         transform.eulerAngles = new Vector3(0, 0, degAng - 90);
+        if(spawnSFX != null) spawnSFX.Play();
     }
 
     void End(Vector2 hitPoint)

@@ -7,7 +7,8 @@ public class FloorFire : MonoBehaviour
     const float maxTime = 1.5f;
     float currentTime = 0.0f;
     bool isSpawned = false;
-
+    [SerializeField] AudioSource loopSFX;
+    
     private void FixedUpdate()
     {
         if (isSpawned)
@@ -24,6 +25,7 @@ public class FloorFire : MonoBehaviour
     {
         transform.position = new Vector3(pos.x, pos.y, transform.position.z);
         isSpawned = true;
+        loopSFX.Play();
     }
 
     void End()
@@ -31,5 +33,6 @@ public class FloorFire : MonoBehaviour
         transform.position = new Vector3(-80, -80, transform.position.z);
         isSpawned = false;
         currentTime = 0f;
+        loopSFX.Stop();
     }
 }

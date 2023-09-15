@@ -6,6 +6,7 @@ public class MiniHomingFireball : MonoBehaviour
 {
     [SerializeField] float speed_p1, speed_p2;
     [SerializeField] float time_p1, time_p2;
+    [SerializeField] AudioSource sfx;
     float currentTime = 0f;
     Transform playerTransform;
     Vector2 beginTarget;
@@ -46,6 +47,7 @@ public class MiniHomingFireball : MonoBehaviour
         playerTransform = player;
         beginTarget = firstPosition;
         curPhase = phase;
+        sfx.Play();
     }
 
     void End()
@@ -54,5 +56,6 @@ public class MiniHomingFireball : MonoBehaviour
         isSpawned = false;
         reachedBeginTarget = false;
         transform.position = new Vector3(-80, -80, transform.position.z);
+        sfx.Stop();
     }
 }

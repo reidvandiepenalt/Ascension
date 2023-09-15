@@ -7,6 +7,7 @@ public class FireRainFireball : MonoBehaviour
     [SerializeField] LayerMask groundLayer;
     [SerializeField] float speed;
     [SerializeField] FloorFire floorFire;
+    [SerializeField] AudioSource spawnSFX, loopSFX;
     bool spawned = false;
 
 
@@ -31,11 +32,14 @@ public class FireRainFireball : MonoBehaviour
     {
         transform.position = new Vector3(startPos.x, startPos.y, transform.position.z);
         spawned = true;
+        spawnSFX.Play();
+        loopSFX.Play();
     }
 
     void End()
     {
         transform.position = new Vector3(-80, -80, transform.position.z);
         spawned = false;
+        loopSFX.Stop();
     }
 }

@@ -8,6 +8,7 @@ public class RapidFireFireball : MonoBehaviour
     const float baseSpeed = 18f;
     float speed;
     float xMove, yMove;
+    [SerializeField] AudioSource spawnSFX, loopSFX;
 
     private void Start()
     {
@@ -29,12 +30,15 @@ public class RapidFireFireball : MonoBehaviour
         transform.eulerAngles = new Vector3(0, 0, angRad * Mathf.Rad2Deg - 90);
         xMove = Mathf.Cos(angRad);
         yMove = Mathf.Sin(angRad);
+        spawnSFX.Play();
+        loopSFX.Play();
     }
 
     void End()
     {
         isSpawned = false;
         transform.position = new Vector3(-80, -80, transform.position.z);
+        loopSFX.Stop();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

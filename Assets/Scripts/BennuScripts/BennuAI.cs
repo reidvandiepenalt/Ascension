@@ -296,6 +296,9 @@ public class BennuAI : BossAI
         //wait for anim to finish
         yield return new WaitForSeconds(2 / 3f);
 
+        //pause
+        yield return new WaitForSeconds(1);
+
         actionQ.Dequeue();
         isAttacking = false;
         yield return null;
@@ -339,6 +342,9 @@ public class BennuAI : BossAI
         //wait for anim to finish
         yield return new WaitForSeconds(19 / 30f);
 
+        //pause
+        yield return new WaitForSeconds(1);
+
         actionQ.Dequeue();
         isAttacking = false;
         yield return null;
@@ -373,6 +379,9 @@ public class BennuAI : BossAI
 
         //wait for anim to finish
         yield return new WaitForSeconds(1 / 3f);
+
+        //pause
+        yield return new WaitForSeconds(1);
 
         actionQ.Dequeue();
         isAttacking = false;
@@ -439,6 +448,9 @@ public class BennuAI : BossAI
         //wait for anim to finish
         yield return new WaitForSeconds(p1 ? (5 / 12f) : 0.25f);
 
+        //pause
+        yield return new WaitForSeconds(1);
+
         actionQ.Dequeue();
         isAttacking = false;
         yield return null;
@@ -473,6 +485,9 @@ public class BennuAI : BossAI
         //wait for anim to finish
         yield return new WaitForSeconds(4/15f);
 
+        //pause
+        yield return new WaitForSeconds(1);
+
         actionQ.Dequeue();
         isAttacking = false;
         yield return null;
@@ -500,7 +515,7 @@ public class BennuAI : BossAI
         sfxManager.PlayCall();
         sfxManager.StartDive();
 
-        speedMod = 2;
+        speedMod = 2f;
         isMoving = true;
         yield return new WaitWhile(() => isMoving);
 
@@ -516,6 +531,8 @@ public class BennuAI : BossAI
             diveFireball2.Launch(transform.position, 135);
         }
 
+        //pause
+        yield return new WaitForSeconds(1);
 
         actionQ.Dequeue();
         isAttacking = false;
@@ -570,6 +587,9 @@ public class BennuAI : BossAI
         //wait for anim to finish
         yield return new WaitForSeconds(p1 ? 0.25f : 1 / 3f);
 
+        //pause
+        yield return new WaitForSeconds(1);
+
         actionQ.Dequeue();
         isAttacking = false;
         yield return null;
@@ -610,6 +630,9 @@ public class BennuAI : BossAI
         moveTarget = RandomQuadrantPosition(moveQuad);
         isMoving = true;
         yield return new WaitWhile(() => isMoving);
+
+        //pause
+        yield return new WaitForSeconds(0.5f);
 
         speedMod = 1f;
         actionQ.Dequeue();

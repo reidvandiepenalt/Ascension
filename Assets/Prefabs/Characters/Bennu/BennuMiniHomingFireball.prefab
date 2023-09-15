@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 8287269078249086101}
   - component: {fileID: 881522791923571602}
   - component: {fileID: 6689853275581024485}
+  - component: {fileID: 3799973495860085696}
   m_Layer: 14
   m_Name: BennuMiniHomingFireball
   m_TagString: Attack
@@ -158,6 +159,7 @@ MonoBehaviour:
   speed_p2: 16
   time_p1: 1.5
   time_p2: 2
+  sfx: {fileID: 6689853275581024485}
 --- !u!114 &8287269078249086100
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5028,7 +5030,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 24300002, guid: bc36d73b4f0894144812e52f39073489,
     type: 2}
   m_audioClip: {fileID: 8300000, guid: adae43360004b654ea97a4ae9686e45f, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 0.325
   m_Pitch: 1
   Loop: 1
@@ -5113,3 +5115,24 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!50 &3799973495860085696
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8287269079832592098}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0

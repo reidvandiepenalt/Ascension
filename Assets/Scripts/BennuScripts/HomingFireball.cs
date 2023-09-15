@@ -7,7 +7,6 @@ public class HomingFireball : MonoBehaviour
     [SerializeField] MiniHomingFireball[] miniFireballs = new MiniHomingFireball[6];
     [SerializeField] float speed_p1, speed_p2;
     [SerializeField] float time_p1, time_p2;
-    [SerializeField] ParticleSystem particleSystem;
     [SerializeField] Animator anim;
     [SerializeField] AudioSource endSFX;
     float currentTime = 0f;
@@ -15,6 +14,7 @@ public class HomingFireball : MonoBehaviour
     BennuAI.Phase curPhase = BennuAI.Phase.one;
     bool isSpawned = false;
     float Speed { get => ((curPhase == BennuAI.Phase.one) ? speed_p1 : speed_p2); }
+    bool hitPlayer = false;
 
     private void FixedUpdate()
     {
@@ -23,21 +23,27 @@ public class HomingFireball : MonoBehaviour
         float angle = Mathf.Atan2(playerTransform.position.y - transform.position.y, playerTransform.position.x - transform.position.x);
         transform.position += new Vector3(Mathf.Cos(angle) * Speed * Time.fixedDeltaTime, Mathf.Sin(angle) * Speed * Time.fixedDeltaTime);
         currentTime += Time.fixedDeltaTime;
-        if(currentTime >= ((curPhase == BennuAI.Phase.one) ? time_p1 : time_p2))
+        if(currentTime >= ((curPhase == BennuAI.Phase.one) ? time_p1 : time_p2) || hitPlayer)
         {
             anim.SetTrigger("Explode");
             endSFX.Play();
             SpawnFBS();
-            Invoke(nameof(End), 0.33f);
+            End();
         }
     }
 
     public void Begin(Transform player, Vector2 position, BennuAI.Phase phase)
     {
+        hitPlayer = false;
         isSpawned = true;
         transform.position = new Vector3(position.x, position.y, transform.position.z);
         playerTransform = player;
         curPhase = phase;
+    }
+
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        if (other.CompareTag("Player")) hitPlayer = true;
     }
 
     void SpawnFBS()
