@@ -195,7 +195,7 @@ public class BennuAI : BossAI
     {
         sfxManager.StartMovement();
         //reached destination
-        if (Vector2.Distance(transform.position, moveTarget) < speed * Time.deltaTime)
+        if (Vector2.Distance(transform.position, moveTarget) < speed * speedMod * Time.deltaTime)
         {
             isMoving = false;
             transform.position = moveTarget;
@@ -530,9 +530,6 @@ public class BennuAI : BossAI
             diveFireball1.Launch(transform.position, 45);
             diveFireball2.Launch(transform.position, 135);
         }
-
-        //pause
-        yield return new WaitForSeconds(1);
 
         actionQ.Dequeue();
         isAttacking = false;
