@@ -6,7 +6,7 @@ public class HorusItem : BossItem
 {
     protected override void SetFlags()
     {
-        PlayerInfo.Instance.doubleJumpUnlock = true;
-        BossStatuses.Instance.horusKilled = true;
+        PlayerInfo.Instance.doubleJumpUnlock[TitleLoadManager.SAVE_SLOT] = true;
+        BossStatuses.Instance.horusKilled[TitleLoadManager.SAVE_SLOT] = true;
     }
 }

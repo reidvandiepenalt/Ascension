@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,14 +19,36 @@ public class TitleLoadManager : MonoBehaviour
     [SerializeField] GameObject gameSlotsBackButton;
     [SerializeField] GameObject gameSlotsPage;
 
+    static int saveSlot = 1;
+    public static int SAVE_SLOT { get => saveSlot; }
+
     public void LoadGame(int slot)
     {
+        saveSlot = slot;
+
         BossStatuses.Load();
         BlessingPickupInfo.Load();
         PlayerInfo.Load();
 
-        changeScenes.levelName = PlayerInfo.Instance.sceneName;
-        changeScenes.startPosition = PlayerInfo.Instance.loadPos;
+        try
+        {
+            changeScenes.levelName = PlayerInfo.Instance.sceneName[SAVE_SLOT];
+            changeScenes.startPosition = PlayerInfo.Instance.loadPos[SAVE_SLOT];
+        }
+        catch
+        {
+            //save slot not instantiated
+            PlayerInfo.Instance.Setup();
+            PlayerInfo.Save();
+            BlessingPickupInfo.Instance.Setup();
+            BlessingPickupInfo.Save();
+            BossStatuses.Instance.Setup();
+            BossStatuses.Save();
+
+            changeScenes.levelName = PlayerInfo.Instance.sceneName[SAVE_SLOT];
+            changeScenes.startPosition = PlayerInfo.Instance.loadPos[SAVE_SLOT];
+        }
+        
 
         changeScenes.LoadScene();
         Instantiate(playerPrefab);
@@ -36,6 +59,8 @@ public class TitleLoadManager : MonoBehaviour
     public void DeleteSave(int slot)
     {
         //clear player save info
+
+
     }
 
     public void OpenGameSlots()

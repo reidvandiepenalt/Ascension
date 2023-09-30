@@ -6,11 +6,11 @@ public class MapItem : BossItem
 {
     void Start()
     {
-        if (PlayerInfo.Instance.mapUnlocked) Destroy(gameObject);
+        if (PlayerInfo.Instance.mapUnlocked[TitleLoadManager.SAVE_SLOT]) Destroy(gameObject);
     }
 
     protected override void SetFlags()
     {
-        PlayerInfo.Instance.mapUnlocked = true;
+        PlayerInfo.Instance.mapUnlocked[TitleLoadManager.SAVE_SLOT] = true;
     }
 }

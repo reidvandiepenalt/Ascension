@@ -233,11 +233,11 @@ public class PlayerTestScript : MonoBehaviour
             inGameMenuCanvas.GetComponent<InventoryMenu>().player = this;
             skillsGrid = UICanvas.GetComponentInChildren<SkillsGridManager>();
 
-            //change?
+            maxHealth.Value = PlayerInfo.Instance.maxHealth[TitleLoadManager.SAVE_SLOT];
             currentHealth.Value = maxHealth.Value;
 
             //set up skill ui's if unlocked
-            if (PlayerInfo.Instance.slamUnlock)
+            if (PlayerInfo.Instance.slamUnlock[TitleLoadManager.SAVE_SLOT])
             {
                 slamUIScript = skillsGrid.AddIcon(slamUI).GetComponent<ProgressBarScript>();
                 slamTypeScripts.slamUIScript = slamUIScript;
@@ -245,7 +245,7 @@ public class PlayerTestScript : MonoBehaviour
                 slam = slamTypeScripts.DefaultSlam;
                 UISkillScripts.Add(slamUIScript);
             }
-            if (PlayerInfo.Instance.sprayUnlock)
+            if (PlayerInfo.Instance.sprayUnlock[TitleLoadManager.SAVE_SLOT])
             {
                 sprayUIScript = skillsGrid.AddIcon(sprayUI).GetComponent<ProgressBarScript>();
                 sprayTypeScripts.sprayUIScript = sprayUIScript;
@@ -253,7 +253,7 @@ public class PlayerTestScript : MonoBehaviour
                 spray = sprayTypeScripts.DefaultSpray;
                 UISkillScripts.Add(sprayUIScript);
             }
-            if (PlayerInfo.Instance.shootUnlock)
+            if (PlayerInfo.Instance.shootUnlock[TitleLoadManager.SAVE_SLOT])
             {
                 shotUIScript = skillsGrid.AddIcon(shotUI).GetComponent<ProgressBarScript>();
                 featherShotsScripts.shotUIScript = shotUIScript;
@@ -261,20 +261,20 @@ public class PlayerTestScript : MonoBehaviour
                 fs = featherShotsScripts.DefaultShot;
                 UISkillScripts.Add(shotUIScript);
             }
-            if (PlayerInfo.Instance.guardUnlock)
+            if (PlayerInfo.Instance.guardUnlock[TitleLoadManager.SAVE_SLOT])
             {
                 guardUIScript = skillsGrid.AddIcon(guardUI).GetComponent<GuardUIScript>();
                 guardTypeScripts.guardUIScript = guardUIScript;
                 guardUIScript.maximum = guardTypeScripts.hitguardCD;
                 guard = guardTypeScripts.DefaultGuard;
             }
-            if (PlayerInfo.Instance.backstepUnlock)
+            if (PlayerInfo.Instance.backstepUnlock[TitleLoadManager.SAVE_SLOT])
             {
                 backstepUIScript = skillsGrid.AddIcon(backstepUI).GetComponent<ProgressBarScript>();
                 backstepUIScript.comboToCharge = backstepComboCount;
                 UISkillScripts.Add(backstepUIScript);
             }
-            if (PlayerInfo.Instance.dashUnlock)
+            if (PlayerInfo.Instance.dashUnlock[TitleLoadManager.SAVE_SLOT])
             {
                 dashUIScript = skillsGrid.AddIcon(dashUI).GetComponent<ProgressBarScript>();
                 dashUIScript.comboToCharge = dashComboCount;
@@ -304,7 +304,7 @@ public class PlayerTestScript : MonoBehaviour
     {
         if (loadFromTransition.Value)
         {
-            transform.position = new Vector3(PlayerInfo.Instance.loadPos.x, PlayerInfo.Instance.loadPos.y, -40);
+            transform.position = new Vector3(PlayerInfo.Instance.loadPos[TitleLoadManager.SAVE_SLOT].x, PlayerInfo.Instance.loadPos[TitleLoadManager.SAVE_SLOT].y, -40);
             loadFromTransition.Value = false;
         }
     }
@@ -335,7 +335,7 @@ public class PlayerTestScript : MonoBehaviour
             state = PlayerState.idle;
             playerSFXManager.PlayJump();
         }
-        else if (PlayerInfo.Instance.doubleJumpUnlock && !doubleJumpUsed && !controller.collisions.below && 
+        else if (PlayerInfo.Instance.doubleJumpUnlock[TitleLoadManager.SAVE_SLOT] && !doubleJumpUsed && !controller.collisions.below && 
             (state == PlayerState.idle || state == PlayerState.gliding || state == PlayerState.walking))//doublejump
         {
             velocity.y = maxJumpVelocity;
@@ -344,7 +344,7 @@ public class PlayerTestScript : MonoBehaviour
             anim.SetTrigger("DoubleJump");
             playerSFXManager.PlayDoubleJump();
             //if upgraded, spawn stun objects
-            if (PlayerInfo.Instance.doubleJumpUpgrade)
+            if (PlayerInfo.Instance.doubleJumpUpgrade[TitleLoadManager.SAVE_SLOT])
             {
                 RaycastHit2D hit = Physics2D.Raycast(gameObject.transform.position, Vector2.down, doubleJumpStunRange, LayerMask.GetMask("Ground"));
                 if (hit.transform != null)
@@ -465,11 +465,11 @@ public class PlayerTestScript : MonoBehaviour
         {
             spray();
         }*/
-        if (PlayerInfo.Instance.shootUnlock && (state == PlayerState.shooting || Input.GetButtonDown("Shoot")))
+        if (PlayerInfo.Instance.shootUnlock[TitleLoadManager.SAVE_SLOT] && (state == PlayerState.shooting || Input.GetButtonDown("Shoot")))
         {
             fs();
         }
-        if (PlayerInfo.Instance.guardUnlock && (state == PlayerState.guarding || Input.GetButtonDown("Guard")))
+        if (PlayerInfo.Instance.guardUnlock[TitleLoadManager.SAVE_SLOT] && (state == PlayerState.guarding || Input.GetButtonDown("Guard")))
         {
             guard();
         }/*
@@ -542,7 +542,7 @@ public class PlayerTestScript : MonoBehaviour
     /// </summary>
     void ChargeJump()
     {
-        if (controller.collisions.below && Input.GetKey(KeyCode.LeftControl) && PlayerInfo.Instance.chargeJumpUnlock)
+        if (controller.collisions.below && Input.GetKey(KeyCode.LeftControl) && PlayerInfo.Instance.chargeJumpUnlock[TitleLoadManager.SAVE_SLOT])
         {
             if (state == PlayerState.walking || state == PlayerState.idle)//begin jump
             {
@@ -736,8 +736,8 @@ public class PlayerTestScript : MonoBehaviour
     public void Respawn()
     {
         fadeSceneOut.RaiseSignal();
-        SceneManager.LoadScene(PlayerInfo.Instance.sceneName);
-        gameObject.transform.position = PlayerInfo.Instance.loadPos;
+        SceneManager.LoadScene(PlayerInfo.Instance.sceneName[TitleLoadManager.SAVE_SLOT]);
+        gameObject.transform.position = PlayerInfo.Instance.loadPos[TitleLoadManager.SAVE_SLOT];
     }
 
     /// <summary>
@@ -821,7 +821,7 @@ public class PlayerTestScript : MonoBehaviour
         Vector2 dashDirection;
         //start dashing
         if ((state == PlayerState.gliding || state == PlayerState.idle || state == PlayerState.walking)
-            && PlayerInfo.Instance.dashUpgrade && Input.GetKeyDown("u") && dashUIScript.charge >= 1) //upgraded dash
+            && PlayerInfo.Instance.dashUpgrade[TitleLoadManager.SAVE_SLOT] && Input.GetKeyDown("u") && dashUIScript.charge >= 1) //upgraded dash
         {
             dashDidHit = false;
             dashUIScript.ResetCombo();

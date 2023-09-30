@@ -17,10 +17,10 @@ public class Blessing : ScriptableObject
         {
             return pickup switch
             {
-                BlessingPickup.BlessingPickups.TernaryAnima => BlessingPickupInfo.Instance.TernaryAnimaPickedUp,
-                BlessingPickup.BlessingPickups.IronAegis => BlessingPickupInfo.Instance.IronAegisPickedUp,
-                BlessingPickup.BlessingPickups.DesertSun => BlessingPickupInfo.Instance.DesertSunPickedUp,
-                BlessingPickup.BlessingPickups.LethalRecompense => BlessingPickupInfo.Instance.LethalRecompensePickedUp,
+                BlessingPickup.BlessingPickups.TernaryAnima => BlessingPickupInfo.Instance.TernaryAnimaPickedUp[TitleLoadManager.SAVE_SLOT],
+                BlessingPickup.BlessingPickups.IronAegis => BlessingPickupInfo.Instance.IronAegisPickedUp[TitleLoadManager.SAVE_SLOT],
+                BlessingPickup.BlessingPickups.DesertSun => BlessingPickupInfo.Instance.DesertSunPickedUp[TitleLoadManager.SAVE_SLOT],
+                BlessingPickup.BlessingPickups.LethalRecompense => BlessingPickupInfo.Instance.LethalRecompensePickedUp[TitleLoadManager.SAVE_SLOT],
                 _ => false,
             };
         }

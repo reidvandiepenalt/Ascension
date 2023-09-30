@@ -21,13 +21,13 @@ public class BossEntranceTrigger : MonoBehaviour
             switch (boss)
             {
                 case Bosses.horus:
-                    if (!BossStatuses.Instance.horusKilled) onEntrance.RaiseSignal();
+                    if (!BossStatuses.Instance.horusKilled[TitleLoadManager.SAVE_SLOT]) onEntrance.RaiseSignal();
                     break;
                 case Bosses.bennu:
-                    if (!BossStatuses.Instance.bennuKilled) onEntrance.RaiseSignal();
+                    if (!BossStatuses.Instance.bennuKilled[TitleLoadManager.SAVE_SLOT]) onEntrance.RaiseSignal();
                     break;
                 case Bosses.bastet:
-                    if (!BossStatuses.Instance.bastKilled) onEntrance.RaiseSignal();
+                    if (!BossStatuses.Instance.bastKilled[TitleLoadManager.SAVE_SLOT]) onEntrance.RaiseSignal();
                     break;
             }
         }

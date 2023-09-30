@@ -15,10 +15,10 @@ public class ChangeScenes : MonoBehaviour
     {
         if (collision.CompareTag("Player") && !collision.isTrigger)
         {
-            if (!PlayerInfo.Instance.travelledTransitions.ContainsKey(roomTransition)) { 
-                PlayerInfo.Instance.travelledTransitions.Add(roomTransition, PlayerInfo.RoomTransitionStates.travelled);
-            }else if (PlayerInfo.Instance.travelledTransitions[roomTransition] == PlayerInfo.RoomTransitionStates.known) {
-                PlayerInfo.Instance.travelledTransitions[roomTransition] = PlayerInfo.RoomTransitionStates.travelled;
+            if (!PlayerInfo.Instance.travelledTransitions[TitleLoadManager.SAVE_SLOT].ContainsKey(roomTransition)) { 
+                PlayerInfo.Instance.travelledTransitions[TitleLoadManager.SAVE_SLOT].Add(roomTransition, PlayerInfo.RoomTransitionStates.travelled);
+            }else if (PlayerInfo.Instance.travelledTransitions[TitleLoadManager.SAVE_SLOT][roomTransition] == PlayerInfo.RoomTransitionStates.known) {
+                PlayerInfo.Instance.travelledTransitions[TitleLoadManager.SAVE_SLOT][roomTransition] = PlayerInfo.RoomTransitionStates.travelled;
             }
             fadeSceneOutSignal.RaiseSignal();
             LoadScene();
@@ -28,7 +28,7 @@ public class ChangeScenes : MonoBehaviour
     public void LoadScene()
     {
         loadFromTransition.Value = true;
-        PlayerInfo.Instance.loadPos = startPosition;
+        PlayerInfo.Instance.loadPos[TitleLoadManager.SAVE_SLOT] = startPosition;
         StartCoroutine(FadeCo());
     }
 

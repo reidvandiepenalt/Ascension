@@ -25,7 +25,7 @@ public class MapMenu : MonoBehaviour, ICanvas
 
     public void UpdatePanels()
     {
-        if (PlayerInfo.Instance.mapUnlocked)
+        if (PlayerInfo.Instance.mapUnlocked[TitleLoadManager.SAVE_SLOT])
         {
             foreach(GameObject child in childObjects)
             {

@@ -7,8 +7,8 @@ public class BastetItem : BossItem
 {
     protected override void SetFlags()
     {
-        PlayerInfo.Instance.guardUnlock = true;
+        PlayerInfo.Instance.guardUnlock[TitleLoadManager.SAVE_SLOT] = true;
         //raise signal to player to check unlocks
-        BossStatuses.Instance.bastKilled = true;
+        BossStatuses.Instance.bastKilled[TitleLoadManager.SAVE_SLOT] = true;
     }
 }

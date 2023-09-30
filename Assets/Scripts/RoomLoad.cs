@@ -14,27 +14,27 @@ public class RoomLoad : MonoBehaviour
         PlayerTestScript.curRoom = room;
         PlayerTestScript.curRoomCenterPoint = centerPoint;
 
-        if (!PlayerInfo.Instance.travelledRooms.ContainsKey(room))
+        if (!PlayerInfo.Instance.travelledRooms[TitleLoadManager.SAVE_SLOT].ContainsKey(room))
         {
-            PlayerInfo.Instance.travelledRooms.Add(room, PlayerInfo.RoomTransitionStates.travelled);
-        }else if(PlayerInfo.Instance.travelledRooms[room] == PlayerInfo.RoomTransitionStates.known)
+            PlayerInfo.Instance.travelledRooms[TitleLoadManager.SAVE_SLOT].Add(room, PlayerInfo.RoomTransitionStates.travelled);
+        }else if(PlayerInfo.Instance.travelledRooms[TitleLoadManager.SAVE_SLOT][room] == PlayerInfo.RoomTransitionStates.known)
         {
-            PlayerInfo.Instance.travelledRooms[room] = PlayerInfo.RoomTransitionStates.travelled;
+            PlayerInfo.Instance.travelledRooms[TitleLoadManager.SAVE_SLOT][room] = PlayerInfo.RoomTransitionStates.travelled;
         }
 
         foreach(PlayerInfo.EgyptRooms adjRoom in adjacentRooms)
         {
-            if (!PlayerInfo.Instance.travelledRooms.ContainsKey(adjRoom))
+            if (!PlayerInfo.Instance.travelledRooms[TitleLoadManager.SAVE_SLOT].ContainsKey(adjRoom))
             {
-                PlayerInfo.Instance.travelledRooms.Add(adjRoom, PlayerInfo.RoomTransitionStates.known);
+                PlayerInfo.Instance.travelledRooms[TitleLoadManager.SAVE_SLOT].Add(adjRoom, PlayerInfo.RoomTransitionStates.known);
             }
         }
 
         foreach (PlayerInfo.EgyptTransitions transition in transitions)
         {
-            if (!PlayerInfo.Instance.travelledTransitions.ContainsKey(transition))
+            if (!PlayerInfo.Instance.travelledTransitions[TitleLoadManager.SAVE_SLOT].ContainsKey(transition))
             {
-                PlayerInfo.Instance.travelledTransitions.Add(transition, PlayerInfo.RoomTransitionStates.known);
+                PlayerInfo.Instance.travelledTransitions[TitleLoadManager.SAVE_SLOT].Add(transition, PlayerInfo.RoomTransitionStates.known);
             }
         }
     }

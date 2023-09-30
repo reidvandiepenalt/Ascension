@@ -22,16 +22,16 @@ public class BlessingPickup : MonoBehaviour
             switch (blessing.pickup)
             {
                 case BlessingPickups.TernaryAnima:
-                    BlessingPickupInfo.Instance.TernaryAnimaPickedUp = true;
+                    BlessingPickupInfo.Instance.TernaryAnimaPickedUp[TitleLoadManager.SAVE_SLOT] = true;
                     break;
                 case BlessingPickups.IronAegis:
-                    BlessingPickupInfo.Instance.IronAegisPickedUp = true;
+                    BlessingPickupInfo.Instance.IronAegisPickedUp[TitleLoadManager.SAVE_SLOT] = true;
                     break;
                 case BlessingPickups.DesertSun:
-                    BlessingPickupInfo.Instance.DesertSunPickedUp = true;
+                    BlessingPickupInfo.Instance.DesertSunPickedUp[TitleLoadManager.SAVE_SLOT] = true;
                     break;
                 case BlessingPickups.LethalRecompense:
-                    BlessingPickupInfo.Instance.LethalRecompensePickedUp = true;
+                    BlessingPickupInfo.Instance.LethalRecompensePickedUp[TitleLoadManager.SAVE_SLOT] = true;
                     break;
                 default:
                     print("pickup enum not created");

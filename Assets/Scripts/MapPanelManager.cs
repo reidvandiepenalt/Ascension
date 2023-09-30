@@ -37,10 +37,10 @@ public class MapPanelManager : MonoBehaviour
 
     private void OnEnable()
     {
-        foreach (PlayerInfo.EgyptRooms room in PlayerInfo.Instance.travelledRooms.Keys)
+        foreach (PlayerInfo.EgyptRooms room in PlayerInfo.Instance.travelledRooms[TitleLoadManager.SAVE_SLOT].Keys)
         {
             rooms[room].gameObject.SetActive(true);
-            switch (PlayerInfo.Instance.travelledRooms[room])
+            switch (PlayerInfo.Instance.travelledRooms[TitleLoadManager.SAVE_SLOT][room])
             {
                 case PlayerInfo.RoomTransitionStates.known:
                     rooms[room].color = knownColor;
@@ -51,10 +51,10 @@ public class MapPanelManager : MonoBehaviour
             }
         }
 
-        foreach (PlayerInfo.EgyptTransitions transition in PlayerInfo.Instance.travelledTransitions.Keys)
+        foreach (PlayerInfo.EgyptTransitions transition in PlayerInfo.Instance.travelledTransitions[TitleLoadManager.SAVE_SLOT].Keys)
         {
             transitions[transition].gameObject.SetActive(true);
-            switch (PlayerInfo.Instance.travelledTransitions[transition])
+            switch (PlayerInfo.Instance.travelledTransitions[TitleLoadManager.SAVE_SLOT][transition])
             {
                 case PlayerInfo.RoomTransitionStates.known:
                     transitions[transition].sharedMaterial = knownMaterial;
