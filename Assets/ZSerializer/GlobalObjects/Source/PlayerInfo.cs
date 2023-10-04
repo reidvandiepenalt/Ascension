@@ -76,24 +76,34 @@ public partial class PlayerInfo
         dashUpgrade = new bool[3];
         mapUnlocked = new bool[3];
         sceneName = new string[3];
-        sceneName[0] = "TutorialRoom1";
-        sceneName[1] = "TutorialRoom1";
-        sceneName[2] = "TutorialRoom1";
+        Array.Fill(sceneName, "TutorialRoom1");
         loadPos = new Vector3[3];
-        loadPos[0] = new Vector3(-18, -3, 0);
-        loadPos[1] = new Vector3(-18, -3, 0);
-        loadPos[2] = new Vector3(-18, -3, 0);
+        Array.Fill(loadPos, new Vector3(-18, -3, 0));
         travelledRooms = new Dictionary<EgyptRooms, RoomTransitionStates>[3];
-        travelledRooms[0] = new Dictionary<EgyptRooms, RoomTransitionStates>();
-        travelledRooms[1] = new Dictionary<EgyptRooms, RoomTransitionStates>();
-        travelledRooms[2] = new Dictionary<EgyptRooms, RoomTransitionStates>();
+        Array.Fill(travelledRooms, new Dictionary<EgyptRooms, RoomTransitionStates>());
         travelledTransitions = new Dictionary<EgyptTransitions, RoomTransitionStates>[3];
-        travelledTransitions[0] = new Dictionary<EgyptTransitions, RoomTransitionStates>();
-        travelledTransitions[1] = new Dictionary<EgyptTransitions, RoomTransitionStates>();
-        travelledTransitions[2] = new Dictionary<EgyptTransitions, RoomTransitionStates>();
+        Array.Fill(travelledTransitions, new Dictionary<EgyptTransitions, RoomTransitionStates>());
         maxHealth = new int[3];
-        maxHealth[0] = 5;
-        maxHealth[1] = 5;
-        maxHealth[2] = 5;
+        Array.Fill(maxHealth, 5);
+    }
+
+    public void DeleteSlot(int slot)
+    {
+        backstepUnlock[slot] = false;
+        slamUnlock[slot] = false;
+        doubleJumpUnlock[slot] = false;
+        doubleJumpUpgrade[slot] = false;
+        chargeJumpUnlock[slot] = false;
+        sprayUnlock[slot] = false;
+        shootUnlock[slot] = false;
+        guardUnlock[slot] = false;
+        dashUnlock[slot] = false;
+        dashUpgrade[slot] = false;
+        mapUnlocked[slot] = false;
+        sceneName[slot] = "TutorialRoom1";
+        loadPos[slot] = new Vector3(-18, -3, 0);
+        travelledRooms[slot] = new Dictionary<EgyptRooms, RoomTransitionStates>();
+        travelledTransitions[slot] = new Dictionary<EgyptTransitions, RoomTransitionStates>();
+        maxHealth[slot] = 5;
     }
 }

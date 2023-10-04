@@ -20,4 +20,12 @@ public partial class BlessingPickupInfo
         IronAegisPickedUp = new bool[3];
         Array.Fill(IronAegisPickedUp, false);
     }
+
+    public void DeleteSlot(int slot)
+    {
+        TernaryAnimaPickedUp[slot] = false;
+        DesertSunPickedUp[slot] = false;
+        LethalRecompensePickedUp[slot] = false;
+        IronAegisPickedUp[slot] = false;
+    }
 }

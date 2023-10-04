@@ -19,4 +19,11 @@ public partial class BossStatuses
         Array.Fill(bastKilled, false);
         Array.Fill(horusKilled, false);
     }
+
+    public void DeleteSlot(int slot)
+    {
+        bennuKilled[slot] = false;
+        bastKilled[slot] = false;
+        horusKilled[slot] = false;
+    }
 }

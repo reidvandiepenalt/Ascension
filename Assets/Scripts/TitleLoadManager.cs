@@ -60,7 +60,12 @@ public class TitleLoadManager : MonoBehaviour
     {
         //clear player save info
 
-
+        PlayerInfo.Instance.DeleteSlot(slot);
+        BlessingPickupInfo.Instance.DeleteSlot(slot);
+        BossStatuses.Instance.DeleteSlot(slot);
+        PlayerInfo.Save();
+        BlessingPickupInfo.Save();
+        BossStatuses.Save();
     }
 
     public void OpenGameSlots()
