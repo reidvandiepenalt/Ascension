@@ -23,6 +23,8 @@ public class NovaTutorialAI : MonoBehaviour
     public float laserDelay, laserExistTime;
     public float vertLaserSpawnHeight, vertLaserSpawnInterval;
 
+    public bool inCutscene = false;
+
     [SerializeField] NovaSFXManager sfxManager;
     public TutorialCutscene cutscene;
 
@@ -414,7 +416,7 @@ public class NovaTutorialAI : MonoBehaviour
     protected void FixedUpdate()
     {
         //if paused, do nothing
-        if (Pause.IsPaused) { return; }
+        if (Pause.IsPaused || inCutscene) { return; }
 
         //catch case
         if (path == null)
@@ -469,10 +471,15 @@ public class NovaTutorialAI : MonoBehaviour
     /// <summary>
     /// Setup and play the intro cutscene
     /// </summary>
-    private void Cutscene()
+    public void Cutscene(bool fromPlayer = false)
     {
-        cutscene.gameObject.SetActive(true);
-        cutscene.PlayCutscene();
+        if (!fromPlayer)
+        {
+            cutscene.gameObject.SetActive(true);
+            cutscene.PlayCutscene();
+        }
+        inCutscene = true;
+        sfxManager.StopMove();
     }
 
     /// <summary>

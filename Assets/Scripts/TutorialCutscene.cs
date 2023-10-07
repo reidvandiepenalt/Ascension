@@ -15,6 +15,7 @@ public class TutorialCutscene : MonoBehaviour
         if (!sfx.isPlaying && hasStartedSFX)
         {
             changeScenes.LoadScene();
+            GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerTestScript>().TutorialSpawn();
         }
     }
 

@@ -409,7 +409,7 @@ public class PlayerTestScript : MonoBehaviour
         }
 
         //toggle debugs
-        if (Input.GetKeyDown(KeyCode.F1)) { debugInvinc = !debugInvinc; }
+        //if (Input.GetKeyDown(KeyCode.F1)) { debugInvinc = !debugInvinc; }
         //if(Input.GetKeyDown(KeyCode.F2)) { debugSkills = !debugSkills; }
 
         //If moving left, set direction to left
@@ -705,7 +705,7 @@ public class PlayerTestScript : MonoBehaviour
                 }
                 else
                 {
-                    Invoke(nameof(Respawn), 0.5f);
+                    Invoke(nameof(Respawn), 1f);
                 }
             }
             else
@@ -737,7 +737,20 @@ public class PlayerTestScript : MonoBehaviour
     {
         fadeSceneOut.RaiseSignal();
         SceneManager.LoadScene(PlayerInfo.Instance.sceneName[TitleLoadManager.SAVE_SLOT]);
-        gameObject.transform.position = PlayerInfo.Instance.loadPos[TitleLoadManager.SAVE_SLOT];
+        gameObject.transform.position = PlayerInfo.Instance.loadPos[TitleLoadManager.SAVE_SLOT] - (Vector3.forward * 40);
+        anim.SetTrigger("Respawn");
+        currentHealth.Value = maxHealth.Value;
+        playerHealthSignal.RaiseSignal();
+        dead = false;
+    }
+
+    public void TutorialSpawn()
+    {
+        anim.SetTrigger("Respawn");
+        currentHealth.Value = maxHealth.Value;
+        playerHealthSignal.RaiseSignal();
+        dead = false;
+
     }
 
     /// <summary>
