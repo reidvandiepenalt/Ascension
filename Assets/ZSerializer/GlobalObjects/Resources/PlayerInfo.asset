@@ -12,17 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b03f2220dae83846a3f676dc0171117, type: 3}
   m_Name: PlayerInfo
   m_EditorClassIdentifier: 
-  sceneName: []
-  loadPos: []
-  maxHealth: 
-  backstepUnlock: 
-  slamUnlock: 
-  doubleJumpUnlock: 
-  doubleJumpUpgrade: 
-  chargeJumpUnlock: 
-  sprayUnlock: 
-  shootUnlock: 
-  guardUnlock: 
-  dashUnlock: 
-  dashUpgrade: 
-  mapUnlocked: 
+  sceneName:
+  - TutorialRoom1
+  - TutorialRoom1
+  - TutorialRoom1
+  loadPos:
+  - {x: -18, y: -3, z: 0}
+  - {x: -18, y: -3, z: 0}
+  - {x: -18, y: -3, z: 0}
+  maxHealth: 050000000500000005000000
+  backstepUnlock: 000000
+  slamUnlock: 000000
+  doubleJumpUnlock: 010000
+  doubleJumpUpgrade: 000000
+  chargeJumpUnlock: 000000
+  sprayUnlock: 000000
+  shootUnlock: 000000
+  guardUnlock: 000000
+  dashUnlock: 000000
+  dashUpgrade: 000000
+  mapUnlocked: 000000

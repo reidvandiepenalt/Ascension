@@ -340,9 +340,9 @@ public class PlayerTestScript : MonoBehaviour
         {
             velocity.y = maxJumpVelocity;
             doubleJumpUsed = true;
-            state = PlayerState.gliding;
             anim.SetTrigger("DoubleJump");
             playerSFXManager.PlayDoubleJump();
+
             //if upgraded, spawn stun objects
             if (PlayerInfo.Instance.doubleJumpUpgrade[TitleLoadManager.SAVE_SLOT])
             {
