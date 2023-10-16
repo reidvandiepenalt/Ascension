@@ -307,6 +307,10 @@ public class PlayerTestScript : MonoBehaviour
             transform.position = new Vector3(PlayerInfo.Instance.loadPos[TitleLoadManager.SAVE_SLOT].x, PlayerInfo.Instance.loadPos[TitleLoadManager.SAVE_SLOT].y, -40);
             loadFromTransition.Value = false;
         }
+        else
+        {
+            transform.position = new Vector3(PlayerInfo.Instance.respawnPos[TitleLoadManager.SAVE_SLOT].x, PlayerInfo.Instance.respawnPos[TitleLoadManager.SAVE_SLOT].y, -40);
+        }
     }
 
     /// <summary>
@@ -737,7 +741,7 @@ public class PlayerTestScript : MonoBehaviour
     {
         fadeSceneOut.RaiseSignal();
         SceneManager.LoadScene(PlayerInfo.Instance.sceneName[TitleLoadManager.SAVE_SLOT]);
-        gameObject.transform.position = PlayerInfo.Instance.loadPos[TitleLoadManager.SAVE_SLOT] - (Vector3.forward * 40);
+        gameObject.transform.position = new Vector3(PlayerInfo.Instance.respawnPos[TitleLoadManager.SAVE_SLOT].x, PlayerInfo.Instance.respawnPos[TitleLoadManager.SAVE_SLOT].y, gameObject.transform.position.z);
         anim.SetTrigger("Respawn");
         currentHealth.Value = maxHealth.Value;
         playerHealthSignal.RaiseSignal();

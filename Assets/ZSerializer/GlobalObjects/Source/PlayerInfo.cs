@@ -43,6 +43,7 @@ public partial class PlayerInfo
     //  Add serializable variables to this object to be able to serialize and access them.
     public string[] sceneName = { "TutorialRoom1", "TutorialRoom1", "TutorialRoom1" };
     public Vector3[] loadPos = { new Vector3(-18, -3, 0), new Vector3(-18, -3, 0), new Vector3(-18, -3, 0) };
+    public Vector3[] respawnPos = { new Vector3(-18, -3, 0), new Vector3(-18, -3, 0), new Vector3(-18, -3, 0) };
 
 
     public int[] maxHealth = new int[3];
@@ -79,6 +80,8 @@ public partial class PlayerInfo
         Array.Fill(sceneName, "TutorialRoom1");
         loadPos = new Vector3[3];
         Array.Fill(loadPos, new Vector3(-18, -3, 0));
+        respawnPos = new Vector3[3];
+        Array.Fill(respawnPos, new Vector3(-18, -3, 0));
         travelledRooms = new Dictionary<EgyptRooms, RoomTransitionStates>[3];
         Array.Fill(travelledRooms, new Dictionary<EgyptRooms, RoomTransitionStates>());
         travelledTransitions = new Dictionary<EgyptTransitions, RoomTransitionStates>[3];
@@ -102,6 +105,7 @@ public partial class PlayerInfo
         mapUnlocked[slot] = false;
         sceneName[slot] = "TutorialRoom1";
         loadPos[slot] = new Vector3(-18, -3, 0);
+        respawnPos[slot] = new Vector3(-18, -3, 0);
         travelledRooms[slot] = new Dictionary<EgyptRooms, RoomTransitionStates>();
         travelledTransitions[slot] = new Dictionary<EgyptTransitions, RoomTransitionStates>();
         maxHealth[slot] = 5;
